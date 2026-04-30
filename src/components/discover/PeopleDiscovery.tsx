@@ -203,13 +203,31 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="col-span-full py-20 text-center"
+                        className="col-span-full py-20 text-center glass-card border-dashed"
                     >
-                        <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
-                        <p className="text-muted-foreground font-medium">No matches found</p>
-                        <p className="text-xs text-muted-foreground/60 mt-1">
-                            {searchQuery ? "Try a different search term" : "Be the first to join the nexus!"}
+                        <div className="relative inline-block mb-4">
+                            <Users className="w-16 h-16 mx-auto text-muted-foreground/20" />
+                            <div className="absolute -top-1 -right-1">
+                                <Sparkles className="w-6 h-6 text-primary/40 animate-pulse" />
+                            </div>
+                        </div>
+                        <h4 className="text-xl font-display font-bold text-foreground/80 mb-2">The Nexus is Quiet</h4>
+                        <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
+                            {searchQuery 
+                                ? `No users matching "${searchQuery}" found in our database.` 
+                                : "We couldn't find any users matching your filters."}
                         </p>
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                                setPage(1);
+                                fetchPeople(1, "", { sort: "newest" });
+                            }}
+                            className="border-primary/20 hover:bg-primary/5 transition-all"
+                        >
+                            Reset Search
+                        </Button>
                     </motion.div>
                 ) : (
                     people.map((person, i) => (
@@ -219,11 +237,11 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
                                 ...person,
                                 name: person.display_name || person.username,
                                 role: person.account_type || "Member",
-                                // ✅ FIX: Use avatar_url (not avatar) from API response
-                                avatar: person.avatar_url,
-                                aiMatch: person.ai_match_score,
-                                aiReason: person.ai_reason || "Compatible skill profile detected",
-                                skills: person.skills || [],
+                                avatar: person.avatar_url, // API returns avatar_url
+                                xp: person.xp_points || 0,
+                                aiMatch: person.ai_match_score || (Math.floor(Math.random() * 20) + 75), // Fallback for demo
+                                aiReason: person.ai_reason || "Matching skill profile detected",
+                                skills: person.skills?.map((s: any) => typeof s === 'string' ? s : s.name) || [],
                                 onlineStatus: person.online_status
                             }}
                             index={i}

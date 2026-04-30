@@ -177,7 +177,7 @@ async def search_skills(
 async def search_users(
     q: Optional[str] = Query(None),
     skill: Optional[str] = Query(None, description="Filter by skill name"),
-    category: Optional[str] = Query(None, description="Filter by skill category (Frontend, Backend, AI/ML, DevOps, Design, Mobile)"),
+    category: Optional[str] = Query(None, description="Filter by skill category"),
     sort: Optional[str] = Query("newest", description="Sort: newest, xp_high, most_followed, most_active"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
@@ -185,118 +185,80 @@ async def search_users(
     current_user: Optional[User] = Depends(auth_module.get_current_user_optional)
 ):
     """Search users by username or display name, with skill/category filtering"""
-    from sqlalchemy import desc, asc
+    from sqlalchemy import desc, or_
+    from common.models import UserSkill, Skill, SkillCategory, Follower
     
-    # Import additional models for skill filtering
-    from common.models import UserSkill, Skill, Follower, UserSocialStats
+    # 1. Base query with outer joins to include all users regardless of skills
+    # We use distinct() to prevent duplicate users when they have multiple skills
+    query = db.query(User).outerjoin(UserSkill).outerjoin(Skill).outerjoin(SkillCategory)
     
-    query = db.query(User)
-    
+    # 2. Exclude current user from results
     if current_user:
         query = query.filter(User.id != current_user.id)
     
-    # Base filters
+    # 3. Apply Filters
     filters = []
     
-    # Text search (username, display_name, bio)
+    # Text search across multiple fields (inclusive OR)
     if q:
         search_pattern = f"%{q}%"
         filters.append(
             or_(
                 User.username.ilike(search_pattern),
                 User.display_name.ilike(search_pattern),
-                User.bio.ilike(search_pattern)
+                User.bio.ilike(search_pattern),
+                UserSkill.skill_name.ilike(search_pattern),
+                Skill.canonical_name.ilike(search_pattern)
             )
         )
     
-    # Skill filter - find users with specific skill
+    # Explicit skill name filter
     if skill:
         skill_pattern = f"%{skill}%"
-        
-        # Subquery to find matching skill IDs
-        matching_skill_ids = db.query(Skill.id).filter(
-            Skill.canonical_name.ilike(skill_pattern)
-        )
-        
-        user_ids_with_skill = db.query(UserSkill.user_id).filter(
+        filters.append(
             or_(
                 UserSkill.skill_name.ilike(skill_pattern),
-                UserSkill.skill_id.in_(matching_skill_ids)
+                Skill.canonical_name.ilike(skill_pattern)
             )
-        ).all()
+        )
         
-        user_ids_with_skill = [u.user_id for u in user_ids_with_skill]
-        if user_ids_with_skill:
-            query = query.filter(User.id.in_(user_ids_with_skill))
-        else:
-            # No users have this skill
-            return {"users": [], "total": 0, "page": page, "limit": limit, "has_next": False, "has_prev": False}
-    
-    # Category filter - find users with skills in a category
+    # Category filter (e.g. Frontend, Backend)
     if category:
-        from common.models import SkillCategory
-        cat = db.query(SkillCategory).filter(
-            or_(
-                SkillCategory.category_name.ilike(f"%{category}%"),
-                SkillCategory.slug.ilike(f"%{category.lower()}%")
-            )
-        ).first()
+        filters.append(SkillCategory.category_name.ilike(f"%{category}%"))
         
-        if cat:
-            skill_ids_in_category = db.query(Skill.id).filter(
-                Skill.category_id == cat.id
-            ).all()
-            skill_ids_in_category = [s.id for s in skill_ids_in_category]
-            
-            if skill_ids_in_category:
-                user_ids_in_category = db.query(UserSkill.user_id).filter(
-                    UserSkill.skill_id.in_(skill_ids_in_category)
-                ).all()
-                user_ids_in_category = [u.user_id for u in user_ids_in_category]
-                
-                if user_ids_in_category:
-                    query = query.filter(User.id.in_(user_ids_in_category))
-                else:
-                    return {"users": [], "total": 0, "page": page, "limit": limit, "has_next": False, "has_prev": False}
+    for f in filters:
+        query = query.filter(f)
+        
+    # 4. Finalizing Query (Unique users only)
+    query = query.distinct()
     
-    # Apply text filters if any
-    if filters:
-        for f in filters:
-            query = query.filter(f)
-    
-    # Get total count before sorting/pagination
+    # 5. Get Total Count
     total = query.count()
     
-    # Apply sorting
+    # 6. Apply Sorting
     if sort == "xp_high":
         query = query.order_by(desc(User.xp_points))
-    elif sort == "most_followed":
-        # This is a separate query - we'll do basic sorting by last_seen for now
-        query = query.order_by(desc(User.last_seen))
     elif sort == "newest":
         query = query.order_by(desc(User.created_at))
+    elif sort == "most_followed":
+        # Placeholder for complex followed sort, default to last_seen
+        query = query.order_by(desc(User.last_seen))
     else:
         query = query.order_by(desc(User.last_seen))
-    
-    # Apply pagination
+        
+    # 7. Pagination
     offset = (page - 1) * limit
     users = query.offset(offset).limit(limit).all()
     
-    # Get follower counts for each user (for display)
-    follower_counts = {}
-    following_counts = {}
-    for user in users:
-        follower_counts[user.id] = db.query(Follower).filter(Follower.following_id == user.id).count()
-        following_counts[user.id] = db.query(Follower).filter(Follower.follower_id == user.id).count()
-    
-    # Build response with follower data
+    # 8. Transform to Response Format
     users_data = []
     for user in users:
-        user_dict = user_to_dict(user, db)
-        user_dict["follower_count"] = follower_counts.get(user.id, 0)
-        user_dict["following_count"] = following_counts.get(user.id, 0)
-        users_data.append(user_dict)
-    
+        u_dict = user_to_dict(user, db)
+        # Add social context
+        u_dict["follower_count"] = db.query(Follower).filter(Follower.following_id == user.id).count()
+        u_dict["following_count"] = db.query(Follower).filter(Follower.follower_id == user.id).count()
+        users_data.append(u_dict)
+        
     return {
         "users": users_data,
         "total": total,

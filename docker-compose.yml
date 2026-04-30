@@ -378,6 +378,8 @@ services:
       - "5173:5173"
     volumes:
       - ./vite.config.ts:/app/vite.config.ts
+      - ./src:/app/src
+      - ./public:/app/public
     depends_on:
       - api_gateway
     networks:
