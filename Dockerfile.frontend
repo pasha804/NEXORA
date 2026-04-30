@@ -1,0 +1,19 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy env file first (Vite embeds vars at build time)
+COPY .env .env
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Use host.docker.internal for Docker environments - allows container to reach host's ports
+ENV VITE_API_URL=http://host.docker.internal:80
+ENV DOCKER=true
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

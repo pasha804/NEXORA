@@ -1,0 +1,62 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+
+from common.database import get_db
+from common.models import User, Notification
+import auth as auth_module
+import schemas
+
+router = APIRouter(prefix="/notifications", tags=["Notifications"])
+
+@router.get("/", response_model=List[schemas.NotificationResponse])
+async def get_notifications(
+    skip: int = 0,
+    limit: int = 50,
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    notifications = db.query(Notification).filter(
+        Notification.user_id == current_user.id
+    ).order_by(Notification.created_at.desc()).offset(skip).limit(limit).all()
+    
+    return notifications
+
+@router.get("/unread-count")
+async def get_unread_count(
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    count = db.query(Notification).filter(
+        Notification.user_id == current_user.id,
+        Notification.is_read == False
+    ).count()
+    return {"unread_count": count}
+
+@router.post("/{notification_id}/read")
+async def mark_as_read(
+    notification_id: int,
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    notification = db.query(Notification).filter(
+        (Notification.id == notification_id) & (Notification.user_id == current_user.id)
+    ).first()
+    
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    notification.is_read = True
+    db.commit()
+    return {"message": "Notification marked as read"}
+
+@router.post("/read-all")
+async def mark_all_as_read(
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    db.query(Notification).filter(
+        (Notification.user_id == current_user.id) & (Notification.is_read == False)
+    ).update({"is_read": True})
+    db.commit()
+    return {"message": "All notifications marked as read"}

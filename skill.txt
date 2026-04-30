@@ -1,0 +1,100 @@
+# Antigravity Skills & Capabilities Directory
+
+This document provides an overview of the specialized skills and tools currently available to Antigravity.
+
+## How to Invoke Skills
+To use a skill, I read the instructions in its `SKILL.md` file using the `view_file` tool. Once read, I follow the patterns and instructions defined within that skill to execute the task.
+
+---
+
+## 🛠 Complete Skill Inventory
+
+Below is a detailed list of specialized skills available for reference and execution. Most skills are invoked by reading their `SKILL.md` file located in the `C:\Users\USER\.gemini\antigravity\skills\` directory.
+
+### Core Development & Architecture
+- **architect-review**: Software architecture and design review.
+- **backend-architect**: Scalable API design and microservices.
+- **senior-architect**: Master-level architecture patterns.
+- **senior-fullstack**: Full-stack best practices.
+- **clean-code**: Principles for maintainable and readable code.
+- **ddd-tactical-patterns / strategic-design**: Domain Driven Design expertise.
+- **design-spells**: UI micro-interactions and "magic" details.
+
+### Frontend Frameworks & UI
+- **react-patterns / react-best-practices**: Advanced React development.
+- **nextjs-best-practices**: Next.js App Router and Server Components.
+- **astro**: Content-centric websites with islands architecture.
+- **sveltekit**: Modern Svelte application patterns.
+- **angular / angular-best-practices**: Angular development and migration.
+- **tailwind-patterns**: Tailwind CSS v4 and design token architecture.
+- **shadcn**: Component management for shadcn/ui.
+- **threejs-skills**: 3D web experiences (animation, geometry, shaders).
+
+### Backend, Languages & Platforms
+- **python-pro / fast-api-pro**: High-performance Python backend development.
+- **nodejs-backend-patterns**: Node.js architectural best practices.
+- **golang-pro / grpc-golang**: Performance-critical Go services.
+- **rust-pro / bevy-ecs-expert**: Systems programming and game engine patterns.
+- **dotnet-backend**: Enterprise .NET Core development.
+- **c-pro / cpp-pro**: Low-level systems programming.
+- **shopify-development**: App and theme development for Shopify.
+- **wordpress-plugin-development**: Modern WP ecosystem development.
+
+### AI, Agents & MLOps
+- **crewai**: Multi-agent orchestration.
+- **hugging-face-cli / datasets / model-trainer**: ML workflow management.
+- **gemini-api-dev**: Advanced Google AI integration.
+- **mlops-engineer**: CI/CD for machine learning.
+- **pydantic-models-py**: Type-safe data validation.
+
+### DevOps, Cloud & CI/CD
+- **aws-skills / azure-skills / gcp-cloud-run**: Multi-cloud infrastructure.
+- **docker-expert / kubernetes-architect**: Container orchestration.
+- **github-actions-templates**: Automated workflow patterns.
+- **terraform-specialist**: Infrastructure as Code (IaC).
+
+### Mobile Development
+- **flutter-expert**: Cross-platform Dart development.
+- **expo-tailwind-setup / upgrading-expo**: React Native / Expo ecosystem.
+- **android-jetpack-compose-expert**: Native Android UI.
+- **ios-developer / swiftui-expert**: Native iOS development.
+
+### Specialized Tools & Utilities
+- **browser-automation**: Playwright/Selenium based interaction.
+- **algolia-search**: Search implementation and relevance tuning.
+- **clerk-auth / nextjs-supabase-auth**: Modern authentication.
+- **google-docs/calendar/sheets-automation**: Workspace integrations.
+- **slack-automation / discord-bot-builder**: Communication tool bots.
+- **ffmpeg / videodb-skills**: Media processing and video intelligence.
+
+### Security
+- **security-auditor**: Comprehensive security vulnerability analysis.
+- **solidity-security**: Smart contract auditing.
+- **red-team-tactics**: Offensive security simulations.
+- **pwn-patterns**: Exploitation techniques.
+
+---
+
+## 🏗 Knowledge & Reference Layers
+
+### StitchMCP Tools
+Direct commands for UI/UX engineering:
+- `create_project`
+- `generate_screen_from_text`
+- `edit_screens`
+- `apply_design_system`
+- `list_projects` / `list_screens` / `get_screen`
+- `create_design_system` / `update_design_system`
+
+### Repository Memory
+- **Knowledge Items (KIs)**: Repository-specific distilled knowledge.
+- **Conversational Brain**: Context from past iterations of the current project.
+
+---
+
+*For any specific task, I will cross-reference these skills to ensure the most robust implementation.*
+
+
+---
+
+*This file is generated automatically to guide the user on the capabilities of the current Antigravity instance.*

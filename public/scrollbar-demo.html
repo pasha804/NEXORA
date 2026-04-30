@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora Scrollbar Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f0f 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(270deg, #3b82f6, #8b5cf6, #ec4899);
+            background-size: 600% 600%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        p {
+            color: #a0a0a0;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-section {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .demo-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: #3b82f6;
+        }
+        
+        .demo-section p {
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+        
+        .scroll-demo {
+            height: 200px;
+            overflow-y: auto;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .horizontal-scroll-demo {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .tab-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .tab-item:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .content-block {
+            padding: 12px;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        /* Import Nexora Scrollbar Styles */
+        
+        /* WebKit Browsers */
+        .discover-tabs-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .discover-tabs-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 0 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .discover-tabs-scroll:hover::-webkit-scrollbar-track {
+            opacity: 1;
+        }
+
+        .discover-tabs-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(
+                90deg,
+                rgba(59, 130, 246, 0.3) 0%,
+                rgba(139, 92, 246, 0.5) 50%,
+                rgba(236, 72, 153, 0.3) 100%
+            );
+            border-radius: 10px;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .discover-tabs-scroll:hover::-webkit-scrollbar-thumb {
+            opacity: 1;
+        }
+
+        .discover-tabs-scroll::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(
+                90deg,
+                rgba(59, 130, 246, 0.6) 0%,
+                rgba(139, 92, 246, 0.8) 50%,
+                rgba(236, 72, 153, 0.6) 100%
+            );
+            box-shadow: 
+                0 0 8px rgba(59, 130, 246, 0.6),
+                0 0 16px rgba(139, 92, 246, 0.4);
+            height: 6px;
+        }
+        
+        .nexora-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .nexora-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 4px;
+        }
+
+        .nexora-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(
+                135deg,
+                rgba(59, 130, 246, 0.3) 0%,
+                rgba(139, 92, 246, 0.3) 100%
+            );
+            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nexora-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(
+                135deg,
+                rgba(59, 130, 246, 0.6) 0%,
+                rgba(139, 92, 246, 0.6) 100%
+            );
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 
+                0 0 8px rgba(59, 130, 246, 0.4),
+                0 0 16px rgba(59, 130, 246, 0.2),
+                inset 0 0 8px rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Firefox */
+        .nexora-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(59, 130, 246, 0.4) rgba(0, 0, 0, 0.3);
+        }
+        
+        .discover-tabs-scroll {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+            scroll-behavior: smooth;
+        }
+        
+        .discover-tabs-scroll:hover {
+            scrollbar-color: rgba(59, 130, 246, 0.4) rgba(0, 0, 0, 0.2);
+        }
+        
+        .badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .instruction {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 12px;
+            margin-top: 16px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nexora Custom Scrollbar Demo</h1>
+        <p>Immersive dark theme scrollbars with glassmorphism and electric blue accents</p>
+        
+        <div class="demo-section">
+            <h2>1. Horizontal Tab Scroll (Discover Page)</h2>
+            <p>Hover to reveal the scrollbar, then scroll horizontally to see the gradient effect.</p>
+            <div class="horizontal-scroll-demo discover-tabs-scroll">
+                <div class="tab-item">⭐ For You <span class="badge">3</span></div>
+                <div class="tab-item">👥 People</div>
+                <div class="tab-item">🎯 Skills</div>
+                <div class="tab-item">👨‍👩‍👧‍👦 Communities</div>
+                <div class="tab-item">💼 Projects</div>
+                <div class="tab-item">📈 Opportunities <span class="badge">12</span></div>
+                <div class="tab-item">📅 Events & PvP</div>
+                <div class="tab-item">🔥 Trending <span class="badge">8</span></div>
+                <div class="tab-item">🎮 Games</div>
+                <div class="tab-item">🏆 Leaderboard</div>
+                <div class="tab-item">⚙️ Settings</div>
+                <div class="tab-item">📊 Analytics</div>
+            </div>
+            <div class="instruction">
+                <strong>Try this:</strong> Hover over the tab area, then scroll left/right. Notice the smooth gradient scrollbar that appears!
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>2. Vertical Scroll (Content Lists)</h2>
+            <p>Hover to see the glassmorphism effect with neon blue gradient.</p>
+            <div class="scroll-demo nexora-scrollbar">
+                <div class="content-block">
+                    <strong>React Developer</strong><br>
+                    TechCorp • $140k-$180k • Remote<br>
+                    <span style="color: #22c55e; font-size: 0.85rem;">96% Match</span>
+                </div>
+                <div class="content-block">
+                    <strong>Full Stack Engineer</strong><br>
+                    StartupXYZ • $120k-$150k • Hybrid<br>
+                    <span style="color: #22c55e; font-size: 0.85rem;">89% Match</span>
+                </div>
+                <div class="content-block">
+                    <strong>Senior Frontend Architect</strong><br>
+                    MegaCorp • $160k-$200k • On-site<br>
+                    <span style="color: #22c55e; font-size: 0.85rem;">94% Match</span>
+                </div>
+                <div class="content-block">
+                    <strong>UI/UX Engineer</strong><br>
+                    DesignCo • $110k-$140k • Remote<br>
+                    <span style="color: #22c55e; font-size: 0.85rem;">88% Match</span>
+                </div>
+                <div class="content-block">
+                    <strong>React Native Developer</strong><br>
+                    MobileFirst • $130k-$160k • Remote<br>
+                    <span style="color: #22c55e; font-size: 0.85rem;">92% Match</span>
+                </div>
+                <div class="content-block">
+                    <strong>TypeScript Specialist</strong><br>
+                    CodeFactory • $125k-$155k • Hybrid<br>
+                    <span style="color: #22c55e; font-size: 0.85rem;">90% Match</span>
+                </div>
+                <div class="content-block">
+                    <strong>Frontend Lead</strong><br>
+                    InnovateLabs • $150k-$190k • Remote<br>
+                    <span style="color: #22c55e; font-size: 0.85rem;">95% Match</span>
+                </div>
+            </div>
+            <div class="instruction">
+                <strong>Try this:</strong> Hover over the content area, then scroll up/down. Watch the scrollbar thumb glow on hover!
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Features Showcase</h2>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="padding: 8px 0;">✅ <strong>Auto-hide:</strong> Scrollbar appears only on hover/scroll</li>
+                <li style="padding: 8px 0;">✅ <strong>Glassmorphism:</strong> Frosted glass effect with blur</li>
+                <li style="padding: 8px 0;">✅ <strong>Gradient Thumb:</strong> Electric blue to purple gradient</li>
+                <li style="padding: 8px 0;">✅ <strong>Neon Glow:</strong> Glow effect on hover</li>
+                <li style="padding: 8px 0;">✅ <strong>Smooth Transitions:</strong> 0.3s cubic-bezier animations</li>
+                <li style="padding: 8px 0;">✅ <strong>Cross-browser:</strong> WebKit + Firefox support</li>
+                <li style="padding: 8px 0;">✅ <strong>Mobile-optimized:</strong> Thinner on mobile (3px)</li>
+                <li style="padding: 8px 0;">✅ <strong>Accessible:</strong> Respects reduced motion preference</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

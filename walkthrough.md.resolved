@@ -1,0 +1,129 @@
+# Nexora PvP Arena — Full Real-Time Production System
+
+## What Was Built
+
+The PvP Arena was completely converted from a demo with hardcoded mock data into a production-ready real-time competitive system.
+
+---
+
+## Changes Made
+
+### Backend
+
+| File | Change |
+|---|---|
+| [models.py](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/backend/models.py) | Added 5 new DB tables: `pvp_matchmaking_queue`, `pvp_match_results`, [pvp_rating](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/backend/routers/pvp.py#691-713), `pvp_match_history`. Enhanced [PvPMatch](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/backend/schemas.py#114-126) with `battle_type`, `skill_id`, [match_status](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/backend/routers/pvp.py#350-413), `spectator_count`. |
+| [routers/pvp.py](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/backend/routers/pvp.py) | Complete rewrite — 11 real endpoints, no mock data. MMR-based matchmaking, real XP/MMR rewards, battle history, leaderboard, forfeit, live matches feed. |
+| [battle_realtime.py](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/backend/battle_realtime.py) | **New file.** Full Socket.IO real-time server with match rooms, server-controlled timer, spectator mode, disconnect grace handling, live score broadcasts, and MATCH_END events. |
+| [main.py](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/backend/main.py) | Mounted Socket.IO at `/battle/socket.io` — wraps FastAPI with `socketio.ASGIApp`. All REST routes continue to work. |
+| [nginx/nginx.conf](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/nginx/nginx.conf) | `/battle/` now proxies to `core_api` (Socket.IO embedded), with WebSocket upgrade headers + 1hr timeout. |
+
+### Frontend
+
+| File | Change |
+|---|---|
+| [QuickMatchPanel.tsx](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/components/pvp/QuickMatchPanel.tsx) | Uses real auth user ID, correct `/pvp/queue/join` endpoint, battle type selector, 3s polling for match status, queue timer, leave-queue button. |
+| [PvPHero.tsx](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/components/pvp/PvPHero.tsx) | Fetches `/pvp/status` for real rank, MMR, win streak. No hardcoded "Diamond II" or "2,450". |
+| [LeaderboardWidget.tsx](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/components/pvp/LeaderboardWidget.tsx) | Removed `MOCK_LEADERBOARD`. Always fetches `/pvp/leaderboard`. Highlights current user's row. |
+| [LiveMatchesSlider.tsx](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/components/pvp/LiveMatchesSlider.tsx) | Removed `MOCK_LIVE_MATCHES`. Fetches `/pvp/matches/live` every 30s. Shows empty-state when no matches. |
+| [battle/BattleRoom.tsx](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/components/pvp/battle/BattleRoom.tsx) | Full Socket.IO integration — handles all 12 real-time events. Live scoreboard, server timer display, spectator count, connection indicator, real XP/MMR result screen with AI feedback. |
+| [PvPMatchHistory.tsx](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/components/pvp/PvPMatchHistory.tsx) | **New component.** Fetches `/pvp/history/{userId}`. Shows win/loss/draw, score, opponent, battle type, time ago, MMR trend arrows. |
+| [pages/PvP.tsx](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/pages/PvP.tsx) | Added [PvPMatchHistory](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/src/components/pvp/PvPMatchHistory.tsx#35-161) to the page layout, passed `user.id` and `token`. |
+| [detail.txt](file:///e:/NEXORA/NEXORA/nexora-skill-forge-main/detail.txt) | Added two new documentation sections: "Nexora PvP Arena System" and "Nexora Real-Time PvP Arena". |
+
+---
+
+## Real-Time Event Flow
+
+````carousel
+```mermaid
+sequenceDiagram
+    participant P1 as Player 1
+    participant SIO as Socket.IO Server
+    participant DB as Database
+    participant P2 as Player 2
+
+    P1->>SIO: join_match {match_id}
+    SIO->>DB: Load match + challenge
+    SIO-->>P1: MATCH_FOUND {challenge, players}
+
+    P2->>SIO: join_match {match_id}
+    SIO-->>P1: MATCH_START {time_limit}
+    SIO-->>P2: MATCH_START {time_limit}
+    SIO-->>P1: TIMER_START {600s}
+    SIO-->>P2: TIMER_START {600s}
+
+    loop Every 5s
+        SIO-->>P1: TIMER_TICK {elapsed, remaining}
+        SIO-->>P2: TIMER_TICK {elapsed, remaining}
+    end
+
+    P1->>SIO: submit_solution {code}
+    SIO->>DB: Save + evaluate
+    SIO-->>P2: PLAYER_SUBMISSION
+    SIO-->>P1: SCORE_UPDATE {80, 0}
+    SIO-->>P1: judge_result {score, feedback}
+
+    P2->>SIO: submit_solution {code}
+    SIO->>DB: Finalize match, update MMR+XP
+    SIO-->>P1: MATCH_END {winner, xp, mmr}
+    SIO-->>P2: MATCH_END {winner, xp, mmr}
+```
+<!-- slide -->
+```mermaid
+sequenceDiagram
+    participant P1 as Player 1
+    participant SIO as Socket.IO Server
+    participant DB as Database
+
+    P1-xSIO: disconnect
+    SIO-->>P2: PLAYER_DISCONNECTED {grace: 30s}
+
+    Note over SIO: 30s grace timer running
+
+    P1->>SIO: join_match (reconnect)
+    SIO->>SIO: Cancel grace timer
+    SIO-->>P2: PLAYER_RECONNECTED
+
+    Note over SIO: Timer expired (forfeit path)
+    SIO->>DB: Finalize - opponent wins
+    SIO-->>P2: FORFEIT + MATCH_END
+```
+````
+
+---
+
+## API Endpoints Summary
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/pvp/queue/join` | Join matchmaking, instantly matches if opponent found |
+| POST | `/pvp/queue/leave` | Leave queue |
+| GET | `/pvp/match/status/{user_id}` | Poll for match status (3s interval) |
+| GET | `/pvp/match/{match_id}` | Full match details |
+| POST | `/pvp/match/{match_id}/submit` | REST-based code/answer submission |
+| POST | `/pvp/match/{match_id}/forfeit` | Forfeit match |
+| GET | `/pvp/history/{user_id}` | Paginated battle history |
+| GET | `/pvp/status` | Authenticated user's real PvP stats |
+| GET | `/pvp/rating/{user_id}` | Any user's MMR rating |
+| GET | `/pvp/leaderboard` | MMR-ranked global leaderboard |
+| GET | `/pvp/matches/live` | Currently in-progress matches |
+
+---
+
+## Verification Notes
+
+To test the full system:
+
+1. **Start backend:** `uvicorn main:app --reload` in `/backend`
+2. **Start frontend:** `npm run dev` in project root
+3. **Log in** with two separate accounts (different browsers/incognito)
+4. **Both click "Find Match"** — one will wait, the second triggers an instant match
+5. **Watch for:** Socket.IO connection, MATCH_FOUND event, timer countdown, live score update, MATCH_END result screen with XP/MMR values
+6. **Leaderboard / Hero stats** — after first match, will show real data instead of Novice defaults
+
+> [!NOTE]
+> On first run, `Base.metadata.create_all()` in `main.py` creates all 5 new tables automatically. No manual migration needed in dev.
+
+> [!IMPORTANT]
+> The `judging.py` `AIJudge` class uses simulated scoring. For production, replace `evaluate_submission` with an LLM API call (GPT-4, Claude) that analyzes the submitted code against the challenge spec.

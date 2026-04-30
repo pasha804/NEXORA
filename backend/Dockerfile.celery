@@ -1,0 +1,15 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt redis celery
+
+COPY common /app/common
+# Copy matchmaking because the worker is part of matchmaking logic in my design
+COPY services/matchmaking /app/services/matchmaking
+
+ENV PYTHONPATH=/app
+
+# Command to run the worker (pointing to worker.py in services/matchmaking)
+CMD ["python", "services/matchmaking/worker.py"]

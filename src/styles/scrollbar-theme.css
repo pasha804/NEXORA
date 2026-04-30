@@ -1,0 +1,137 @@
+/**
+ * Nexora Global Scrollbar System
+ * 
+ * 🎨 Theme: Dark Futuristic / Neon / Glassmorphism
+ * 🎯 Objective: Blend seamlessly into dark UI with neon accents
+ * 📱 Support: Chrome, Edge, Safari, Firefox (Responsive)
+ */
+
+/* ==========================================================================
+   GLOBAL SCROLLBAR VARIABLES
+   ========================================================================== */
+:root {
+  /* Dimensions */
+  --scrollbar-width: 8px;
+  --scrollbar-height: 8px;
+  --scrollbar-radius: 10px;
+
+  /* Colors - Default Theme */
+  --scrollbar-track-bg: rgba(255, 255, 255, 0.02); /* Near transparent */
+  --scrollbar-thumb-bg: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  --scrollbar-thumb-border: 1px solid rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb-hover-bg: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+  --scrollbar-thumb-hover-border: 1px solid rgba(6, 182, 212, 0.3);
+  --scrollbar-glow-color: rgba(6, 182, 212, 0.5); /* #06b6d4 */
+}
+
+/* ==========================================================================
+   WEBKIT BROWSERS (Chrome, Edge, Safari)
+   ========================================================================== */
+
+/* 1. Global Scrollbar Setup */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-height);
+  background-color: transparent; /* Track is handled below */
+}
+
+/* 2. Track (Background) */
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-bg);
+  border-radius: var(--scrollbar-radius);
+  margin: 2px;
+}
+
+/* 3. Thumb (The draggable part) */
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-bg);
+  border: var(--scrollbar-thumb-border);
+  border-radius: var(--scrollbar-radius);
+  /* Glassmorphism Effect */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  /* Smooth transition handled by CSS properties usually, 
+     but webkit-scrollbar doesn't support transition directly on all props. 
+     We simulate via hover state. */
+}
+
+/* 4. Thumb Hover State */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-bg);
+  border: var(--scrollbar-thumb-hover-border);
+  box-shadow: 0 0 10px var(--scrollbar-glow-color), inset 0 0 5px rgba(255,255,255,0.1);
+  cursor: grab;
+}
+
+/* 5. Thumb Active/Click State */
+::-webkit-scrollbar-thumb:active {
+  background: #06b6d4; /* Neon Cyan Solid */
+  box-shadow: 0 0 15px var(--scrollbar-glow-color), 0 0 5px #fff;
+  cursor: grabbing;
+}
+
+/* 6. Corner (Where horizontal & vertical meet) */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ==========================================================================
+   FIREFOX (Standard CSS Scrollbar Spec)
+   ========================================================================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e293b rgba(0, 0, 0, 0.2); /* Thumb Track */
+}
+
+/* ==========================================================================
+   UTILITY CLASSES (Tailwind-like)
+   ========================================================================== */
+
+/* .scrollbar-hide: Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* .scrollbar-thin: Force thin scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+/* .scrollbar-neon: Extra bright neon mode */
+.scrollbar-neon::-webkit-scrollbar-thumb {
+  border: 1px solid #06b6d4;
+  background: rgba(6, 182, 212, 0.2);
+  box-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
+}
+.scrollbar-neon::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 15px #06b6d4;
+}
+
+/* .scrollbar-glass: Frosted glass effect */
+.scrollbar-glass::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+.scrollbar-glass::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* ==========================================================================
+   MOBILE & RESPONSIVE BEHAVIOR
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Hide scrollbars on mobile by default for cleaner look, allow touch scroll */
+  body, .scroll-container {
+    scrollbar-width: none;
+  }
+  body::-webkit-scrollbar, .scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+}

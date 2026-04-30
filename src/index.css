@@ -1,0 +1,257 @@
+@import "@fontsource/orbitron/400.css";
+@import "@fontsource/orbitron/500.css";
+@import "@fontsource/orbitron/600.css";
+@import "@fontsource/orbitron/700.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Nexora Dark Futuristic Theme */
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 6%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Electric Blue Primary */
+    --primary: 187 100% 42%;
+    --primary-foreground: 222 47% 4%;
+
+    /* Neon Magenta Accent */
+    --secondary: 300 100% 60%;
+    --secondary-foreground: 222 47% 4%;
+
+    --muted: 222 30% 12%;
+    --muted-foreground: 215 20% 55%;
+
+    /* Cyan Accent */
+    --accent: 187 100% 50%;
+    --accent-foreground: 222 47% 4%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 30% 15%;
+    --input: 222 30% 12%;
+    --ring: 187 100% 42%;
+
+    --radius: 0.75rem;
+
+    /* Nexora Custom Colors */
+    --electric-blue: 187 100% 50%;
+    --neon-magenta: 300 100% 60%;
+    --neon-purple: 270 100% 65%;
+    --cyber-green: 150 100% 50%;
+    --warning-orange: 30 100% 50%;
+    
+    /* Glass Effects */
+    --glass-bg: 222 47% 8% / 0.6;
+    --glass-border: 187 100% 50% / 0.2;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(187 100% 50%) 0%, hsl(270 100% 65%) 100%);
+    --gradient-glow: linear-gradient(135deg, hsl(187 100% 50% / 0.3) 0%, hsl(300 100% 60% / 0.3) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(222 47% 10%) 0%, hsl(222 47% 6%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(222 47% 4%) 0%, hsl(222 47% 8%) 50%, hsl(222 47% 4%) 100%);
+
+    /* Shadows */
+    --shadow-glow: 0 0 20px hsl(187 100% 50% / 0.3);
+    --shadow-glow-lg: 0 0 40px hsl(187 100% 50% / 0.4);
+    --shadow-neon: 0 0 30px hsl(300 100% 60% / 0.3);
+
+    --sidebar-background: 222 47% 6%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 187 100% 42%;
+    --sidebar-primary-foreground: 222 47% 4%;
+    --sidebar-accent: 222 30% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 30% 15%;
+    --sidebar-ring: 187 100% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+  }
+}
+
+@layer components {
+  /* Glass Card Effect */
+  .glass-card {
+    @apply relative overflow-hidden rounded-xl border border-border/30;
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(222 47% 5%) 100%);
+    backdrop-filter: blur(20px);
+  }
+
+  .glass-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-20 pointer-events-none;
+    background: linear-gradient(135deg, hsl(var(--electric-blue) / 0.1) 0%, transparent 50%);
+  }
+
+  /* Glow Border Effect */
+  .glow-border {
+    @apply relative;
+    box-shadow: 0 0 20px hsl(var(--electric-blue) / 0.2),
+                inset 0 0 20px hsl(var(--electric-blue) / 0.05);
+  }
+
+  .glow-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl pointer-events-none;
+    background: linear-gradient(135deg, hsl(var(--electric-blue) / 0.3) 0%, hsl(var(--neon-magenta) / 0.1) 100%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    padding: 1px;
+  }
+
+  /* Neon Text */
+  .text-glow {
+    text-shadow: 0 0 10px hsl(var(--electric-blue) / 0.5),
+                 0 0 20px hsl(var(--electric-blue) / 0.3),
+                 0 0 40px hsl(var(--electric-blue) / 0.2);
+  }
+
+  .text-glow-magenta {
+    text-shadow: 0 0 10px hsl(var(--neon-magenta) / 0.5),
+                 0 0 20px hsl(var(--neon-magenta) / 0.3);
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--electric-blue)) 0%, hsl(var(--neon-magenta)) 100%);
+  }
+
+  /* Animated Background Grid */
+  .grid-pattern {
+    background-image: 
+      linear-gradient(hsl(var(--electric-blue) / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--electric-blue) / 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* Skill Badge */
+  .skill-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
+    @apply border border-primary/30 bg-primary/10 text-primary;
+  }
+
+  /* XP Progress Bar */
+  .xp-bar {
+    @apply relative h-2 rounded-full overflow-hidden;
+    background: hsl(var(--muted));
+  }
+
+  .xp-bar-fill {
+    @apply h-full rounded-full;
+    background: linear-gradient(90deg, hsl(var(--electric-blue)) 0%, hsl(var(--neon-magenta)) 100%);
+    box-shadow: 0 0 10px hsl(var(--electric-blue) / 0.5);
+  }
+
+  /* Rank Badge */
+  .rank-badge {
+    @apply inline-flex items-center justify-center w-10 h-10 rounded-lg font-bold;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, hsl(var(--electric-blue)) 0%, hsl(var(--neon-purple)) 100%);
+    box-shadow: 0 0 20px hsl(var(--electric-blue) / 0.4);
+  }
+}
+
+@layer utilities {
+  /* Scrollbar hide */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animation utilities */
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  /* Shimmer for XP bars and skeleton loaders */
+  .animate-shimmer {
+    animation: shimmer 2.5s linear infinite;
+  }
+
+  /* Animated mesh gradient background for Discover page */
+  .animate-mesh {
+    animation: mesh-move 12s ease-in-out infinite alternate;
+  }
+
+  /* Card hover lift — applied via group-hover or motion */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px hsl(var(--electric-blue) / 0.15);
+  }
+
+  @keyframes glow {
+    from { box-shadow: 0 0 20px hsl(var(--electric-blue) / 0.2); }
+    to   { box-shadow: 0 0 40px hsl(var(--electric-blue) / 0.4); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-20px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 20px hsl(var(--electric-blue) / 0.3);
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 40px hsl(var(--electric-blue) / 0.6);
+    }
+  }
+
+  @keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+
+  @keyframes mesh-move {
+    0%   { background-position: 0% 0%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 100%; }
+  }
+}

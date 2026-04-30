@@ -1,0 +1,393 @@
+services:
+  # ==========================================
+  # CORE INFRASTRUCTURE
+  # ==========================================
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: nexora_db
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-nexora_master}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - nexora-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nexora_master}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: nexora_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - nexora-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  # ==========================================
+  # API GATEWAY (NGINX)
+  # ==========================================
+
+  api_gateway:
+    image: nginx:alpine
+    container_name: nexora_gateway
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      auth_service:
+        condition: service_started
+      profile_service:
+        condition: service_started
+      matchmaking_service:
+        condition: service_started
+      core_api:
+        condition: service_started
+      settings_service:
+        condition: service_started
+      media_service:
+        condition: service_started
+      battle_engine_service:
+        condition: service_started
+      ranking_service:
+        condition: service_started
+      economy_service:
+        condition: service_started
+      spectator_service:
+        condition: service_started
+      feed_service:
+        condition: service_started
+      recommendation_service:
+        condition: service_started
+      activity_service:
+        condition: service_started
+      notification_service:
+        condition: service_started
+      realtime_service:
+        condition: service_started
+    networks:
+      - nexora-net
+
+  # ==========================================
+  # MICROSERVICES
+  # ==========================================
+
+  core_api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nexora_core
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  auth_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.auth
+    container_name: nexora_auth
+    hostname: auth_service
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  profile_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.profile
+    container_name: nexora_profile
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  settings_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.settings
+    container_name: nexora_settings
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  media_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.media
+    container_name: nexora_media
+    env_file: .env
+    volumes:
+      - media_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  matchmaking_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.matchmaking
+    container_name: nexora_matchmaking
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  battle_engine_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.battle_engine
+    container_name: nexora_battle_engine
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  ranking_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.ranking
+    container_name: nexora_ranking
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  economy_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.economy
+    container_name: nexora_economy
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  spectator_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.spectator
+    container_name: nexora_spectator
+    env_file: .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  notification_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.notifications
+    container_name: nexora_notifications
+    env_file: .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  realtime_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.realtime
+    container_name: nexora_realtime
+    env_file: .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  feed_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_feed
+    hostname: feed_service
+    command: uvicorn services.feed.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  activity_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_activity
+    command: uvicorn services.activity.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  recommendation_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_recommendation
+    command: uvicorn services.recommendation.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  growth_engine:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_growth
+    command: uvicorn services.growth_engine.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  gamification_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_gamification
+    command: uvicorn services.gamification.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  skill_intelligence_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_skill_intelligence
+    command: uvicorn services.skill_intelligence.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  creator_economy_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_creator
+    command: uvicorn services.creator_economy.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  battle_pass_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_battlepass
+    command: uvicorn services.battle_pass.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  graph_ai_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_graph
+    command: uvicorn services.graph_ai.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  analytics_service:
+    build: { context: ./backend, dockerfile: Dockerfile }
+    container_name: nexora_analytics
+    command: uvicorn services.analytics.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [ nexora-net ]
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.celery
+    container_name: nexora_ui_worker
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-net
+
+  # ==========================================
+  # FRONTEND
+  # ==========================================
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: nexora_frontend
+    env_file: .env
+    environment:
+      # IMPORTANT: Use localhost:80 because nginx is exposed to host on port 80
+      # Browser runs on host machine and can resolve localhost, not Docker hostnames
+      - VITE_API_URL=http://localhost:80
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./vite.config.ts:/app/vite.config.ts
+    depends_on:
+      - api_gateway
+    networks:
+      - nexora-net
+
+volumes:
+  postgres_data:
+  media_data:
+
+
+networks:
+  nexora-net:
+    driver: bridge

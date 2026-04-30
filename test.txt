@@ -1,0 +1,67 @@
+================================================================================
+                     TEST DATA & CREDENTIALS
+================================================================================
+
+ORIGINAL TEST USERS (11 users):
+All users have password: password123
+
+| # | Username | Email | Skills | XP | Rank |
+|---|----------|-------|--------|-----|------|
+| 1 | basha_dev | basha_dev@nexora.test | JavaScript, React, NodeJS, Python, CSS | 1500 | Bronze I |
+| 2 | react_dev | react_dev@nexora.test | React, JavaScript | 4500 | Gold III |
+| 3 | python_dev | python_dev@nexora.test | Python, FastAPI, PostgreSQL, Docker, AWS | 3200 | Silver I |
+| 4 | fullstack_dev | fullstack_dev@nexora.test | React, NodeJS, MongoDB, Express, JavaScript | 2800 | Silver II |
+| 5 | security_expert | security_expert@nexora.test | Cybersecurity, Penetration Testing, Network Security, Linux, Python | 5800 | Platinum II |
+| 6 | devops_engineer | devops_engineer@nexora.test | DevOps, Docker, Kubernetes, AWS, Terraform | 4200 | Gold II |
+| 7 | ml_engineer | ml_engineer@nexora.test | Machine Learning, Python, TensorFlow, NLP, Data Science | 6500 | Platinum III |
+| 8 | data_scientist | data_scientist@nexora.test | Data Science, Python, Pandas, SQL, Tableau | 3100 | Silver I |
+| 9 | ui_designer | ui_designer@nexora.test | UI Design, Figma, CSS, React, Design Systems | 2400 | Bronze III |
+| 10 | mobile_dev | mobile_dev@nexora.test | Flutter, Dart, Firebase, Android, iOS | 2600 | Bronze I |
+| 11 | cloud_engineer | cloud_engineer@nexora.test | AWS, GCP, Terraform, Docker, Kubernetes | 4800 | Gold I |
+
+EXTENDED TEST USERS (20 NEW):
+
+| # | Username | Email | Skills | XP | Rank |
+|---|----------|-------|--------|-----|------|
+| 12 | blockchain_dev | blockchain_dev@nexora.test | Solidity, Ethereum, Web3, JavaScript, TypeScript | 5200 | Gold III |
+| 13 | ai_researcher | ai_researcher@nexora.test | Computer Vision, PyTorch, Python, Deep Learning, Research | 7200 | Platinum II |
+| 14 | rustacean | rustacean@nexora.test | Rust, Systems Programming, WebAssembly, C++, Linux | 4100 | Gold I |
+| 15 | graphql_guru | graphql_guru@nexora.test | GraphQL, Apollo, Node.js, TypeScript, PostgreSQL | 3800 | Gold I |
+| 16 | sre_lead | sre_lead@nexora.test | SRE, Prometheus, Grafana, Kubernetes, Incident Response | 5500 | Gold III |
+| 17 | ux_researcher | ux_researcher@nexora.test | UX Research, Figma, User Testing, Data Analysis, Prototyping | 2800 | Silver II |
+| 18 | backend_wizard | backend_wizard@nexora.test | Microservices, Go, gRPC, Redis, Kafka | 6200 | Platinum I |
+| 19 | ios_ninja | ios_ninja@nexora.test | iOS, Swift, SwiftUI, Objective-C, Xcode | 4600 | Gold II |
+| 20 | data_engineer | data_engineer@nexora.test | Apache Spark, SQL, Airflow, Snowflake, Python | 4900 | Gold II |
+| 21 | security_analyst | security_analyst@nexora.test | Application Security, OWASP, Burp Suite, Python, Threat Modeling | 3400 | Silver II |
+| 22 | game_dev_pro | game_dev_pro@nexora.test | Unity, C#, Unreal Engine, Game Design, 3D Graphics | 5100 | Gold III |
+| 23 | qa_automation | qa_automation@nexora.test | Selenium, Playwright, Cypress, Python, API Testing | 2900 | Silver II |
+| 24 | tech_writer | tech_writer@nexora.test | Technical Writing, API Docs, Markdown, Git, Content Strategy | 1800 | Bronze III |
+| 25 | vim_master | vim_master@nexora.test | Vim, Bash, Neovim, Linux, Tmux | 3200 | Silver I |
+| 26 | cloud_architect | cloud_architect@nexora.test | Cloud Architecture, AWS, Azure, GCP, Serverless | 6800 | Platinum II |
+| 27 | agile_coach | agile_coach@nexora.test | Agile, Scrum, Kanban, Jira, Team Leadership | 2400 | Bronze III |
+| 28 | ml_ops_engineer | ml_ops_engineer@nexora.test | MLOps, Kubernetes, MLflow, Kubeflow, Python | 5700 | Gold III |
+| 29 | product_manager | product_manager@nexora.test | Product Management, Roadmapping, Analytics, User Research, Jira | 2100 | Bronze II |
+| 30 | dev_advocate | dev_advocate@nexora.test | Developer Relations, Public Speaking, Technical Content, Community, React | 2600 | Bronze I |
+| 31 | database_expert | database_expert@nexora.test | PostgreSQL, MySQL, Database Design, Query Optimization, Replication | 4400 | Gold II |
+
+TOTAL TEST USERS: 31
+
+CATEGORY COVERAGE:
+- Frontend: React, Vue, Angular, UI Design
+- Backend: Python, Node.js, Go, Rust
+- AI/ML: Machine Learning, Deep Learning, Data Science
+- DevOps: Docker, Kubernetes, AWS, SRE
+- Design: UI/UX, Figma, Design Systems
+- Mobile: iOS, Android, Flutter
+- Cybersecurity: Security, Ethical Hacking
+- Blockchain: Solidity, Web3, Ethereum
+- Database: PostgreSQL, MySQL, MongoDB
+- Game Dev: Unity, Unreal Engine
+
+
+
+
+
+graphify watch .
+
+graphify update .

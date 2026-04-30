@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy service code & common library
+# Context is 'backend/', so we copy 'services/matchmaking' -> /app
+# And 'common' -> /app/common
+
+COPY common /app/common
+COPY services/matchmaking /app/
+
+# Environment
+ENV PYTHONPATH=/app
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

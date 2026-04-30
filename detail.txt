@@ -1,0 +1,716 @@
+================================================================================
+                     NEXORA PLATFORM DOCUMENTATION
+================================================================================
+
+VERSION: 3.0 (Production Ready - April 2026)
+PLATFORM TYPE: Skill-Based Social Network with Gamification
+TECH STACK: React + TypeScript + Vite (Frontend), FastAPI + Python (Backend),
+            PostgreSQL (Database), Redis (Cache), Docker (Containerization)
+
+================================================================================
+                          TABLE OF CONTENTS
+================================================================================
+
+1. PLATFORM OVERVIEW
+2. USER ROLES & EXPERIENCE
+3. PAGE STRUCTURE & ROUTES
+4. FEATURES BY PAGE
+5. DISCOVER SYSTEM FIXES
+6. PROFILE SYSTEM UPGRADES
+7. FEED & POST SYSTEM
+8. AUTHENTICATION & SECURITY
+9. GAMIFICATION SYSTEM
+10. TEST DATA & CREDENTIALS (30 USERS)
+11. API ENDPOINTS REFERENCE
+12. TECHNICAL CONFIGURATION
+
+================================================================================
+                        1. PLATFORM OVERVIEW
+================================================================================
+
+NEXORA is a skill-based social platform that combines professional networking
+with gamification elements. Users develop skills, compete in PvP battles,
+join communities, and connect with others who have complementary or related skills.
+
+VISION: LinkedIn + Discord + Gaming + Gen-Z Future Network
+
+KEY CONCEPTS:
+- SKILLS: Users possess skills with levels (Beginner, Intermediate, Advanced, Expert, Master)
+- XP (Experience Points): Earned through activities, battles, and accomplishments
+- RANK: Progression system (Novice, Bronze, Silver, Gold, Platinum, Diamond, Master, Grandmaster)
+- PvP BATTLES: Real-time skill-based competitions between users
+- COMMUNITIES: Skill-based groups where users collaborate and learn
+- AI COACH: Personalized learning guidance and recommendations
+
+================================================================================
+                        2. USER ROLES & EXPERIENCE
+================================================================================
+
+NEW USER (Unauthenticated):
+- Lands on Index page with marketing content
+- Can view Hero, Features, PvP Preview, Community Preview, Leaderboard
+- Must sign up/login to access platform features
+
+AUTHENTICATED USER (Onboarding Incomplete):
+- Redirected to /onboarding to complete profile setup
+- Must select skills, interests, and complete profile
+
+AUTHENTICATED USER (Fully Onboarded):
+- Full access to all platform features
+- Can battle, message, join communities, create content
+
+================================================================================
+                        3. PAGE STRUCTURE & ROUTES
+================================================================================
+
+PUBLIC ROUTES:
+------------
+/                 - Index (Landing/Marketing Page)
+/auth             - Login/Signup Page
+
+AUTHENTICATED ROUTES (with AppLayout):
+--------------------------------
+/onboarding       - Profile Setup (Skills, Interests, Bio)
+/dashboard       - Home Feed (Main Activity)
+/discover        - Discovery Hub (All explore features)
+/pvp             - PvP Battle Arena
+/communities    - Communities Hub
+/reels           - Short-form Video Content
+/ai-coach       - AI Learning Assistant
+/battle-pass     - Season Progress & Rewards
+/settings       - Account Settings
+/profile/:user  - User Profiles
+/messages       - Messaging
+
+================================================================================
+                        4. FEATURES BY PAGE
+================================================================================
+
+---------- INDEX PAGE (Landing) ----------
+Components:
+- Navbar: Logo, Sign In, Sign Up buttons, Features, Pricing links
+- Hero Section: Headline, CTA, Animated skill icons
+- Features Section: Platform capabilities overview
+- PvP Section: Battle preview with live match simulation
+- Community Section: Community highlights
+- Leaderboard Section: Top players display
+- CTA Section: Get Started / Download App
+- Footer: Links, Social, Legal
+
+---------- AUTH PAGE ----------
+Features:
+- Toggle between Sign In / Sign Up modes
+- Email + Password authentication (JWT-based)
+- OAuth buttons (Google, GitHub) - UI present
+- Remember me checkbox
+- Forgot password link
+- Background animated gradient
+
+---------- ONBOARDING PAGE ----------
+Steps (Multi-step wizard):
+1. Skills Selection: Browse and select skills to develop
+2. Interests Selection: Topics of interest
+3. Profile Setup: Display name, bio, avatar
+4. Goals: Learning goals, collaboration preferences
+
+After completion: Redirected to Dashboard
+
+---------- DASHBOARD PAGE ----------
+Layout (3-column on desktop):
+Left Sidebar (3 cols):
+- User Identity Card: Avatar, Name, XP, Level, Rank
+- Quick Stats: Followers, Following, Battles
+- Navigation: Dashboard, Discover, PvP, Messages, Profile, Communities, Reels, AI Coach
+- Notifications bell
+- Settings link
+- Sign Out button
+
+Center Feed (6 cols):
+- Welcome Header: "Welcome back, {username}"
+- Trending Discovery Strip: Horizontal scroll of trending content
+- Main Feed: Posts from followed users and discoveries
+- Create Post FAB (floating action button on mobile)
+- Full post creation modal
+
+Right Sidebar (3 cols):
+- Trending Skills: Popular skills to learn
+- Active Battles: Live matches to spectate
+- Suggested Connections: People to connect with
+
+---------- DISCOVER PAGE ----------
+TABS:
+- For You: AI-powered personalized content feed
+- People: User discovery with advanced search & filters (FIXED)
+- Skills: Skill exploration and leaderboards
+- Communities: Community discovery
+- Projects: Project marketplace/job board
+- Opportunities: Job/internship opportunities
+- Events: Tech events calendar
+- Trending: Currently trending content
+
+SEARCH & FILTER FEATURES (FIXED):
+- Instant username search
+- Skill-based search (e.g., "React Developer")
+- Category filtering: Frontend, Backend, AI/ML, DevOps, Design, Mobile, Cybersecurity
+- Sort options: XP High to Low, Newest Users, Most Followed, Most Active
+- Infinite scroll pagination
+- Loading skeleton while fetching
+- Empty state UI when no results
+
+---------- PROFILE PAGE ----------
+LINKEDIN-QUALITY FEATURES (UPGRADED):
+- Banner image with custom upload
+- Avatar with edit functionality
+- Name, Headline, Location
+- Followers & Following counts
+- About section with rich text
+- Experience section (add/edit/delete/reorder)
+- Education section (add/edit/delete/reorder)
+- Skills section with endorsement support
+- Certifications section
+- Projects portfolio section
+- Resume upload/download
+- Social links (GitHub, LinkedIn, Website)
+- Achievements showcase
+- PvP Rank / Arena Stats
+- Activity timeline
+
+EDIT FEATURES:
+- Pencil icon edit for every section
+- Modal editing UI for all sections
+- Add new entries
+- Edit existing entries
+- Delete entries
+- Reorder sections
+- Instant save
+
+---------- MESSAGES PAGE ----------
+Layout (3-panel messaging):
+- Conversations List (left): List of active conversations
+- Chat Window (center): Message thread with user
+- Info Panel (right): User info, shared skills, quick actions
+
+Features:
+- Skill-based messaging (can only message users with compatible skills)
+- Real-time message simulation
+- Typing indicators
+- Read receipts visual
+- File/image sharing UI
+
+---------- PVP PAGE ----------
+Views:
+- Battle Arena: Quick match and live battles
+- Tournaments: Tournament discovery and management
+
+Components:
+- PvP Hero: Stats overview, rank, MMR
+- Quick Match Panel: Find opponent button
+- Live Matches Slider: Spectate ongoing matches
+- Leaderboard Widget: Top players
+- Match History: Past battles
+- Battle Room: Active match interface
+- Tournament Discovery: Available tournaments
+
+---------- COMMUNITIES PAGE ----------
+Components:
+- Community Feed: Posts from joined communities
+- Create Community Modal: Start new community
+- Tabs: Feed, Channels, Learning, Events, Projects
+
+Features:
+- Create/join communities
+- Community channels (chat rooms)
+- Shared learning resources
+- Community events
+- Collaborative projects
+
+---------- REELS PAGE ----------
+Features:
+- Short-form vertical video feed
+- Like, Comment, Share actions
+- Upload video modal
+- Trending reels
+
+---------- AI COACH PAGE ----------
+Features:
+- AI Chat Interface: Ask questions, get guidance
+- Goals Tracker: Track learning goals
+- Performance Analytics: Progress charts
+- Smart Alerts: Recommended actions
+- Industry Trends: Market insights
+- Career Path Panel: Skill-to-career mapping
+- AI Recommendations: Personalized suggestions
+- Daily Missions: Gamified tasks
+- Learning Roadmap: Skill progression path
+- Skill Radar Chart: Skills visualization
+
+---------- BATTLE PASS PAGE ----------
+Features:
+- Season progress visualization
+- Tier rewards display
+- Missions/challenges
+- Claim rewards
+
+---------- SETTINGS PAGE ----------
+Tabs:
+- Profile: Edit profile information
+- Security: Password, 2FA
+- Privacy: Visibility settings
+- Notifications: Alert preferences
+- Data: Export/delete data
+- Community: Community preferences
+- Content: Posting preferences
+- PvP: Battle settings
+- Messaging: Chat preferences
+- AI: AI interaction settings
+
+================================================================================
+                    5. DISCOVER SYSTEM FIXES
+================================================================================
+
+PREVIOUS ISSUES (FIXED):
+- Users not appearing in Discover page
+- Search by skill not working
+- Filter options limited
+- Pagination issues
+
+FIXES IMPLEMENTED:
+
+1. SEARCH API UPGRADES (backend/routers/search.py):
+   - Added skill parameter for filtering by skill name
+   - Added category parameter for filtering by skill category
+   - Added sort parameter: newest, xp_high, most_followed, most_active
+   - Enhanced text search across username, display_name, bio
+   - Skill filtering queries UserSkill and Skill tables
+   - Category filtering queries SkillCategory table
+   - Proper pagination with has_next/has_prev flags
+
+2. FRONTEND COMPONENTS UPGRADED:
+   - PeopleDiscovery.tsx: Enhanced with skill/category filters
+   - DiscoverHeader.tsx: Updated filter panel with categories
+   - Proper API parameter passing
+   - Loading skeleton while fetching
+   - Empty state UI when no results
+   - Infinite scroll with "Load More" button
+
+3. DATA FLOW FIXES:
+   - user_to_dict properly maps all user fields
+   - Social stats (followers/following) included in responses
+   - avatar_url correctly mapped
+   - XP and rank information displayed
+
+SEARCH SYNTAX EXAMPLES:
+- Search "React" → Users with React skill
+- Search "Frontend" → Users in Frontend category
+- Filter "AI/ML" → Users with AI/ML skills
+- Sort "xp_high" → Highest XP users first
+- Sort "newest" → Most recently joined first
+
+================================================================================
+                    6. PROFILE SYSTEM UPGRADES
+================================================================================
+
+LINKEDIN-QUALITY FEATURES:
+
+HEADER SECTION:
+- Custom banner image (upload support)
+- Avatar with ring effect and edit button
+- Display name with verification badge
+- Professional headline/title
+- Location with map icon
+- Followers and Following counts
+- Edit buttons on every section
+
+EDITABLE SECTIONS:
+
+1. ABOUT:
+   - Rich text bio editor
+   - Character limit display
+   - Save/Cancel actions
+
+2. EXPERIENCE:
+   - Job title, company, dates
+   - Description field
+   - Add/Edit/Delete entries
+   - Drag-to-reorder support
+   - Current position indicator
+
+3. EDUCATION:
+   - Institution, degree, field
+   - Dates and GPA (optional)
+   - Add/Edit/Delete entries
+   - Drag-to-reorder support
+
+4. SKILLS:
+   - Skill name with proficiency level
+   - Endorsement count
+   - Verified badge
+   - Add/Remove skills
+   - Reorder by priority
+
+5. CERTIFICATIONS:
+   - Certification name
+   - Issuing organization
+   - Date obtained
+   - Expiration (if applicable)
+
+6. PROJECTS:
+   - Project name and description
+   - Link and demo URLs
+   - Tech stack tags
+   - Screenshots/media
+
+7. RESUME:
+   - PDF upload support
+   - Download functionality
+   - Multiple versions
+
+8. SOCIAL LINKS:
+   - GitHub URL
+   - LinkedIn URL
+   - Personal Website
+   - Twitter/X
+   - Portfolio
+
+9. ACHIEVEMENTS:
+   - Display earned achievements
+   - XP rewards shown
+   - Rarity indicators
+   - Locked achievements shown
+
+10. PVP STATS:
+    - Current rank and rating
+    - Battle win/loss record
+    - Win rate percentage
+    - Recent match history
+    - Season progress
+
+================================================================================
+                    7. FEED & POST SYSTEM
+================================================================================
+
+POST TYPES SUPPORTED:
+1. Text Post - Simple text content
+2. Image Post - With image upload
+3. Code Post - Syntax highlighted code
+4. Poll Post - Multiple choice voting
+5. Achievement Post - Celebrating achievements
+6. Learning Post - Skill learning milestones
+7. Project Post - Sharing projects
+8. Link Post - Sharing external URLs
+
+POST FEATURES:
+- Create posts from home feed
+- Text post composer with placeholder
+- Image upload support
+- Skill tagging (#React, #Python, etc.)
+- Poll creation with options
+- Like posts
+- Comment on posts
+- Share/Repost
+- Delete own posts
+- Bookmark posts
+- Viral post highlighting
+
+FEED TABS:
+- For You: AI-curated content
+- Following: Posts from followed users
+- Trending: Most liked/shares posts
+- DevLog: Developer content
+- Discussions: Community discussions
+
+FEED FEATURES:
+- Infinite scroll pagination
+- Loading skeleton
+- Pull-to-refresh (mobile)
+- Real-time updates indicator
+- Empty state when no posts
+- Error handling with retry
+
+POST COMPOSER UI (LinkedIn/X style):
+- Avatar preview
+- Text input with placeholder
+- Media upload buttons (Image, Code)
+- Poll creation option
+- Skill tag suggestions
+- Character counter
+- Post button with loading state
+- Cancel action
+
+================================================================================
+                        8. AUTHENTICATION & SECURITY
+================================================================================
+
+AUTHENTICATION:
+- JWT-based authentication
+- Token stored in localStorage (access_token)
+- Token passed in Authorization header: Bearer {token}
+- Session expires based on JWT_SECRET configuration
+- Automatic token refresh (if implemented)
+
+LOGIN ENDPOINT:
+- POST /auth/login
+- Body: { email, password }
+- Response: { access_token, token_type, user_id, username, display_name, avatar_url, onboarding_completed }
+
+SIGNUP ENDPOINT:
+- POST /auth/signup
+- Body: { email, password, username, display_name, avatar_url }
+- Response: { access_token, ... }
+
+ONBOARDING:
+- /auth/onboarding/skills - Save selected skills
+- /auth/onboarding/interests - Save interests
+- /auth/onboarding/profile - Save profile details
+
+SECURITY FEATURES:
+- Password hashing (bcrypt)
+- SQL injection prevention
+- CORS configuration
+- Rate limiting
+- Input validation
+
+================================================================================
+                        9. GAMIFICATION SYSTEM
+================================================================================
+
+XP (EXPERIENCE POINTS):
+- Earned through various activities:
+  * Completing daily missions
+  * Winning PvP battles
+  * Posting content
+  * Getting likes/comments
+  * Completing learning goals
+  * Referring users
+  * Achievements
+
+RANK TIERS:
+- Novice (0-699)
+- Bronze (700-899)
+- Silver (900-1099)
+- Gold (1100-1299)
+- Platinum (1300-1599)
+- Diamond (1600-1899)
+- Master (1900-2199)
+- Grandmaster (2200+)
+
+SKILL LEVELS (per skill):
+- Beginner (Level 1)
+- Intermediate (Level 2)
+- Advanced (Level 3)
+- Expert (Level 4)
+- Master (Level 5)
+
+REPUTATION SYSTEM:
+- Verified skills (30%)
+- Endorsements (20%)
+- PvP wins (20%)
+- Achievements (15%)
+- Followers (15%)
+
+================================================================================
+                    10. TEST DATA & CREDENTIALS
+================================================================================
+
+ORIGINAL TEST USERS (11 users):
+All users have password: password123
+
+| # | Username | Email | Skills | XP | Rank |
+|---|----------|-------|--------|-----|------|
+| 1 | basha_dev | basha_dev@nexora.test | JavaScript, React, NodeJS, Python, CSS | 1500 | Bronze I |
+| 2 | react_dev | react_dev@nexora.test | React, JavaScript | 4500 | Gold III |
+| 3 | python_dev | python_dev@nexora.test | Python, FastAPI, PostgreSQL, Docker, AWS | 3200 | Silver I |
+| 4 | fullstack_dev | fullstack_dev@nexora.test | React, NodeJS, MongoDB, Express, JavaScript | 2800 | Silver II |
+| 5 | security_expert | security_expert@nexora.test | Cybersecurity, Penetration Testing, Network Security, Linux, Python | 5800 | Platinum II |
+| 6 | devops_engineer | devops_engineer@nexora.test | DevOps, Docker, Kubernetes, AWS, Terraform | 4200 | Gold II |
+| 7 | ml_engineer | ml_engineer@nexora.test | Machine Learning, Python, TensorFlow, NLP, Data Science | 6500 | Platinum III |
+| 8 | data_scientist | data_scientist@nexora.test | Data Science, Python, Pandas, SQL, Tableau | 3100 | Silver I |
+| 9 | ui_designer | ui_designer@nexora.test | UI Design, Figma, CSS, React, Design Systems | 2400 | Bronze III |
+| 10 | mobile_dev | mobile_dev@nexora.test | Flutter, Dart, Firebase, Android, iOS | 2600 | Bronze I |
+| 11 | cloud_engineer | cloud_engineer@nexora.test | AWS, GCP, Terraform, Docker, Kubernetes | 4800 | Gold I |
+
+EXTENDED TEST USERS (20 NEW):
+
+| # | Username | Email | Skills | XP | Rank |
+|---|----------|-------|--------|-----|------|
+| 12 | blockchain_dev | blockchain_dev@nexora.test | Solidity, Ethereum, Web3, JavaScript, TypeScript | 5200 | Gold III |
+| 13 | ai_researcher | ai_researcher@nexora.test | Computer Vision, PyTorch, Python, Deep Learning, Research | 7200 | Platinum II |
+| 14 | rustacean | rustacean@nexora.test | Rust, Systems Programming, WebAssembly, C++, Linux | 4100 | Gold I |
+| 15 | graphql_guru | graphql_guru@nexora.test | GraphQL, Apollo, Node.js, TypeScript, PostgreSQL | 3800 | Gold I |
+| 16 | sre_lead | sre_lead@nexora.test | SRE, Prometheus, Grafana, Kubernetes, Incident Response | 5500 | Gold III |
+| 17 | ux_researcher | ux_researcher@nexora.test | UX Research, Figma, User Testing, Data Analysis, Prototyping | 2800 | Silver II |
+| 18 | backend_wizard | backend_wizard@nexora.test | Microservices, Go, gRPC, Redis, Kafka | 6200 | Platinum I |
+| 19 | ios_ninja | ios_ninja@nexora.test | iOS, Swift, SwiftUI, Objective-C, Xcode | 4600 | Gold II |
+| 20 | data_engineer | data_engineer@nexora.test | Apache Spark, SQL, Airflow, Snowflake, Python | 4900 | Gold II |
+| 21 | security_analyst | security_analyst@nexora.test | Application Security, OWASP, Burp Suite, Python, Threat Modeling | 3400 | Silver II |
+| 22 | game_dev_pro | game_dev_pro@nexora.test | Unity, C#, Unreal Engine, Game Design, 3D Graphics | 5100 | Gold III |
+| 23 | qa_automation | qa_automation@nexora.test | Selenium, Playwright, Cypress, Python, API Testing | 2900 | Silver II |
+| 24 | tech_writer | tech_writer@nexora.test | Technical Writing, API Docs, Markdown, Git, Content Strategy | 1800 | Bronze III |
+| 25 | vim_master | vim_master@nexora.test | Vim, Bash, Neovim, Linux, Tmux | 3200 | Silver I |
+| 26 | cloud_architect | cloud_architect@nexora.test | Cloud Architecture, AWS, Azure, GCP, Serverless | 6800 | Platinum II |
+| 27 | agile_coach | agile_coach@nexora.test | Agile, Scrum, Kanban, Jira, Team Leadership | 2400 | Bronze III |
+| 28 | ml_ops_engineer | ml_ops_engineer@nexora.test | MLOps, Kubernetes, MLflow, Kubeflow, Python | 5700 | Gold III |
+| 29 | product_manager | product_manager@nexora.test | Product Management, Roadmapping, Analytics, User Research, Jira | 2100 | Bronze II |
+| 30 | dev_advocate | dev_advocate@nexora.test | Developer Relations, Public Speaking, Technical Content, Community, React | 2600 | Bronze I |
+| 31 | database_expert | database_expert@nexora.test | PostgreSQL, MySQL, Database Design, Query Optimization, Replication | 4400 | Gold II |
+
+TOTAL TEST USERS: 31
+
+CATEGORY COVERAGE:
+- Frontend: React, Vue, Angular, UI Design
+- Backend: Python, Node.js, Go, Rust
+- AI/ML: Machine Learning, Deep Learning, Data Science
+- DevOps: Docker, Kubernetes, AWS, SRE
+- Design: UI/UX, Figma, Design Systems
+- Mobile: iOS, Android, Flutter
+- Cybersecurity: Security, Ethical Hacking
+- Blockchain: Solidity, Web3, Ethereum
+- Database: PostgreSQL, MySQL, MongoDB
+- Game Dev: Unity, Unreal Engine
+
+================================================================================
+                        11. API ENDPOINTS REFERENCE
+================================================================================
+
+AUTHENTICATION:
+- POST /auth/signup         - Register new user
+- POST /auth/login          - Login (JSON body)
+- POST /auth/token          - Login (OAuth2 form)
+- GET /auth/me              - Current user
+- POST /auth/onboarding/skills      - Save skills
+- POST /auth/onboarding/interests   - Save interests
+- POST /auth/onboarding/profile     - Complete profile
+
+USERS:
+- GET /users/me                     - Current user
+- PATCH /users/me                   - Update profile
+- GET /users/{username}             - Get by username
+- GET /users/{user_id}/stats        - User stats
+- GET /users/{user_id}/achievements - Achievements
+- GET /users/{user_id}/reputation   - Reputation score
+- GET /users/me/completeness        - Profile completeness
+- POST /users/profile/upload-resume - Resume upload
+- GET /users/analytics/platform     - Platform analytics
+
+SEARCH:
+- GET /search              - Unified search
+- GET /search/users        - User search (ENHANCED)
+  * q: Search query
+  * skill: Filter by skill name
+  * category: Filter by category
+  * sort: newest, xp_high, most_followed, most_active
+  * page, limit: Pagination
+- GET /search/skills        - Skill search
+
+SOCIAL:
+- POST /social/follow/{user_id}       - Follow user
+- POST /social/unfollow/{user_id}     - Unfollow
+- GET /social/followers/{user_id}     - Get followers
+- GET /social/following/{user_id}     - Get following
+- GET /social/recommendations         - Follow recommendations
+- GET /social/recommended             - AI recommendations
+- GET /social/trending-skills         - Trending skills
+- GET /social/home-feed              - Home feed data
+
+POSTS:
+- POST /posts/create         - Create post
+- GET /posts/feed            - Get feed
+- POST /posts/{id}/like      - Like post
+- POST /posts/{id}/comment   - Comment on post
+
+CONNECTIONS:
+- POST /connections/request         - Send connection request
+- POST /connections/accept/{id}    - Accept request
+- POST /connections/reject/{id}    - Reject request
+- GET /connections/list            - List connections
+
+MESSAGES:
+- GET /messages/conversations      - List conversations
+- GET /messages/{user_id}          - Get messages with user
+- POST /messages/send              - Send message
+- GET /messages/status/{user_id}   - Messaging permission status
+
+PVP:
+- POST /pvp/queue/join             - Join matchmaking
+- POST /pvp/queue/leave            - Leave queue
+- GET /pvp/matches                 - Recent matches
+- GET /pvp/leaderboard             - Rankings
+
+SKILLS:
+- GET /skills                      - List all skills
+- GET /skills/categories           - List categories
+- GET /skills/{id}                 - Get skill details
+
+================================================================================
+                    12. TECHNICAL CONFIGURATION
+================================================================================
+
+DOCKER SETUP:
+- PostgreSQL on port 5432
+- Redis on port 6379
+- Nginx API Gateway on port 80
+- Frontend Dev Server on port 5173
+
+ENVIRONMENT VARIABLES:
+- DATABASE_URL: PostgreSQL connection string
+- JWT_SECRET: Secret for JWT tokens
+- REDIS_URL: Redis connection string
+- VITE_API_URL: Backend API URL
+
+NGINX CORS CONFIGURATION:
+- Frontend running in Docker cannot access host localhost directly
+- Uses VITE_API_URL=http://nexora_gateway:80 (Docker network)
+- Gateway proxies to backend services
+
+BUILD COMMANDS:
+- Frontend: npm install && npm run build
+- Backend: pip install -r requirements.txt
+- Docker: docker-compose up -d
+
+DATABASE MIGRATIONS:
+- Run generate_test_data.py for test data
+- Run seed.py to reset database
+
+SKILL CATEGORIES AVAILABLE:
+- Frontend
+- Backend
+- AI/ML
+- DevOps
+- Design
+- Mobile
+- Cybersecurity
+- Blockchain
+- Game Dev
+- Database
+- Data Science
+- Systems
+
+================================================================================
+                          PRODUCTION READY CHECKLIST
+================================================================================
+
+[✓] Discover page shows all active users
+[✓] Search by username works instantly
+[✓] Search by skill works
+[✓] Search by category works (Frontend, Backend, AI/ML, DevOps, Design, Mobile)
+[✓] Filters: XP High to Low, Newest Users, Most Followed, Most Active
+[✓] Pagination implemented
+[✓] Empty state UI when no results
+[✓] Loading skeleton while fetching
+[✓] 31 test users created with diverse skills
+[✓] Profile page upgraded to LinkedIn quality
+[✓] All sections editable (About, Experience, Education, Skills, etc.)
+[✓] Post creation enabled on Home Feed
+[✓] All post types supported
+[✓] Dark futuristic NEXORA theme
+[✓] Smooth animations with Framer Motion
+[✓] Responsive mobile/desktop layouts
+[✓] Toast notifications
+[✓] JWT authentication working
+[✓] Skill-based messaging working
+[✓] Follow system working
+[✓] Like/comment system working
+
+================================================================================
+                          END OF DOCUMENTATION
+================================================================================
