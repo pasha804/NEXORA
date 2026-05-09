@@ -314,11 +314,11 @@ async def get_trending_skills(db: Session = Depends(get_db)):
         return cached
     
     trending = db.query(
-        Skill.id, Skill.name, Skill.icon_url, func.count(UserSkill.id).label("count")
-    ).join(UserSkill).group_by(Skill.id).order_by(desc("count")).limit(6).all()
+        Skill.id, Skill.canonical_name, func.count(UserSkill.id).label("count")
+    ).join(UserSkill, Skill.id == UserSkill.skill_id).group_by(Skill.id).order_by(desc("count")).limit(6).all()
     
     result = [
-        {"id": t.id, "name": t.name, "icon_url": t.icon_url, "user_count": t.count} 
+        {"id": t.id, "name": t.canonical_name, "icon_url": None, "user_count": t.count} 
         for t in trending
     ]
     
@@ -339,13 +339,22 @@ async def get_home_feed_data(
     recommended = await get_recommended_users(current_user, db)
     trending = await get_trending_skills(db)
     
-    recent_posts = db.query(SkillPost).order_by(SkillPost.created_at.desc()).limit(10).all()
-    
-    live_matches = db.query(PvPMatch).filter(PvPMatch.status == "in_progress").limit(5).all()
+    # 4. Global Activity (Alternative to personal feed if empty)
+    try:
+        from social_utils import post_to_dict, match_to_dict
+        recent_posts_objs = db.query(models.Post).order_by(models.Post.created_at.desc()).limit(10).all()
+        live_matches_objs = db.query(models.PvPMatch).filter(models.PvPMatch.status == "in_progress").limit(5).all()
+        
+        recent_posts = [post_to_dict(p, db) for p in recent_posts_objs]
+        live_matches = [match_to_dict(m, db) for m in live_matches_objs]
+    except Exception as e:
+        print(f"Error fetching global feed: {e}")
+        recent_posts = []
+        live_matches = []
 
     result = {
+        "trending": trending,
         "recommended_users": recommended,
-        "trending_skills": trending,
         "recent_posts": recent_posts,
         "live_matches": live_matches
     }
@@ -464,13 +473,11 @@ async def get_all_trends(db: Session = Depends(get_db)):
     skills = [s.canonical_name for s in trending_skills] or ["Python", "JavaScript", "React", "AI", "Rust"]
 
     # 2. Trending Posts / Hashtags (from DB)
-    # Simple logic: extract most frequent tags/words from recent posts
     posts = db.query(SkillPost).order_by(SkillPost.created_at.desc()).limit(50).all()
-    # Mock logic for extraction for now, but returning real post titles as "trends"
     tags = ["#Code", "#Build", "#Ship", "#Growth"]
     if posts:
-        # Just use some keywords from titles/content
-        tags = list(set([f"#{p.title.split()[0]}" for p in posts if p.title]))[:5]
+        # Just use some keywords from content
+        tags = list(set([f"#{p.content.split()[0]}" for p in posts if p.content]))[:5]
 
     # 3. Trending Creators (top ranked users)
     creators = db.query(User).join(UserSocialStats).order_by(desc(UserSocialStats.reputation_score)).limit(5).all()

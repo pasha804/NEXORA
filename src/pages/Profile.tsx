@@ -14,6 +14,7 @@ import { ProfessionalPortfolio } from "@/components/profile/ProfessionalPortfoli
 import { ProfileEditModal } from "@/components/profile/ProfileEditModal";
 import { useSkillProgression } from "@/hooks/useSkillIntelligence";
 import { SkillActivityTimeline } from "@/components/profile/SkillActivityTimeline";
+import { Briefcase, GraduationCap, Lightbulb, UserRoundPen, Wrench } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
 
@@ -158,6 +159,29 @@ const Profile = () => {
                     isOwnProfile={!!isOwnProfile}
                     onEdit={() => openEdit("bio")}
                 />
+
+                {isOwnProfile && (
+                    <div className="px-4 md:px-8 pb-2">
+                        <div className="glass-card p-3 flex flex-wrap gap-2">
+                            {[
+                                { label: "About", tab: "bio" as const, icon: UserRoundPen },
+                                { label: "Experience", tab: "experience" as const, icon: Briefcase },
+                                { label: "Education", tab: "education" as const, icon: GraduationCap },
+                                { label: "Projects", tab: "projects" as const, icon: Lightbulb },
+                                { label: "Skills", tab: "skills" as const, icon: Wrench },
+                            ].map(({ label, tab, icon: Icon }) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => openEdit(tab)}
+                                    className="inline-flex items-center gap-1.5 text-xs border border-primary/30 hover:bg-primary/10 rounded-lg px-3 py-1.5 transition-all"
+                                >
+                                    <Icon className="w-3.5 h-3.5" />
+                                    <span>{label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid lg:grid-cols-3 gap-6 px-4 md:px-8">
                     {/* Left Column */}

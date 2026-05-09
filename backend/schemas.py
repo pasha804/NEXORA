@@ -1,10 +1,10 @@
-from pydantic import BaseModel, EmailStr, field_serializer, field_validator
+from pydantic import BaseModel, field_serializer, field_validator
 from typing import Optional, List, Dict, Any, Union
 from datetime import datetime
 
 # ==================== USER SCHEMAS ====================
 class UserBase(BaseModel):
-    email: EmailStr
+    email: str
     full_name: Optional[str] = None
 
 class UserCreate(UserBase):
@@ -13,7 +13,7 @@ class UserCreate(UserBase):
     display_name: Optional[str] = None  # alias accepted from frontend
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 class Token(BaseModel):
@@ -47,7 +47,7 @@ class UserUpdate(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
-    email: EmailStr
+    email: str
     username: str
     full_name: Optional[str] = None
     display_name: Optional[str] = None

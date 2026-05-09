@@ -91,8 +91,8 @@ async def get_dashboard_data(
         activity_feed.append({
             "id": activity.id,
             "type": activity.activity_type,
-            "content": activity.description,
-            "timestamp": activity.created_at.isoformat() if activity.created_at else None
+            "content": f"{activity.activity_type.replace('_', ' ').capitalize()} (Ref: {activity.reference_id})",
+            "timestamp": activity.timestamp.isoformat() if activity.timestamp else None
         })
     
     # If no activity, show skill-based content

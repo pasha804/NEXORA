@@ -1,5 +1,4 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, HTTPException
 import socketio
 from common.database import engine
 from common import models
@@ -269,22 +268,9 @@ _fastapi_app = FastAPI(
     version="2.0.0"
 )
 
-# CORS Middleware
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",
-    "http://localhost:80",
-    "*"
-]
-
-_fastapi_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS is handled entirely by the nginx gateway.
+# Do NOT add CORSMiddleware here — it would produce duplicate headers
+# ('*, http://localhost:5173') which browsers reject.
 
 # Include Routers
 _fastapi_app.include_router(auth_router.router)
@@ -304,13 +290,62 @@ _fastapi_app.include_router(ai_router.router)
 _fastapi_app.include_router(reels.router)
 _fastapi_app.include_router(communities.router)
 
-@_fastapi_app.get("/")
+@_fastapi_app.get("/api")
 async def root():
     return {"message": "Welcome to Nexora API", "status": "active", "version": "2.0.0"}
 
 @_fastapi_app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+# --- Static File Serving (React App) ---
+# We look for 'dist' in the parent directory as per the Docker structure
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dist"))
+
+# 1. Mount static assets explicitly
+if os.path.exists(os.path.join(frontend_dir, "assets")):
+    _fastapi_app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dir, "assets")), name="assets")
+
+# 2. Serve other static files in dist root
+if os.path.exists(frontend_dir):
+    try:
+        _fastapi_app.mount("/static", StaticFiles(directory=frontend_dir), name="static_root")
+    except Exception as e:
+        print(f"Warning: Could not mount static directory: {e}")
+
+# 3. Root route fallback
+@_fastapi_app.get("/")
+async def serve_index():
+    index_path = os.path.join(frontend_dir, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Nexora API v2.0.0 is online", "frontend": "missing"}
+
+# 4. SPA fallback route for client-side pages (refresh-safe routing)
+@_fastapi_app.get("/{full_path:path}", include_in_schema=False)
+async def serve_spa(full_path: str):
+    api_prefixes = {
+        "api", "auth", "media", "docs", "redoc", "openapi.json",
+        "search", "users", "social", "pvp", "ai", "messages",
+        "connections", "notifications", "presence", "skills",
+        "dashboard", "posts", "communities", "reels", "battle"
+    }
+    first_segment = full_path.split("/", 1)[0] if full_path else ""
+    if first_segment in api_prefixes:
+        raise HTTPException(status_code=404, detail=f"Route /{full_path} not found on server")
+
+    index_path = os.path.join(frontend_dir, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+
+    raise HTTPException(
+        status_code=404,
+        detail="Frontend not found. Build frontend so backend/dist/index.html exists."
+    )
 
 # ─────────────────────────────────────────────────────────
 # Mount Socket.IO under /battle/socket.io
@@ -321,6 +356,4 @@ async def health_check():
 # Both Battle and Social use the same sio instance but different namespaces
 # We keep /battle/socket.io as the entry point for consistency with existing routing
 sio_asgi_app = socketio.ASGIApp(sio, _fastapi_app, socketio_path="/battle/socket.io")
-app = sio_asgi_app
-# The ASGI entrypoint is the socket.io wrapped app
 app = sio_asgi_app

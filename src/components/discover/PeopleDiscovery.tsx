@@ -64,8 +64,11 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
             console.log("[DISCOVER] Response ok:", resp.ok);
 
             if (resp.ok) {
-                const data = await resp.json();
-                console.log("[DISCOVER] Data:", data);
+                const responseData = await resp.json();
+                console.log("API DATA:", responseData);
+                const data = responseData && typeof responseData === "object" && "data" in responseData
+                    ? (responseData as any).data
+                    : responseData;
                 const users = data.users || [];
                 console.log("[DISCOVER] Users count:", users.length);
                 if (isFirstPage) {
@@ -73,7 +76,7 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
                 } else {
                     setPeople(prev => [...prev, ...users]);
                 }
-                setHasMore(data.has_next || false);
+                setHasMore(Boolean(data.has_next));
             } else {
                 if (isFirstPage) setPeople([]);
             }
@@ -239,7 +242,7 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
                                 role: person.account_type || "Member",
                                 avatar: person.avatar_url, // API returns avatar_url
                                 xp: person.xp_points || 0,
-                                aiMatch: person.ai_match_score || (Math.floor(Math.random() * 20) + 75), // Fallback for demo
+                                aiMatch: person.ai_match_score ?? 0,
                                 aiReason: person.ai_reason || "Matching skill profile detected",
                                 skills: person.skills?.map((s: any) => typeof s === 'string' ? s : s.name) || [],
                                 onlineStatus: person.online_status

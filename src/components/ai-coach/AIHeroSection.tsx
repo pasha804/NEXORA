@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Bot, TrendingUp, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";

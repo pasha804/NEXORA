@@ -19,7 +19,7 @@ export const NotificationDropdown = () => {
 
     const fetchNotifications = async () => {
         try {
-            const resp = await fetch(`${API_URL}/notifications`, {
+            const resp = await fetch(`${API_URL}/notifications/`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (resp.ok) {

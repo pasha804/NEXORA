@@ -13,6 +13,7 @@ import {
     TrendingUp,
     Zap
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 
 import { useAuth } from "@/hooks/useAuth";

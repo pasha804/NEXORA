@@ -234,6 +234,67 @@ async def get_daily_missions(
     return {"missions": missions, "totalXP": sum(m["xpReward"] for m in missions), "completedCount": 0}
 
 
+@router.get("/alerts")
+async def get_ai_alerts(
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Return AI coach alerts for SmartAlerts panel."""
+    pvp_rating = db.query(models.PvPRating).filter(
+        models.PvPRating.user_id == current_user.id
+    ).first()
+    social_stats = db.query(models.UserSocialStats).filter(
+        models.UserSocialStats.user_id == current_user.id
+    ).first()
+
+    streak_days = social_stats.streak_days if social_stats else 0
+    wins = pvp_rating.wins if pvp_rating else 0
+    matches = pvp_rating.matches_played if pvp_rating else 0
+    win_rate = round((wins / matches) * 100) if matches else 0
+    now = datetime.utcnow().isoformat()
+
+    alerts = [
+        {
+            "id": "focus_tip",
+            "type": "tip",
+            "title": "Focus window detected",
+            "message": "Your best performance comes from uninterrupted 45-minute practice blocks.",
+            "timestamp": now,
+            "read": False,
+            "actionText": "Start now"
+        },
+        {
+            "id": "streak_status",
+            "type": "success" if streak_days >= 3 else "warning",
+            "title": "Consistency signal",
+            "message": f"Current learning streak: {streak_days} day(s). Keep momentum alive today.",
+            "timestamp": now,
+            "read": False,
+            "actionText": "View goals"
+        },
+        {
+            "id": "pvp_health",
+            "type": "info" if matches == 0 else ("success" if win_rate >= 50 else "warning"),
+            "title": "PvP performance pulse",
+            "message": "No PvP history yet. Play your first match to calibrate coaching."
+            if matches == 0 else f"PvP win rate this cycle: {win_rate}% across {matches} matches.",
+            "timestamp": now,
+            "read": False,
+            "actionText": "Open PvP"
+        }
+    ]
+    return {"alerts": alerts}
+
+
+@router.post("/alerts/{alert_id}/read")
+async def mark_alert_read(
+    alert_id: str,
+    current_user: User = Depends(auth_module.get_current_user)
+):
+    """Acknowledge a SmartAlert. Persisting is optional for now."""
+    return {"ok": True, "alert_id": alert_id, "user_id": current_user.id}
+
+
 # ==================== GOALS & ACHIEVEMENTS ====================
 
 @router.get("/goals", response_model=List[schemas.UserGoalResponse])

@@ -10,6 +10,8 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    // SPA fallback: serve index.html for all non-asset routes on refresh
+    historyApiFallback: true,
     // IMPORTANT: Proxy to localhost:80 where nginx gateway is exposed
     // This works because docker-compose maps nginx:80 to host:80
     proxy: {
@@ -74,6 +76,10 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
       },
       "/users": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
+      "/ai": {
         target: "http://localhost:80",
         changeOrigin: true,
       },

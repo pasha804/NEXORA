@@ -185,70 +185,84 @@ async def search_users(
     current_user: Optional[User] = Depends(auth_module.get_current_user_optional)
 ):
     """Search users by username or display name, with skill/category filtering"""
-    from sqlalchemy import desc, or_
-    from common.models import UserSkill, Skill, SkillCategory, Follower
+    from sqlalchemy import desc, or_, func
+    from common.models import UserSkill, Skill, SkillCategory, Follower, Profile
     
-    # 1. Base query with outer joins to include all users regardless of skills
-    # We use distinct() to prevent duplicate users when they have multiple skills
-    query = db.query(User).outerjoin(UserSkill).outerjoin(Skill).outerjoin(SkillCategory)
+    # 1. Base query with outer joins so users without skills still appear
+    query = (
+        db.query(User)
+        .outerjoin(UserSkill, UserSkill.user_id == User.id)
+        .outerjoin(Skill, Skill.id == UserSkill.skill_id)
+        .outerjoin(SkillCategory, SkillCategory.id == Skill.category_id)
+        .outerjoin(Profile, Profile.user_id == User.id)
+    )
     
     # 2. Exclude current user from results
     if current_user:
         query = query.filter(User.id != current_user.id)
     
-    # 3. Apply Filters
-    filters = []
-    
-    # Text search across multiple fields (inclusive OR)
+    # 3. Apply filters
     if q:
         search_pattern = f"%{q}%"
-        filters.append(
+        query = query.filter(
             or_(
                 User.username.ilike(search_pattern),
                 User.display_name.ilike(search_pattern),
                 User.bio.ilike(search_pattern),
                 UserSkill.skill_name.ilike(search_pattern),
-                Skill.canonical_name.ilike(search_pattern)
+                Skill.canonical_name.ilike(search_pattern),
+                Profile.bio.ilike(search_pattern)
             )
         )
-    
-    # Explicit skill name filter
+
     if skill:
         skill_pattern = f"%{skill}%"
-        filters.append(
+        query = query.filter(
             or_(
                 UserSkill.skill_name.ilike(skill_pattern),
                 Skill.canonical_name.ilike(skill_pattern)
             )
         )
-        
-    # Category filter (e.g. Frontend, Backend)
+
     if category:
-        filters.append(SkillCategory.category_name.ilike(f"%{category}%"))
-        
-    for f in filters:
-        query = query.filter(f)
-        
-    # 4. Finalizing Query (Unique users only)
-    query = query.distinct()
+        query = query.filter(SkillCategory.category_name.ilike(f"%{category}%"))
+
+    # 4. Deduplicate at the Python level to avoid PostgreSQL DISTINCT ON / ORDER BY conflicts
+    # We collect all matching user IDs first, then fetch and sort them cleanly.
     
-    # 5. Get Total Count
-    total = query.count()
+    # Get distinct user IDs matching the filters
+    id_query = query.with_entities(User.id)
+    user_ids = list({row[0] for row in id_query.all()})  # set deduplicates
+    
+    total = len(user_ids)
+    
+    # 5. Build a clean query on the deduplicated IDs with proper sorting
+    # Eagerly load relationships to avoid N+1 queries and AttributeErrors
+    from sqlalchemy.orm import selectinload
+    clean_query = db.query(User).options(
+        selectinload(User.skills),
+        selectinload(User.profile),
+        selectinload(User.stats),
+    ).filter(User.id.in_(user_ids))
     
     # 6. Apply Sorting
     if sort == "xp_high":
-        query = query.order_by(desc(User.xp_points))
+        clean_query = clean_query.order_by(desc(User.xp_points))
     elif sort == "newest":
-        query = query.order_by(desc(User.created_at))
+        clean_query = clean_query.order_by(desc(User.created_at))
     elif sort == "most_followed":
-        # Placeholder for complex followed sort, default to last_seen
-        query = query.order_by(desc(User.last_seen))
+        follower_count_sub = db.query(Follower.following_id, func.count(Follower.id).label('f_count'))\
+            .group_by(Follower.following_id).subquery()
+        clean_query = clean_query.outerjoin(follower_count_sub, User.id == follower_count_sub.c.following_id)\
+            .order_by(desc(func.coalesce(follower_count_sub.c.f_count, 0)))
     else:
-        query = query.order_by(desc(User.last_seen))
+        clean_query = clean_query.order_by(desc(User.last_seen))
         
     # 7. Pagination
     offset = (page - 1) * limit
-    users = query.offset(offset).limit(limit).all()
+    users = clean_query.offset(offset).limit(limit).all()
+    
+    print("Users found:", len(users))
     
     # 8. Transform to Response Format
     users_data = []

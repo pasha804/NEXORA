@@ -1,12 +1,12 @@
-# Graph Report - E:\NEXORA\NEXORA\nexora-skill-forge-main  (2026-04-29)
+# Graph Report - D:\love-chat-backend\NEXORA  (2026-04-30)
 
 ## Corpus Check
-- 278 files · ~232,951 words
+- 283 files · ~236,779 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1202 nodes · 2521 edges · 207 communities detected
-- Extraction: 51% EXTRACTED · 49% INFERRED · 0% AMBIGUOUS · INFERRED: 1232 edges (avg confidence: 0.56)
+- 1236 nodes · 2534 edges · 236 communities detected
+- Extraction: 51% EXTRACTED · 49% INFERRED · 0% AMBIGUOUS · INFERRED: 1241 edges (avg confidence: 0.56)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -217,103 +217,132 @@
 - [[_COMMUNITY_Community 204|Community 204]]
 - [[_COMMUNITY_Community 205|Community 205]]
 - [[_COMMUNITY_Community 206|Community 206]]
+- [[_COMMUNITY_Community 207|Community 207]]
+- [[_COMMUNITY_Community 208|Community 208]]
+- [[_COMMUNITY_Community 209|Community 209]]
+- [[_COMMUNITY_Community 210|Community 210]]
+- [[_COMMUNITY_Community 211|Community 211]]
+- [[_COMMUNITY_Community 212|Community 212]]
+- [[_COMMUNITY_Community 213|Community 213]]
+- [[_COMMUNITY_Community 214|Community 214]]
+- [[_COMMUNITY_Community 215|Community 215]]
+- [[_COMMUNITY_Community 216|Community 216]]
+- [[_COMMUNITY_Community 217|Community 217]]
+- [[_COMMUNITY_Community 218|Community 218]]
+- [[_COMMUNITY_Community 219|Community 219]]
+- [[_COMMUNITY_Community 220|Community 220]]
+- [[_COMMUNITY_Community 221|Community 221]]
+- [[_COMMUNITY_Community 222|Community 222]]
+- [[_COMMUNITY_Community 223|Community 223]]
+- [[_COMMUNITY_Community 224|Community 224]]
+- [[_COMMUNITY_Community 225|Community 225]]
+- [[_COMMUNITY_Community 226|Community 226]]
+- [[_COMMUNITY_Community 227|Community 227]]
+- [[_COMMUNITY_Community 228|Community 228]]
+- [[_COMMUNITY_Community 229|Community 229]]
+- [[_COMMUNITY_Community 230|Community 230]]
+- [[_COMMUNITY_Community 231|Community 231]]
+- [[_COMMUNITY_Community 232|Community 232]]
+- [[_COMMUNITY_Community 233|Community 233]]
+- [[_COMMUNITY_Community 234|Community 234]]
+- [[_COMMUNITY_Community 235|Community 235]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `User` - 122 edges
-2. `UserSkill` - 84 edges
-3. `Skill` - 77 edges
-4. `UserSocialStats` - 66 edges
+1. `User` - 123 edges
+2. `UserSkill` - 85 edges
+3. `Skill` - 78 edges
+4. `UserSocialStats` - 67 edges
 5. `Follower` - 61 edges
 6. `SkillCategory` - 47 edges
-7. `UserRank` - 37 edges
-8. `Profile` - 36 edges
+7. `Profile` - 37 edges
+8. `UserRank` - 37 edges
 9. `AIJudge` - 35 edges
 10. `SkillProof` - 35 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `UserSecurityScore` --uses--> `Returns a float 0.0 (clean) to 1.0 (toxic).     Simple keyword mock.`  [INFERRED]
-  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\services\security\logic.py
-- `SkillPost` --calls--> `create_skill_post()`  [INFERRED]
-  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\routers\posts.py
-- `_finalize_match_sync()` --calls--> `PvPMatchResult`  [INFERRED]
-  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\battle_realtime.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py
-- `_finalize_match_sync()` --calls--> `PvPRating`  [INFERRED]
-  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\battle_realtime.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py
-- `_finalize_match_sync()` --calls--> `PvPMatchHistory`  [INFERRED]
-  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\battle_realtime.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py
+- `User` --uses--> `Returns comprehensive skill analysis including radar chart data,     skill leve`  [INFERRED]
+  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\routers\ai.py
+- `User` --uses--> `Generates a personalized learning roadmap based on user's skill gaps     and ca`  [INFERRED]
+  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\routers\ai.py
+- `User` --uses--> `AI-predicted career directions based on user's skill profile.`  [INFERRED]
+  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\routers\ai.py
+- `User` --uses--> `Personalized recommendations for courses, collaborations, battles, and projects.`  [INFERRED]
+  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\routers\ai.py
+- `User` --uses--> `Auto-generated daily improvement tasks tailored to user needs.`  [INFERRED]
+  E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\common\models.py → E:\NEXORA\NEXORA\nexora-skill-forge-main\backend\routers\ai.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.04
-Nodes (101): ai_chat(), create_user_goal(), get_achievements(), get_daily_missions(), get_goals_tracker_data(), get_industry_trends(), get_learning_roadmap(), get_performance_analytics() (+93 more)
+Cohesion: 0.06
+Nodes (81): create_access_token(), _do_register(), get_me(), get_password_hash(), handleSubmit(), login(), login_form(), Login with OAuth2 form data (username = email). Used by Swagger UI. (+73 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.04
-Nodes (66): Base, create_community(), join_community(), link_platform_logic(), Mock logic to link external account and scrape stats., calculate_tier_xp(), connect_platform(), ConnectRequest (+58 more)
+Cohesion: 0.12
+Nodes (91): Save user skills collected during onboarding., save_onboarding_skills(), get_db(), create_extended_users(), ensure_skill(), Extended Test Data Generator for Nexora Creates 20 additional test users with di, Deterministic multi-signal skill verification.      Signals:     - XP in the, verify_skill_logic() (+83 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.05
-Nodes (78): _auto_finalize_on_timeout(), _broadcast_match(), code_update(), connect(), disconnect(), _finalize_match_sync(), forfeit_match(), _get_db() (+70 more)
+Cohesion: 0.04
+Nodes (65): complete_onboarding(), Complete onboarding by saving bio and profile preferences., accept_connection_request(), ConnectionRequestSchema, send_connection_request(), generate_social_data(), Generate social test data, create_test_users() (+57 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.05
-Nodes (61): complete_onboarding(), Complete onboarding by saving bio and profile preferences., accept_connection_request(), ConnectionRequestSchema, send_connection_request(), create_extended_users(), ensure_skill(), Extended Test Data Generator for Nexora Creates 20 additional test users with di (+53 more)
+Nodes (79): _auto_finalize_on_timeout(), _broadcast_match(), code_update(), connect(), disconnect(), _finalize_match_sync(), forfeit_match(), _get_db() (+71 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.04
-Nodes (78): get_current_user(), BaseModel, AchievementResponse, BattlePassSeasonResponse, BattlePassTierResponse, CareerPath, CareerPredictionResponse, ChatRequest (+70 more)
+Nodes (77): get_current_user(), BaseModel, AchievementResponse, BattlePassSeasonResponse, BattlePassTierResponse, CareerPath, CareerPredictionResponse, ChatRequest (+69 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.17
-Nodes (75): Save user skills collected during onboarding., save_onboarding_skills(), get_skill_intelligence(), get_skill_recommendations(), ProfileUpdate, ProjectBase, ProjectCreate, ProjectResponse (+67 more)
+Cohesion: 0.05
+Nodes (56): Base, create_community(), join_community(), calculate_tier_xp(), get_current_season(), get_leaderboard(), get_user_progress(), MatchResult (+48 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.05
-Nodes (47): get_db(), add_earnings(), analyze_text_toxicity(), calculate_reputation(), generate_insights_logic(), mint_badge_logic(), Deterministic multi-signal skill verification.      Signals:     - XP in the, Formula:     Reputation Score =      (Skill XP * 0.35) +      (Followers * 2) (+39 more)
+Cohesion: 0.04
+Nodes (35): get_url(), Run migrations in 'offline' mode.      This configures the context with just a, Run migrations in 'online' mode.      In this scenario we need to create an En, run_migrations_offline(), run_migrations_online(), add_earnings(), analyze_text_toxicity(), calculate_reputation() (+27 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.06
-Nodes (35): ActivityCreate, calculate_virality_score(), Config, create_post(), FeedResponse, get_dau(), get_economy_health(), get_feed() (+27 more)
+Nodes (34): ActivityCreate, calculate_virality_score(), create_post(), FeedResponse, get_dau(), get_economy_health(), get_feed(), get_post_score() (+26 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.12
-Nodes (17): cache_get(), cache_set(), _classic_post_to_dict(), _post_to_dict(), search_skills(), search_users(), _skill_to_dict(), unified_search() (+9 more)
+Cohesion: 0.09
+Nodes (35): Achievement, PvPMatch, PvPMatchResult, SkillPost, UserAchievement, cache_get(), cache_set(), _classic_post_to_dict() (+27 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.09
-Nodes (10): get_url(), Run migrations in 'offline' mode.      This configures the context with just a, Run migrations in 'online' mode.      In this scenario we need to create an En, run_migrations_offline(), run_migrations_online(), ConnectionManager, upload_file(), websocket_endpoint() (+2 more)
+Nodes (18): get_current_user_from_token(), create_project(), delete_project(), follow_user(), get_my_profile(), get_my_projects(), get_profile_by_username(), get_settings() (+10 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.08
-Nodes (12): AccountSettings(), ActiveBattleContainer(), AppLayout(), Navbar(), NotificationSettings(), PrivacySettings(), RealTimeEvents(), SecuritySettings() (+4 more)
+Cohesion: 0.09
+Nodes (24): ai_chat(), create_user_goal(), get_achievements(), get_daily_missions(), get_goals_tracker_data(), get_industry_trends(), get_learning_roadmap(), get_performance_analytics() (+16 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.09
-Nodes (23): check_and_award_achievements(), _get_completeness_recommendations(), get_platform_analytics(), get_profile_completeness(), get_resume_metadata(), get_user_achievements(), get_user_by_username(), get_user_reputation() (+15 more)
+Cohesion: 0.08
+Nodes (11): AccountSettings(), ActiveBattleContainer(), Navbar(), NotificationSettings(), PrivacySettings(), RealTimeEvents(), SecuritySettings(), TournamentDashboard() (+3 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.09
 Nodes (21): add_skill_proof(), get_all_skills(), get_skill_activity(), get_skill_categories(), get_skill_intelligence(), get_skill_leaderboard(), get_skill_progression(), get_trending_skills() (+13 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.19
-Nodes (16): get_current_user_from_token(), create_project(), delete_project(), follow_user(), get_my_profile(), get_my_projects(), get_profile_by_username(), get_settings() (+8 more)
+Cohesion: 0.1
+Nodes (21): check_and_award_achievements(), _get_completeness_recommendations(), get_platform_analytics(), get_profile_completeness(), get_resume_metadata(), get_user_achievements(), get_user_by_username(), get_user_reputation() (+13 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.33
-Nodes (8): ConnectionRequest, create_connection(), find_skill_experts(), Create a weighted edge between two users in the social graph., Suggest collaborators based on skill clustering and graph proximity., Find top experts in a specific skill category using graph centrality., suggest_collaborators(), SocialGraphEdge
+Nodes (7): Toaster(), addToRemoveQueue(), dispatch(), genId(), reducer(), toast(), useToast()
 
 ### Community 15 - "Community 15"
-Cohesion: 0.33
-Nodes (7): Toaster(), addToRemoveQueue(), dispatch(), genId(), reducer(), toast(), useToast()
+Cohesion: 0.25
+Nodes (0): 
 
 ### Community 16 - "Community 16"
 Cohesion: 0.25
 Nodes (0): 
 
 ### Community 17 - "Community 17"
-Cohesion: 0.25
+Cohesion: 0.29
 Nodes (0): 
 
 ### Community 18 - "Community 18"
@@ -329,7 +358,7 @@ Cohesion: 0.29
 Nodes (0): 
 
 ### Community 21 - "Community 21"
-Cohesion: 0.29
+Cohesion: 0.33
 Nodes (0): 
 
 ### Community 22 - "Community 22"
@@ -341,7 +370,7 @@ Cohesion: 0.33
 Nodes (0): 
 
 ### Community 24 - "Community 24"
-Cohesion: 0.33
+Cohesion: 0.4
 Nodes (0): 
 
 ### Community 25 - "Community 25"
@@ -361,40 +390,40 @@ Cohesion: 0.4
 Nodes (0): 
 
 ### Community 29 - "Community 29"
-Cohesion: 0.4
-Nodes (0): 
-
-### Community 30 - "Community 30"
-Cohesion: 0.4
-Nodes (0): 
-
-### Community 31 - "Community 31"
 Cohesion: 0.6
 Nodes (3): fetchNotifications(), markAllRead(), markRead()
 
-### Community 32 - "Community 32"
+### Community 30 - "Community 30"
 Cohesion: 0.5
 Nodes (2): handleKeyDown(), handleSend()
 
-### Community 33 - "Community 33"
+### Community 31 - "Community 31"
 Cohesion: 0.4
 Nodes (0): 
+
+### Community 32 - "Community 32"
+Cohesion: 0.4
+Nodes (0): 
+
+### Community 33 - "Community 33"
+Cohesion: 0.6
+Nodes (3): handleDoubleTap(), handleLike(), togglePlay()
 
 ### Community 34 - "Community 34"
 Cohesion: 0.4
 Nodes (0): 
 
 ### Community 35 - "Community 35"
-Cohesion: 0.6
-Nodes (3): handleDoubleTap(), handleLike(), togglePlay()
+Cohesion: 0.67
+Nodes (3): get_dashboard_data(), _mmr_to_rank(), Get aggregated dashboard data for the current user
 
 ### Community 36 - "Community 36"
-Cohesion: 0.4
+Cohesion: 0.5
 Nodes (0): 
 
 ### Community 37 - "Community 37"
-Cohesion: 0.67
-Nodes (3): get_dashboard_data(), _mmr_to_rank(), Get aggregated dashboard data for the current user
+Cohesion: 0.5
+Nodes (0): 
 
 ### Community 38 - "Community 38"
 Cohesion: 0.5
@@ -409,12 +438,12 @@ Cohesion: 0.5
 Nodes (0): 
 
 ### Community 41 - "Community 41"
-Cohesion: 0.5
-Nodes (0): 
-
-### Community 42 - "Community 42"
 Cohesion: 0.67
 Nodes (2): getAvatarColor(), LeaderboardRow()
+
+### Community 42 - "Community 42"
+Cohesion: 0.5
+Nodes (0): 
 
 ### Community 43 - "Community 43"
 Cohesion: 0.5
@@ -698,23 +727,23 @@ Nodes (0):
 
 ### Community 113 - "Community 113"
 Cohesion: 1.0
-Nodes (1): Evaluates a code submission and returns scores and feedback.
+Nodes (0): 
 
 ### Community 114 - "Community 114"
 Cohesion: 1.0
-Nodes (1): Formula: (AI * 0.6) + (Vote * 0.3) + (Speed * 0.1)
+Nodes (1): Evaluates a code submission and returns scores and feedback.
 
 ### Community 115 - "Community 115"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Formula: (AI * 0.6) + (Vote * 0.3) + (Speed * 0.1)
 
 ### Community 116 - "Community 116"
 Cohesion: 1.0
-Nodes (1): Map a SQLAlchemy User model to this response schema.
+Nodes (0): 
 
 ### Community 117 - "Community 117"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Map a SQLAlchemy User model to this response schema.
 
 ### Community 118 - "Community 118"
 Cohesion: 1.0
@@ -1072,8 +1101,124 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
+### Community 207 - "Community 207"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 208 - "Community 208"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 209 - "Community 209"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 210 - "Community 210"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 211 - "Community 211"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 212 - "Community 212"
+Cohesion: 1.0
+Nodes (1): Map a SQLAlchemy User model to this response schema.
+
+### Community 213 - "Community 213"
+Cohesion: 1.0
+Nodes (1): Response schema for skill analysis endpoint
+
+### Community 214 - "Community 214"
+Cohesion: 1.0
+Nodes (1): Single week in learning roadmap
+
+### Community 215 - "Community 215"
+Cohesion: 1.0
+Nodes (1): Response schema for learning roadmap
+
+### Community 216 - "Community 216"
+Cohesion: 1.0
+Nodes (1): Single career path prediction
+
+### Community 217 - "Community 217"
+Cohesion: 1.0
+Nodes (1): Response schema for career predictions
+
+### Community 218 - "Community 218"
+Cohesion: 1.0
+Nodes (1): Single AI recommendation
+
+### Community 219 - "Community 219"
+Cohesion: 1.0
+Nodes (1): Response schema for recommendations
+
+### Community 220 - "Community 220"
+Cohesion: 1.0
+Nodes (1): Response schema for daily missions
+
+### Community 221 - "Community 221"
+Cohesion: 1.0
+Nodes (1): Response schema for performance analytics
+
+### Community 222 - "Community 222"
+Cohesion: 1.0
+Nodes (1): Request schema for AI chat
+
+### Community 223 - "Community 223"
+Cohesion: 1.0
+Nodes (1): Response schema for AI chat
+
+### Community 224 - "Community 224"
+Cohesion: 1.0
+Nodes (1): Response schema for industry trends
+
+### Community 225 - "Community 225"
+Cohesion: 1.0
+Nodes (1): Get current authenticated user
+
+### Community 226 - "Community 226"
+Cohesion: 1.0
+Nodes (1): Update current user's profile
+
+### Community 227 - "Community 227"
+Cohesion: 1.0
+Nodes (1): Get profile completeness score
+
+### Community 228 - "Community 228"
+Cohesion: 1.0
+Nodes (1): Get user profile by username
+
+### Community 229 - "Community 229"
+Cohesion: 1.0
+Nodes (1): Get all achievements for a user
+
+### Community 230 - "Community 230"
+Cohesion: 1.0
+Nodes (1): Check and award achievements based on user activity
+
+### Community 231 - "Community 231"
+Cohesion: 1.0
+Nodes (1): Get detailed stats for a user
+
+### Community 232 - "Community 232"
+Cohesion: 1.0
+Nodes (1): Get platform-wide analytics
+
+### Community 233 - "Community 233"
+Cohesion: 1.0
+Nodes (1): Get user reputation score          Factors:     - Verified skills (30%)
+
+### Community 234 - "Community 234"
+Cohesion: 1.0
+Nodes (1): Upload or replace the current user's resume/CV.
+
+### Community 235 - "Community 235"
+Cohesion: 1.0
+Nodes (1): Get the latest resume metadata for a user (URL and timestamp).
+
 ## Knowledge Gaps
-- **56 isolated node(s):** `Simulates the AI Judge for PvP Code Challenges.     In a production env, this w`, `Evaluates a code submission and returns scores and feedback.`, `Formula: (AI * 0.6) + (Vote * 0.3) + (Speed * 0.1)`, `Config`, `Schema for updating user profile` (+51 more)
+- **80 isolated node(s):** `Simulates the AI Judge for PvP Code Challenges.     In a production env, this w`, `Evaluates a code submission and returns scores and feedback.`, `Formula: (AI * 0.6) + (Vote * 0.3) + (Speed * 0.1)`, `Config`, `Schema for updating user profile` (+75 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 62`** (2 nodes): `test_search_api.py`, `Quick test to verify search API returns users`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -1151,235 +1296,293 @@ Nodes (0):
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 99`** (2 nodes): `Communities()`, `Communities.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (2 nodes): `Messages.tsx`, `Messages()`
+- **Thin community `Community 100`** (2 nodes): `Index.tsx`, `handleIntroComplete()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (2 nodes): `NotFound.tsx`, `NotFound()`
+- **Thin community `Community 101`** (2 nodes): `Messages.tsx`, `Messages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (2 nodes): `Profile.tsx`, `openEdit()`
+- **Thin community `Community 102`** (2 nodes): `NotFound.tsx`, `NotFound()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (2 nodes): `Reels.tsx`, `Reels()`
+- **Thin community `Community 103`** (2 nodes): `Profile.tsx`, `openEdit()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (2 nodes): `Settings.tsx`, `renderContent()`
+- **Thin community `Community 104`** (2 nodes): `Reels.tsx`, `Reels()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (1 nodes): `debug_signup.py`
+- **Thin community `Community 105`** (2 nodes): `Settings.tsx`, `renderContent()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (1 nodes): `eslint.config.js`
+- **Thin community `Community 106`** (1 nodes): `debug_signup.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (1 nodes): `postcss.config.js`
+- **Thin community `Community 107`** (1 nodes): `eslint.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (1 nodes): `tailwind.config.ts`
+- **Thin community `Community 108`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (1 nodes): `test_db_direct.py`
+- **Thin community `Community 109`** (1 nodes): `tailwind.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 110`** (1 nodes): `vite.config.ts`
+- **Thin community `Community 110`** (1 nodes): `test_db_direct.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 111`** (1 nodes): `vitest.config.ts`
+- **Thin community `Community 111`** (1 nodes): `vite.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 112`** (1 nodes): `add_columns.py`
+- **Thin community `Community 112`** (1 nodes): `vitest.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 113`** (1 nodes): `Evaluates a code submission and returns scores and feedback.`
+- **Thin community `Community 113`** (1 nodes): `add_columns.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 114`** (1 nodes): `Formula: (AI * 0.6) + (Vote * 0.3) + (Speed * 0.1)`
+- **Thin community `Community 114`** (1 nodes): `Evaluates a code submission and returns scores and feedback.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 115`** (1 nodes): `list_tables.py`
+- **Thin community `Community 115`** (1 nodes): `Formula: (AI * 0.6) + (Vote * 0.3) + (Speed * 0.1)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 116`** (1 nodes): `Map a SQLAlchemy User model to this response schema.`
+- **Thin community `Community 116`** (1 nodes): `list_tables.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 117`** (1 nodes): `__init__.py`
+- **Thin community `Community 117`** (1 nodes): `Map a SQLAlchemy User model to this response schema.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 118`** (1 nodes): `celery_config.py`
+- **Thin community `Community 118`** (1 nodes): `test_flow.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 119`** (1 nodes): `__init__.py`
+- **Thin community `Community 119`** (1 nodes): `verify_flow.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 120`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 121`** (1 nodes): `vite-env.d.ts`
+- **Thin community `Community 121`** (1 nodes): `celery_config.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 122`** (1 nodes): `NavLink.tsx`
+- **Thin community `Community 122`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 123`** (1 nodes): `CommunityChannelsTab.tsx`
+- **Thin community `Community 123`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 124`** (1 nodes): `CommunityEventsTab.tsx`
+- **Thin community `Community 124`** (1 nodes): `main.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (1 nodes): `CommunityFeed.tsx`
+- **Thin community `Community 125`** (1 nodes): `vite-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (1 nodes): `CommunityHeader.tsx`
+- **Thin community `Community 126`** (1 nodes): `NavLink.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (1 nodes): `CommunityProjectsTab.tsx`
+- **Thin community `Community 127`** (1 nodes): `CommunityChannelsTab.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 128`** (1 nodes): `DiscoverTabs.tsx`
+- **Thin community `Community 128`** (1 nodes): `CommunityEventsTab.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (1 nodes): `EmptyStates.tsx`
+- **Thin community `Community 129`** (1 nodes): `CommunityFeed.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (1 nodes): `OpportunitiesBoard.tsx`
+- **Thin community `Community 130`** (1 nodes): `CommunityHeader.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (1 nodes): `CreatePostFab.tsx`
+- **Thin community `Community 131`** (1 nodes): `CommunityProjectsTab.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 132`** (1 nodes): `MainFeed.tsx`
+- **Thin community `Community 132`** (1 nodes): `DiscoverTabs.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (1 nodes): `CommunitySection.tsx`
+- **Thin community `Community 133`** (1 nodes): `EmptyStates.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (1 nodes): `CTASection.tsx`
+- **Thin community `Community 134`** (1 nodes): `OpportunitiesBoard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 135`** (1 nodes): `FeaturesSection.tsx`
+- **Thin community `Community 135`** (1 nodes): `CreatePostFab.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 136`** (1 nodes): `Footer.tsx`
+- **Thin community `Community 136`** (1 nodes): `MainFeed.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 137`** (1 nodes): `HeroSection.tsx`
+- **Thin community `Community 137`** (1 nodes): `CommunitySection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 138`** (1 nodes): `LeaderboardSection.tsx`
+- **Thin community `Community 138`** (1 nodes): `CTASection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 139`** (1 nodes): `PvPSection.tsx`
+- **Thin community `Community 139`** (1 nodes): `FeaturesSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 140`** (1 nodes): `MessagingLayout.tsx`
+- **Thin community `Community 140`** (1 nodes): `Footer.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 141`** (1 nodes): `MessageBubble.tsx`
+- **Thin community `Community 141`** (1 nodes): `HeroSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 142`** (1 nodes): `InfoPanel.tsx`
+- **Thin community `Community 142`** (1 nodes): `LeaderboardSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 143`** (1 nodes): `AchievementsWidget.tsx`
+- **Thin community `Community 143`** (1 nodes): `PvPSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 144`** (1 nodes): `AIGrowth.tsx`
+- **Thin community `Community 144`** (1 nodes): `CinematicIntro.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 145`** (1 nodes): `CommunityPresence.tsx`
+- **Thin community `Community 145`** (1 nodes): `MessagingLayout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 146`** (1 nodes): `ProfessionalPortfolio.tsx`
+- **Thin community `Community 146`** (1 nodes): `MessageBubble.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 147`** (1 nodes): `SkillActivityTimeline.tsx`
+- **Thin community `Community 147`** (1 nodes): `InfoPanel.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 148`** (1 nodes): `BracketVisualization.tsx`
+- **Thin community `Community 148`** (1 nodes): `AchievementsWidget.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 149`** (1 nodes): `PvPHero.tsx`
+- **Thin community `Community 149`** (1 nodes): `AIGrowth.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 150`** (1 nodes): `PvPMatchHistory.tsx`
+- **Thin community `Community 150`** (1 nodes): `CommunityPresence.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 151`** (1 nodes): `SpectatorView.tsx`
+- **Thin community `Community 151`** (1 nodes): `ProfessionalPortfolio.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 152`** (1 nodes): `ReelFeed.tsx`
+- **Thin community `Community 152`** (1 nodes): `SkillActivityTimeline.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 153`** (1 nodes): `AISettings.tsx`
+- **Thin community `Community 153`** (1 nodes): `BracketVisualization.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 154`** (1 nodes): `CommunitySettings.tsx`
+- **Thin community `Community 154`** (1 nodes): `PvPHero.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 155`** (1 nodes): `ContentSettings.tsx`
+- **Thin community `Community 155`** (1 nodes): `PvPMatchHistory.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 156`** (1 nodes): `MessagingSettings.tsx`
+- **Thin community `Community 156`** (1 nodes): `SpectatorView.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 157`** (1 nodes): `PvPSettings.tsx`
+- **Thin community `Community 157`** (1 nodes): `ReelFeed.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 158`** (1 nodes): `accordion.tsx`
+- **Thin community `Community 158`** (1 nodes): `AISettings.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 159`** (1 nodes): `alert-dialog.tsx`
+- **Thin community `Community 159`** (1 nodes): `CommunitySettings.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 160`** (1 nodes): `alert.tsx`
+- **Thin community `Community 160`** (1 nodes): `ContentSettings.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 161`** (1 nodes): `aspect-ratio.tsx`
+- **Thin community `Community 161`** (1 nodes): `MessagingSettings.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 162`** (1 nodes): `avatar.tsx`
+- **Thin community `Community 162`** (1 nodes): `PvPSettings.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 163`** (1 nodes): `badge.tsx`
+- **Thin community `Community 163`** (1 nodes): `accordion.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 164`** (1 nodes): `button.tsx`
+- **Thin community `Community 164`** (1 nodes): `alert-dialog.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 165`** (1 nodes): `card.tsx`
+- **Thin community `Community 165`** (1 nodes): `alert.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 166`** (1 nodes): `checkbox.tsx`
+- **Thin community `Community 166`** (1 nodes): `aspect-ratio.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 167`** (1 nodes): `collapsible.tsx`
+- **Thin community `Community 167`** (1 nodes): `avatar.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 168`** (1 nodes): `command.tsx`
+- **Thin community `Community 168`** (1 nodes): `badge.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 169`** (1 nodes): `context-menu.tsx`
+- **Thin community `Community 169`** (1 nodes): `button.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 170`** (1 nodes): `dialog.tsx`
+- **Thin community `Community 170`** (1 nodes): `card.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 171`** (1 nodes): `dropdown-menu.tsx`
+- **Thin community `Community 171`** (1 nodes): `checkbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 172`** (1 nodes): `hover-card.tsx`
+- **Thin community `Community 172`** (1 nodes): `collapsible.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 173`** (1 nodes): `input-otp.tsx`
+- **Thin community `Community 173`** (1 nodes): `command.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 174`** (1 nodes): `input.tsx`
+- **Thin community `Community 174`** (1 nodes): `context-menu.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 175`** (1 nodes): `label.tsx`
+- **Thin community `Community 175`** (1 nodes): `dialog.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 176`** (1 nodes): `menubar.tsx`
+- **Thin community `Community 176`** (1 nodes): `dropdown-menu.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 177`** (1 nodes): `navigation-menu.tsx`
+- **Thin community `Community 177`** (1 nodes): `hover-card.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 178`** (1 nodes): `popover.tsx`
+- **Thin community `Community 178`** (1 nodes): `input-otp.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 179`** (1 nodes): `progress.tsx`
+- **Thin community `Community 179`** (1 nodes): `input.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 180`** (1 nodes): `radio-group.tsx`
+- **Thin community `Community 180`** (1 nodes): `label.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 181`** (1 nodes): `scroll-area.tsx`
+- **Thin community `Community 181`** (1 nodes): `Logo.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 182`** (1 nodes): `select.tsx`
+- **Thin community `Community 182`** (1 nodes): `menubar.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 183`** (1 nodes): `separator.tsx`
+- **Thin community `Community 183`** (1 nodes): `navigation-menu.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 184`** (1 nodes): `sheet.tsx`
+- **Thin community `Community 184`** (1 nodes): `popover.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 185`** (1 nodes): `skeleton.tsx`
+- **Thin community `Community 185`** (1 nodes): `progress.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 186`** (1 nodes): `slider.tsx`
+- **Thin community `Community 186`** (1 nodes): `radio-group.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 187`** (1 nodes): `switch.tsx`
+- **Thin community `Community 187`** (1 nodes): `scroll-area.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 188`** (1 nodes): `table.tsx`
+- **Thin community `Community 188`** (1 nodes): `select.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 189`** (1 nodes): `tabs.tsx`
+- **Thin community `Community 189`** (1 nodes): `separator.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 190`** (1 nodes): `textarea.tsx`
+- **Thin community `Community 190`** (1 nodes): `sheet.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 191`** (1 nodes): `toast.tsx`
+- **Thin community `Community 191`** (1 nodes): `skeleton.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 192`** (1 nodes): `toggle-group.tsx`
+- **Thin community `Community 192`** (1 nodes): `slider.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 193`** (1 nodes): `toggle.tsx`
+- **Thin community `Community 193`** (1 nodes): `switch.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 194`** (1 nodes): `tooltip.tsx`
+- **Thin community `Community 194`** (1 nodes): `table.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 195`** (1 nodes): `use-toast.ts`
+- **Thin community `Community 195`** (1 nodes): `tabs.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 196`** (1 nodes): `useFeedStore.ts`
+- **Thin community `Community 196`** (1 nodes): `textarea.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 197`** (1 nodes): `useMessagingStore.ts`
+- **Thin community `Community 197`** (1 nodes): `toast.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 198`** (1 nodes): `client.ts`
+- **Thin community `Community 198`** (1 nodes): `toggle-group.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 199`** (1 nodes): `types.ts`
+- **Thin community `Community 199`** (1 nodes): `toggle.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 200`** (1 nodes): `BattlePass.tsx`
+- **Thin community `Community 200`** (1 nodes): `tooltip.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 201`** (1 nodes): `Dashboard.tsx`
+- **Thin community `Community 201`** (1 nodes): `use-toast.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 202`** (1 nodes): `Index.tsx`
+- **Thin community `Community 202`** (1 nodes): `useFeedStore.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 203`** (1 nodes): `PvP.tsx`
+- **Thin community `Community 203`** (1 nodes): `useMessagingStore.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 204`** (1 nodes): `example.test.ts`
+- **Thin community `Community 204`** (1 nodes): `client.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 205`** (1 nodes): `setup.ts`
+- **Thin community `Community 205`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 206`** (1 nodes): `messaging.ts`
+- **Thin community `Community 206`** (1 nodes): `BattlePass.tsx`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 207`** (1 nodes): `Dashboard.tsx`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 208`** (1 nodes): `PvP.tsx`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 209`** (1 nodes): `example.test.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 210`** (1 nodes): `setup.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 211`** (1 nodes): `messaging.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 212`** (1 nodes): `Map a SQLAlchemy User model to this response schema.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 213`** (1 nodes): `Response schema for skill analysis endpoint`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 214`** (1 nodes): `Single week in learning roadmap`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 215`** (1 nodes): `Response schema for learning roadmap`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 216`** (1 nodes): `Single career path prediction`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 217`** (1 nodes): `Response schema for career predictions`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 218`** (1 nodes): `Single AI recommendation`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 219`** (1 nodes): `Response schema for recommendations`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 220`** (1 nodes): `Response schema for daily missions`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 221`** (1 nodes): `Response schema for performance analytics`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 222`** (1 nodes): `Request schema for AI chat`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 223`** (1 nodes): `Response schema for AI chat`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 224`** (1 nodes): `Response schema for industry trends`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 225`** (1 nodes): `Get current authenticated user`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 226`** (1 nodes): `Update current user's profile`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 227`** (1 nodes): `Get profile completeness score`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 228`** (1 nodes): `Get user profile by username`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 229`** (1 nodes): `Get all achievements for a user`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 230`** (1 nodes): `Check and award achievements based on user activity`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 231`** (1 nodes): `Get detailed stats for a user`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 232`** (1 nodes): `Get platform-wide analytics`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 233`** (1 nodes): `Get user reputation score          Factors:     - Verified skills (30%)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 234`** (1 nodes): `Upload or replace the current user's resume/CV.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 235`** (1 nodes): `Get the latest resume metadata for a user (URL and timestamp).`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `User` connect `Community 0` to `Community 1`, `Community 3`, `Community 5`, `Community 7`, `Community 14`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
-- **Why does `UserSocialStats` connect `Community 0` to `Community 1`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 13`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
-- **Are the 120 inferred relationships involving `User` (e.g. with `Test user generator for Nexora skill-based messaging verification. Creates 10 us` and `Extended Test Data Generator for Nexora Creates 20 additional test users with di`) actually correct?**
-  _`User` has 120 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 82 inferred relationships involving `UserSkill` (e.g. with `Test user generator for Nexora skill-based messaging verification. Creates 10 us` and `Extended Test Data Generator for Nexora Creates 20 additional test users with di`) actually correct?**
-  _`UserSkill` has 82 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 75 inferred relationships involving `Skill` (e.g. with `Test user generator for Nexora skill-based messaging verification. Creates 10 us` and `Extended Test Data Generator for Nexora Creates 20 additional test users with di`) actually correct?**
-  _`Skill` has 75 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `User` connect `Community 0` to `Community 1`, `Community 2`, `Community 5`, `Community 7`, `Community 8`, `Community 10`?**
+  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+- **Why does `QueueJoinBody` connect `Community 3` to `Community 4`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Are the 121 inferred relationships involving `User` (e.g. with `Search across:     1. Users (username, display_name, bio, location)     2. Skill` and `Search skills by name or category`) actually correct?**
+  _`User` has 121 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 83 inferred relationships involving `UserSkill` (e.g. with `Search across:     1. Users (username, display_name, bio, location)     2. Skill` and `Search skills by name or category`) actually correct?**
+  _`UserSkill` has 83 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 76 inferred relationships involving `Skill` (e.g. with `Search across:     1. Users (username, display_name, bio, location)     2. Skill` and `Search skills by name or category`) actually correct?**
+  _`Skill` has 76 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Simulates the AI Judge for PvP Code Challenges.     In a production env, this w`, `Evaluates a code submission and returns scores and feedback.`, `Formula: (AI * 0.6) + (Vote * 0.3) + (Speed * 0.1)` to the rest of the system?**
-  _56 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _80 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.04 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06 - nodes in this community are weakly interconnected._

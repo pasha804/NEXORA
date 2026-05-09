@@ -31,6 +31,13 @@ export const AppLayout = () => {
     const { user, loading, signOut } = useAuth();
     const [showIntro, setShowIntro] = useState(true);
 
+    // Must be before any conditional returns — hooks must always run in the same order
+    useEffect(() => {
+        if (!loading && user && !user.onboarding_completed && location.pathname !== "/onboarding") {
+            navigate("/onboarding");
+        }
+    }, [user, loading, location.pathname, navigate]);
+
     if (loading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
@@ -42,12 +49,6 @@ export const AppLayout = () => {
     if (!user) {
         return <Navigate to="/auth" replace />;
     }
-
-    useEffect(() => {
-        if (!loading && user && !user.onboarding_completed && location.pathname !== "/onboarding") {
-            navigate("/onboarding");
-        }
-    }, [user, loading, location.pathname, navigate]);
 
     const isActive = (path: string) => location.pathname === path;
 
