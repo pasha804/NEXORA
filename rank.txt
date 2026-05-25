@@ -1,0 +1,259 @@
+================================================================================
+                  NEXORA FREE FIRE-STYLE RANK & PROGRESSION SYSTEM
+================================================================================
+
+VERSION: 6.0 | May 2026
+Sources: backend/routers/pvp.py, src/lib/rankSystem.ts,
+         src/components/ui/RankBadge.tsx, src/components/pvp/PvPHero.tsx
+
+================================================================================
+  OVERVIEW
+================================================================================
+
+Nexora uses a competitive gaming-style progression system inspired by
+Free Fire, PUBG Mobile, and Valorant. There are THREE parallel systems:
+
+  1. PvP RANK (RP-based)    — 8 tiers × 5 divisions + Grandmaster
+  2. USER LEVEL (XP-based)  — Level 1–100+ with progressive XP formula
+  3. PRESTIGE SYSTEM        — Resets at Level 100, earns exclusive rewards
+
+================================================================================
+  SYSTEM 1 — PvP RANK (RP-BASED, FREE FIRE STYLE)
+================================================================================
+
+RANK TIERS & DIVISIONS:
+Each tier has 5 divisions (I = highest, V = lowest within tier).
+Each division = 50 RP. Stars fill as you earn RP within a division.
+
+┌─────────────────┬──────────────────┬──────────┬────────────────────────────┐
+│ TIER            │ RP RANGE         │ ICON     │ GLOW COLOR                 │
+├─────────────────┼──────────────────┼──────────┼────────────────────────────┤
+│ Novice          │ 0 – 99           │ 🔰       │ Gray                       │
+│ Bronze I–V      │ 100 – 399        │ 🥉       │ Orange                     │
+│ Silver I–V      │ 400 – 649        │ 🥈       │ Slate/Silver               │
+│ Gold I–V        │ 650 – 899        │ 🥇       │ Yellow/Gold                │
+│ Platinum I–V    │ 900 – 1199       │ 💎       │ Cyan                       │
+│ Diamond I–V     │ 1200 – 2199      │ 💠       │ Blue                       │
+│ Heroic I–V      │ 2200 – 3199      │ ⚡       │ Purple                     │
+│ Master I–V      │ 3200 – 4199      │ 🔥       │ Red                        │
+│ Grandmaster     │ 4200+            │ 👑       │ Gold/Amber                 │
+└─────────────────┴──────────────────┴──────────┴────────────────────────────┘
+
+DIVISION BREAKDOWN (example — Diamond):
+  Diamond I   → 1200 RP
+  Diamond II  → 1400 RP
+  Diamond III → 1600 RP
+  Diamond IV  → 1800 RP
+  Diamond V   → 2000 RP
+
+STAR SYSTEM:
+  Each division has 5 stars.
+  Stars fill based on RP progress within the 50-RP division window.
+  Full stars → promotion to next division.
+  Displayed as: ★★★☆☆ (3/5 stars)
+
+STARTING RP: 1000 (Platinum III)
+
+RP CHANGES PER MATCH:
+  Win  → +30 base RP
+         +5 per win streak (max +25 bonus)
+         +0 to +10 performance bonus (based on AI score)
+  Draw → +5 RP
+  Loss → -20 RP
+  AFK/Forfeit → -50 RP (opponent gets full win RP)
+
+PERFORMANCE BONUSES:
+  Win streak 3+  → +15 RP bonus
+  Win streak 5+  → +25 RP bonus
+  Score 90+      → +10 RP bonus
+  Anti-cheat penalty → 50% RP reduction
+
+GRANDMASTER:
+  Top global players only (4200+ RP)
+  Leaderboard-based seasonal qualification
+  Seasonal soft reset at end of season
+
+================================================================================
+  SYSTEM 2 — USER LEVEL (XP-BASED, PROGRESSIVE)
+================================================================================
+
+LEVEL FORMULA (progressive — harder each level):
+  XP Required for Level N = 1000 × (1 + N × 0.15)
+
+  Examples:
+    Level 1  → 1,150 XP to reach Level 2
+    Level 5  → 1,750 XP to reach Level 6
+    Level 10 → 2,500 XP to reach Level 11
+    Level 25 → 4,750 XP to reach Level 26
+    Level 50 → 8,500 XP to reach Level 51
+    Level 100→ 16,000 XP to reach Level 101
+
+LEVEL DISPLAY:
+  - Animated XP progress bar on profile, dashboard, AI Coach
+  - Glowing level badge with tier-appropriate color
+  - Milestone levels unlock special rewards
+
+MILESTONE LEVELS: 10, 25, 50, 75, 100
+  Level 10  → Profile frame unlock
+  Level 25  → Animated border
+  Level 50  → Exclusive title
+  Level 75  → AI customization pack
+  Level 100 → Legendary cosmetic + Prestige eligibility
+
+HOW TO EARN XP:
+  Win PvP match          → +200 XP
+  Draw PvP match         → +100 XP
+  Lose PvP match         → +50 XP (participation)
+  Complete daily mission → +50 to +100 XP
+  Daily login bonus      → +50 XP (once per day)
+  Post content           → XP awarded
+  Achievements           → XP varies by rarity
+
+STREAK MULTIPLIER (applied to all XP gains):
+  Streak 0–6 days   → 1.0× (base)
+  Streak 7–13 days  → 1.1×
+  Streak 14–20 days → 1.2×
+  Streak 21–27 days → 1.3×
+  ...
+  Formula: min(2.0, 1.0 + (streak_days // 7) × 0.1)
+  Maximum: 2.0× at 70+ day streak
+
+================================================================================
+  SYSTEM 3 — PRESTIGE SYSTEM
+================================================================================
+
+At Level 100, users can PRESTIGE:
+  - Level resets to 1
+  - All earned rewards are KEPT
+  - Exclusive prestige badge awarded
+  - Additional XP multiplier unlocked
+
+PRESTIGE TIERS:
+  Prestige I    → +0.1× XP multiplier, Prestige I badge
+  Prestige II   → +0.2× XP multiplier, Prestige II badge + glow
+  Prestige III  → +0.3× XP multiplier, Animated frame
+  Prestige IV   → +0.4× XP multiplier, Exclusive profile aura
+  Prestige Master → +0.5× XP multiplier, Legendary cosmetic set
+
+================================================================================
+  SYSTEM 4 — REPUTATION SCORE (0–100)
+================================================================================
+
+Composite score shown on profile and Discover cards.
+
+BREAKDOWN:
+  Verified Skills    → up to 30 points
+  Endorsements       → up to 20 points
+  PvP Wins           → up to 20 points
+  Achievements       → up to 15 points
+  Followers          → up to 15 points
+
+REPUTATION TIERS:
+  0–39   → Bronze
+  40–59  → Silver
+  60–74  → Gold
+  75–89  → Platinum
+  90–100 → Diamond
+
+================================================================================
+  SYSTEM 5 — DAILY STREAK & MULTIPLIER
+================================================================================
+
+  Streak resets if you miss a day.
+  Stored in: UserSocialStats.streak_days
+  Multiplier stored in: UserSocialStats.xp_multiplier
+
+  Streak 70+ days = 2.0× XP on everything.
+
+================================================================================
+  RANK UI COMPONENTS
+================================================================================
+
+  RankBadge     — Animated badge with tier icon, name, optional stars + RP
+                  Sizes: xs, sm, md, lg, xl
+                  Used in: Profile, Discover cards, PvP Hero, Leaderboard
+
+  RankStars     — Animated 5-star row for current division progress
+                  Used in: RankCard, PvP Hero
+
+  RankCard      — Full rank card with RP bar, stars, W/L/WR stats, streak
+                  Used in: PvP Hero right panel, Profile PvP section
+
+  getRankInfo() — Pure function: RP → { full, tier, division, stars, color, glow, icon }
+  getRankInfoFromString() — "Diamond III" → RankInfo
+
+================================================================================
+  RANK DISPLAY LOCATIONS
+================================================================================
+
+  Profile header      → RankBadge (sm, showStars) + Level
+  Dashboard sidebar   → RankBadge (sm, showStars) + XP progress bar
+  Discover cards      → RankBadge (xs) in stats row
+  PvP Hero            → RankBadge (lg, showStars, showRP) + RankCard
+  Leaderboard         → RankBadge (xs) per entry
+  AI Coach hero       → Level + XP progress
+
+================================================================================
+  QUICK REFERENCE — HOW TO RANK UP FAST
+================================================================================
+
+  1. WIN PvP BATTLES
+     → +30 base RP + up to +35 bonus = up to +65 RP per win
+     → Best ROI for rank progression
+
+  2. BUILD WIN STREAKS
+     → 3+ wins in a row: +15 RP bonus per win
+     → 5+ wins in a row: +25 RP bonus per win
+
+  3. SCORE HIGH IN BATTLES
+     → AI Judge score 90+ = +10 RP bonus
+     → Submit fast = speed bonus
+
+  4. MAINTAIN DAILY STREAK
+     → Up to 2× XP multiplier at 70+ days
+     → Daily login: +50 XP free
+
+  5. COMPLETE DAILY MISSIONS
+     → Free XP every day, personalized to your skills
+
+  6. VERIFY YOUR SKILLS
+     → Boosts Reputation Score by up to 30 points
+     → Unlocks verification badge on profile
+
+  7. GET ENDORSEMENTS
+     → Boosts Reputation Score by up to 20 points
+
+  8. EARN ACHIEVEMENTS
+     → Each gives XP and profile badges
+
+================================================================================
+  TEST USER RP REFERENCE (all start at 1000 RP = Platinum III)
+================================================================================
+
+After seeding, all users start at 1000 RP.
+Win battles to climb the ranks.
+
+RP → Rank mapping:
+  100  → Bronze I
+  400  → Silver I
+  650  → Gold I
+  900  → Platinum I
+  1000 → Platinum III  ← Starting point
+  1200 → Diamond I
+  2200 → Heroic I
+  3200 → Master I
+  4200 → Grandmaster
+
+================================================================================
+  ANTI-CHEAT PENALTIES
+================================================================================
+
+  >20 wins in 24 hours          → 50% RP penalty (rapid_wins)
+  >5 matches vs same opponent   → 30% RP penalty (same_opponent_abuse)
+  Win streak >15                → 20% RP penalty (suspicious_streak)
+  Trust score <50               → 50% RP penalty (low_trust_score)
+  Forfeit/AFK                   → -50 RP (no anti-cheat bypass)
+
+================================================================================
+                         END OF RANK DOCUMENTATION
+================================================================================

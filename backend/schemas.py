@@ -101,6 +101,7 @@ class UserResponse(BaseModel):
             full_name=user.full_name,
             display_name=display_name,
             avatar_url=user.avatar_url,
+            banner_url=user.banner_url or (getattr(user.profile, "banner_url", None) if hasattr(user, 'profile') and user.profile else None),
             bio=user.bio,
             is_active=user.is_active,
             xp=user.xp_points or 0, # Map xp_points to xp for frontend

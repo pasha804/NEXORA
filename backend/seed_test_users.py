@@ -8,7 +8,8 @@ import random
 # Test Data from test.txt
 TEST_USERS = [
     # ORIGINAL TEST USERS
-    {"username": "basha_dev", "email": "basha_dev@nexora.test", "skills": ["JavaScript", "React", "NodeJS", "Python", "CSS"], "xp": 1500, "rank": "Bronze I"},
+    # basha_dev is the LEGENDARY FOUNDER account — run upgrade_basha_dev.py to max it out
+    {"username": "basha_dev", "email": "basha_dev@nexora.test", "skills": ["JavaScript", "React", "NodeJS", "Python", "CSS"], "xp": 999999, "rank": "Grandmaster"},
     {"username": "react_dev", "email": "react_dev@nexora.test", "skills": ["React", "JavaScript"], "xp": 4500, "rank": "Gold III"},
     {"username": "python_dev", "email": "python_dev@nexora.test", "skills": ["Python", "FastAPI", "PostgreSQL", "Docker", "AWS"], "xp": 3200, "rank": "Silver I"},
     {"username": "fullstack_dev", "email": "fullstack_dev@nexora.test", "skills": ["React", "NodeJS", "MongoDB", "Express", "JavaScript"], "xp": 2800, "rank": "Silver II"},

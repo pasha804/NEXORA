@@ -2,10 +2,12 @@
                      NEXORA PLATFORM DOCUMENTATION
 ================================================================================
 
-VERSION: 3.0 (Production Ready - April 2026)
+VERSION: 5.0 (Production Ready - May 2026)
 PLATFORM TYPE: Skill-Based Social Network with Gamification
 TECH STACK: React + TypeScript + Vite (Frontend), FastAPI + Python (Backend),
             PostgreSQL (Database), Redis (Cache), Docker (Containerization)
+            Nginx (API Gateway + CORS), Socket.IO (Real-time)
+ARCHITECTURE: Microservices with centralized PostgreSQL database
 
 ================================================================================
                           TABLE OF CONTENTS
@@ -676,28 +678,208 @@ SKILL CATEGORIES AVAILABLE:
                           PRODUCTION READY CHECKLIST
 ================================================================================
 
-[✓] Discover page shows all active users (inclusive search enabled)
-[✓] Search by username/bio/skill works instantly with ILIKE
-[✓] White screen on refresh ELIMINATED via Hydration Guard
-[✓] Search by category works (Frontend, Backend, AI/ML, DevOps, Design, Mobile)
-[✓] Filters: XP High to Low, Newest Users, Most Followed, Most Active
-[✓] Pagination implemented with Load More support
-[✓] Profile data persistence verified (JSON fields preserved on PATCH)
-[✓] Empty state UI with Reset Search functionality
-[✓] Loading skeleton while fetching
-[✓] 31 test users created with diverse skills
-[✓] Profile page upgraded to LinkedIn quality
-[✓] All sections editable (About, Experience, Education, Skills, etc.)
-[✓] Post creation enabled on Home Feed
-[✓] All post types supported
+SOCIAL SYSTEM:
+[✓] Followers/Following modal — clickable counts open animated modal
+[✓] Enriched follower/following data (bio, rank, skills, is_following)
+[✓] Remove follower endpoint (DELETE /social/followers/{id})
+[✓] Skill endorsement system (POST /skills/endorse, GET /skills/endorsements)
+[✓] social.py missing models import fixed (home-feed was crashing)
+[✓] Follow/unfollow with optimistic UI updates
+[✓] Real-time follow notifications via Redis pub/sub
+
+RANK SYSTEM (FREE FIRE STYLE):
+[✓] 8 tiers × 5 divisions: Novice → Bronze → Silver → Gold → Platinum →
+    Diamond → Heroic → Master → Grandmaster
+[✓] RP-based progression (not plain MMR)
+[✓] Performance-based RP: +30 win base, +streak bonus (max +25), +perf bonus
+[✓] _mmr_to_rank() returns subdivisions ("Diamond III", "Heroic I", etc.)
+[✓] src/lib/rankSystem.ts — shared rank utility (getRankInfo, xpForNextLevel, etc.)
+[✓] RankBadge component — animated, tier-colored, with stars + RP
+[✓] RankCard component — full card with RP bar, W/L/WR, streak
+[✓] PvPHero upgraded with dynamic tier-colored glow + RankCard
+[✓] LeaderboardWidget upgraded with RankBadge per entry
+[✓] PvPStats profile component upgraded with RankCard
+[✓] HeroProfileHeader uses RankBadge instead of plain Badge
+[✓] Discover PersonCard uses RankBadge (xs)
+[✓] HomeLeftSidebar uses RankBadge + progressive XP formula
+[✓] AIHeroSection uses progressive XP formula (1000 × (1 + level × 0.15))
+[✓] _finalize_match bug fixed (rating used before assignment)
+
+LEGENDARY FOUNDER ACCOUNT:
+[✓] upgrade_basha_dev.py — standalone script to max out basha_dev
+[✓] Sets: 99,999 RP (Grandmaster), Level 100, 999,999 XP
+[✓] Sets: 4,700 wins, 94% win rate, 47 win streak, #1 leaderboard
+[✓] Sets: 250,000 followers, 15 verified Master-level skills
+[✓] Unlocks: all achievements (Common → Mythic) including Founder + Nexora Legend
+[✓] Sets: full professional profile (bio, experience, education, projects)
+[✓] Sets: Legend trust level, 10,000 reputation score
+[✓] Run: docker compose exec core_api python upgrade_basha_dev.py
+
+CORE STABILITY:
+[✓] White screen on refresh ELIMINATED — historyApiFallback + auth hydration guard
+[✓] All routes survive browser refresh (/dashboard, /discover, /profile, /ai-coach, etc.)
+[✓] JWT token restored from localStorage on page load
+[✓] Auth loading state blocks rendering until hydration completes
+[✓] Per-page error boundaries — each route has isolated error recovery
+[✓] App-level error boundary with reload button
+[✓] All authenticated pages lazy-loaded (code splitting)
+[✓] Page-level Suspense fallback loaders
+[✓] Presence tracking — /presence/online on login, /presence/offline on sign out
+
+CORS & NETWORKING:
+[✓] CORS fixed — Nginx is single source of truth, FastAPI CORSMiddleware removed
+[✓] Duplicate CORS headers eliminated
+[✓] Vite proxy covers all API prefixes (auth, users, social, pvp, ai, search,
+    messages, notifications, skills, dashboard, posts, communities, reels,
+    tournaments, presence, connections, feed, media, settings, matchmaking)
+
+DISCOVER PAGE:
+[✓] All 31 test users appear in Discover
+[✓] Search by username, display_name, bio, skill_name all work
+[✓] Category filter pills (Frontend, Backend, AI/ML, DevOps, Design, Mobile,
+    Cybersecurity, Blockchain, Database, Game Dev)
+[✓] Sort options (Newest, XP High, Most Followed, Most Active)
+[✓] Python-level deduplication replaces broken PostgreSQL DISTINCT ON
+[✓] Pagination with Load More
+[✓] Premium empty state with Reset Search
+
+PROFILE SYSTEM:
+[✓] LinkedIn-quality profile header (banner, avatar, XP bar, rank badge)
+[✓] All sections editable: About, Experience, Education, Skills, Projects
+[✓] ProfileEditModal saves to /users/me (PATCH) + /auth/onboarding/skills
+[✓] Double-save bug fixed (localOnly flag on updateUser)
+[✓] banner_url included in UserResponse.from_orm_user
+[✓] GET /users/{username} uses selectinload + from_orm_user (no raw ORM crash)
+[✓] ProfessionalPortfolio renders experience/education/projects from real data
+
+MESSAGING:
+[✓] Wrong token key fixed (localStorage "token" → "access_token")
+[✓] ConversationList maps backend room_id + recipient correctly
+[✓] ChatWindow fetches message history with correct token
+[✓] useMessagingStore.sendMessage uses real user_id from localStorage
+[✓] user_id stored in localStorage on login, cleared on sign out
+[✓] /messages/rooms returns ISO timestamp for last_message_time
+[✓] Skill-based messaging permission system working
+
+AI COACH:
+[✓] AIHeroSection missing useState/useEffect import fixed
+[✓] All AI endpoints wired: skill-analysis, roadmap, career-predict,
+    recommendations, daily-missions, alerts, goals-tracker, performance-analytics,
+    industry-trends, chat
+[✓] AppLayout hooks-order violation fixed
+
+PVP SYSTEM:
+[✓] challenge_id FK added to pvp_matches model
+[✓] PvPSubmission model created and DB migration added
+[✓] Anti-cheat system active (rate limiting, same-opponent detection)
+[✓] ELO/MMR ranking with 8 tiers (Novice → Grandmaster)
+
+BATTLE PASS:
+[✓] Connected to real API (/battlepass/current_season, /tiers, /progress)
+[✓] Fallback tier data when no season is active
+[✓] Unlock tier button calls /battlepass/unlock_tier
+
+SKILLS:
+[✓] Endorsement endpoints added (POST /skills/endorse, GET /skills/endorsements/{id})
+[✓] SkillActivityLog.metadata bug fixed (activity_metadata)
+[✓] Skill progression, badges, intelligence, trending all working
+
+SETTINGS:
+[✓] Settings sidebar animation fixed (layoutId inside relative container)
+[✓] ProfileSettings double-save fixed (localOnly=true after manual PATCH)
+[✓] GamificationContext XP gains use localOnly to avoid PATCH spam
+
+COMMUNITIES:
+[✓] SidebarLeft fetches real communities from /communities/me and /communities/discover
+[✓] SidebarRight fetches trending skills and top contributors from real API
+[✓] AI assistant in communities sidebar uses /ai/chat
+
+REELS:
+[✓] Empty state shown when no reels available
+[✓] Feed fetches from /reels/feed with correct token
+[✓] Like system calls /reels/{id}/like with optimistic UI
+
+DASHBOARD:
+[✓] MainFeed permanent spinner replaced with "You're all caught up" state
+[✓] HomeRightSidebar missing MessageCircle import fixed
+[✓] HomeRightSidebar alert() replaced with toast.success()
+[✓] HomeLeftSidebar shows real skill progression from API
+
+NOTIFICATIONS:
+[✓] Trailing slash fixed (/notifications/ not /notifications)
+[✓] Polling every 60s as backup to WebSockets
+
+GENERAL:
+[✓] 31 test users seeded with diverse skills
 [✓] Dark futuristic NEXORA theme
-[✓] Smooth animations with Framer Motion
+[✓] Framer Motion animations throughout
 [✓] Responsive mobile/desktop layouts
-[✓] Toast notifications
-[✓] JWT authentication working
-[✓] Skill-based messaging working
-[✓] Follow system working
-[✓] Like/comment system working
+[✓] Toast notifications (sonner)
+[✓] React Router future flag warnings (non-breaking)
+
+================================================================================
+                    SOCIAL SYSTEM — FOLLOWERS & FOLLOWING
+================================================================================
+
+FOLLOWERS MODAL:
+- Clicking Followers count on any profile opens animated modal
+- Clicking Following count opens modal on Following tab
+- Each user card shows: avatar, display name, @username, bio, rank badge,
+  skill tags (top 3), verified checkmark
+- Follow/Unfollow button per user with optimistic state update
+- Remove Follower button (own profile, followers tab only)
+- Search bar to filter by username or display name
+- Clicking a user navigates to their profile and closes modal
+
+ENRICHED FOLLOWERS/FOLLOWING API:
+  GET /social/followers/{user_id}  — returns bio, rank, level, xp,
+                                     followers_count, skills, is_following
+  GET /social/following/{user_id}  — same enrichment
+  DELETE /social/followers/{id}    — remove a follower from your list
+
+FOLLOW SYSTEM:
+  POST /social/follow/{user_id}    — follow user
+  POST /social/unfollow/{user_id}  — unfollow user
+  GET  /social/is-following/{id}   — check follow status
+  GET  /social/recommendations     — AI-powered follow suggestions
+
+REAL-TIME:
+  - Follow/unfollow instantly updates UI (optimistic)
+  - Redis pub/sub emits follow_created event
+  - Reputation service listens and updates target user's score
+  - Notification created for new follower
+
+================================================================================
+                    SOCIAL SYSTEM — SKILL ENDORSEMENTS
+================================================================================
+
+  POST /skills/endorse
+    Body: { target_user_id, skill_name, action: "add"|"remove" }
+    - Increments/decrements UserSkill.endorsement_count
+    - Prevents self-endorsement
+    - Prevents duplicate endorsements
+
+  GET /skills/endorsements/{user_id}
+    - Returns all endorsements received by a user
+    - Used by SkillReputation component to show endorse/endorsed state
+
+  UI: SkillReputation component shows Endorse/Endorsed toggle per skill
+      (only visible when viewing another user's profile)
+
+================================================================================
+                    KNOWN ISSUES & LIMITATIONS
+================================================================================
+
+- React Router v6 future flag warnings (v7_startTransition, v7_relativeSplatPath)
+  → Non-breaking. Add future flags to BrowserRouter props to silence them.
+- Economy service (economy/main.py) references user.xp and user.coins which
+  don't exist on the User model — economy service is standalone, not in core_api.
+- Battle Pass requires BattlePassSeason rows in DB to show real season data.
+  → The page gracefully falls back to static tier data when no season exists.
+- OAuth buttons (Google, GitHub) on Auth page are UI-only, not wired to backend.
+- Reels video upload stores URL only — actual video hosting requires CDN/S3 setup.
+- Voice/video channels in Communities are UI placeholders (WebRTC not implemented).
+- AI chat uses rule-based responses — no LLM integration yet.
 
 ================================================================================
                           END OF DOCUMENTATION

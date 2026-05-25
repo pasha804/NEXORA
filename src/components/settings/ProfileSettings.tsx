@@ -105,10 +105,16 @@ export const ProfileSettings = () => {
                 throw new Error("Failed to update profile");
             }
 
-            const updatedUserData = await response.json();
-
-            // Update local auth state
-            await updateUser(updatedUserData);
+            // Re-fetch user from /auth/me to sync auth context — do NOT call updateUser
+            // (updateUser calls PATCH again, causing a double-save)
+            const meResp = await fetch(`${API_URL}/auth/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (meResp.ok) {
+                const fresh = await meResp.json();
+                // localOnly=true: sync context without triggering another PATCH
+                await updateUser({ display_name: fresh.display_name, avatar_url: fresh.avatar_url, bio: fresh.bio }, true);
+            }
             toast.success("Profile updated successfully!");
         } catch (error) {
             console.error(error);

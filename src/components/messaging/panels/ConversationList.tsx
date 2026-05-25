@@ -25,7 +25,7 @@ export const ConversationList = () => {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const token = localStorage.getItem("token");
+                const token = localStorage.getItem("access_token");
                 const resp = await fetch(`${API_URL}/messages/rooms`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
@@ -34,41 +34,57 @@ export const ConversationList = () => {
 
                     // Map backend Room to Conversation type
                     const mapped: Conversation[] = data.map((room: any) => {
-                        const otherUser = room.user2_id.toString() === currentUser?.id.toString()
-                            ? room.user1 : room.user2;
+                        const recipientData = room.recipient;
+                        const roomId = (room.room_id || room.id || "").toString();
 
                         return {
-                            id: room.id.toString(),
-                            type: 'direct',
+                            id: roomId,
+                            type: 'direct' as const,
                             participants: [
-                                { id: room.user1_id.toString(), username: room.user1.username, name: room.user1.display_name || room.user1.username, onlineStatus: room.user1.online_status, isVerified: true, skills: [] },
-                                { id: room.user2_id.toString(), username: room.user2.username, name: room.user2.display_name || room.user2.username, onlineStatus: room.user2.online_status, isVerified: true, skills: [] }
+                                {
+                                    id: currentUser?.id.toString() || "0",
+                                    username: currentUser?.username || "",
+                                    name: currentUser?.display_name || currentUser?.username || "",
+                                    onlineStatus: "online" as const,
+                                    isVerified: false,
+                                    skills: []
+                                },
+                                {
+                                    id: recipientData?.id?.toString() || "0",
+                                    username: recipientData?.username || "",
+                                    name: recipientData?.display_name || recipientData?.username || "",
+                                    avatar: recipientData?.avatar_url,
+                                    onlineStatus: (recipientData?.online_status || "offline") as any,
+                                    isVerified: false,
+                                    skills: []
+                                }
                             ],
                             recipient: {
-                                id: otherUser.id.toString(),
-                                username: otherUser.username,
-                                name: otherUser.display_name || otherUser.username,
-                                onlineStatus: otherUser.online_status,
-                                isVerified: true,
+                                id: recipientData?.id?.toString() || "0",
+                                username: recipientData?.username || "",
+                                name: recipientData?.display_name || recipientData?.username || "",
+                                avatar: recipientData?.avatar_url,
+                                onlineStatus: (recipientData?.online_status || "offline") as any,
+                                isVerified: false,
                                 skills: []
                             },
                             messages: [],
-                            unreadCount: 0,
+                            unreadCount: room.unread_count || 0,
                             isPinned: false,
                             isMuted: false,
-                            category: 'all',
+                            category: 'all' as const,
                             typingUsers: [],
-                            createdAt: new Date(room.created_at),
-                            updatedAt: new Date(room.created_at),
+                            createdAt: new Date(),
+                            updatedAt: new Date(room.last_message_time || Date.now()),
                             lastMessage: {
                                 id: "0",
-                                conversationId: room.id.toString(),
+                                conversationId: roomId,
                                 senderId: "0",
-                                type: "text",
-                                content: "No messages yet",
-                                createdAt: new Date(room.created_at),
-                                updatedAt: new Date(room.created_at),
-                                status: "delivered",
+                                type: "text" as const,
+                                content: room.last_message || "No messages yet",
+                                createdAt: new Date(room.last_message_time || Date.now()),
+                                updatedAt: new Date(room.last_message_time || Date.now()),
+                                status: "delivered" as const,
                                 reactions: [],
                                 isEdited: false,
                                 isPinned: false,

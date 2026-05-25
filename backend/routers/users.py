@@ -174,10 +174,16 @@ async def get_user_by_username(
     db: Session = Depends(get_db)
 ):
     """Get user profile by username"""
-    user = db.query(models.User).filter(models.User.username == username).first()
+    from sqlalchemy.orm import selectinload
+    user = db.query(models.User).options(
+        selectinload(models.User.profile),
+        selectinload(models.User.stats),
+        selectinload(models.User.skills),
+        selectinload(models.User.interests),
+    ).filter(models.User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return user
+    return schemas.UserResponse.from_orm_user(user)
 
 @router.get("/{user_id}/achievements")
 async def get_user_achievements(
@@ -342,7 +348,7 @@ async def get_user_stats(
             "verified_skills": verified_skill_count
         },
         "pvp": {
-            "rating": pvp_rating.rating if pvp_rating else 1000,
+            "rating": pvp_rating.mmr if pvp_rating else 1000,
             "wins": stats.battle_wins if stats else 0,
             "losses": stats.battle_losses if stats else 0,
             "matches_played": pvp_rating.matches_played if pvp_rating else 0

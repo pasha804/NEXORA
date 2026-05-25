@@ -91,6 +91,22 @@ export default defineConfig(({ mode }) => ({
         target: "http://localhost:80",
         changeOrigin: true,
       },
+      "/communities": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
+      "/reels": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
+      "/tournaments": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
+      "/presence": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
     },
   },
   plugins: [react()],

@@ -26,7 +26,7 @@ export const ChatWindow = () => {
 
             const fetchHistory = async () => {
                 try {
-                    const token = localStorage.getItem("token");
+                    const token = localStorage.getItem("access_token");
                     const resp = await fetch(`${API_URL}/messages/${activeConversationId}`, {
                         headers: { "Authorization": `Bearer ${token}` }
                     });

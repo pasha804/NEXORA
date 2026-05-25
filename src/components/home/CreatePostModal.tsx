@@ -20,7 +20,7 @@ interface CreatePostModalProps {
 
 type PostType = "text" | "image" | "code" | "poll" | "achievement" | "learning";
 
-const POST_TYPES: { id: PostType; label: string; icon: React.ElementType; color: string }[] = [
+const POST_TYPES: { id: PostType; label: string; icon: React.ElementType | null; color: string }[] = [
     { id: "text", label: "Text", icon: null, color: "" },
     { id: "image", label: "Image", icon: Image, color: "text-green-400" },
     { id: "code", label: "Code", icon: Code2, color: "text-blue-400" },

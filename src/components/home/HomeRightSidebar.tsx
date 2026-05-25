@@ -15,11 +15,12 @@ import {
     DollarSign,
     GraduationCap,
     Clock,
-    UserCircle2
+    UserCircle2,
+    MessageCircle
 } from "lucide-react";
 import { motion } from "framer-motion";
-
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const HomeRightSidebar = () => {
     const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
@@ -119,8 +120,7 @@ export const HomeRightSidebar = () => {
                 body: JSON.stringify({ receiver_id: userId })
             });
             if (resp.ok) {
-                // Toast success handled by calling component or simple alert
-                alert("Connection request sent!");
+                toast.success("Connection request sent!");
             }
         } catch (err) {
             console.error("Connect error:", err);

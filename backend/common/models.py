@@ -559,6 +559,7 @@ class PvPMatch(Base):
     player1_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     player2_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     skill_id = Column(Integer, ForeignKey("skills.id"), nullable=True)
+    challenge_id = Column(Integer, ForeignKey("pvp_challenges.id"), nullable=True)
     battle_type = Column(String, default="code_challenge")  # code_challenge, knowledge_quiz, problem_solving, timed_challenge
     status = Column(String, default="waiting")  # waiting, in_progress, completed, forfeited
     match_status = Column(String, default="pending")  # pending, ready, active, finished
@@ -572,6 +573,7 @@ class PvPMatch(Base):
     player2 = relationship("User", foreign_keys=[player2_id])
     winner = relationship("User", foreign_keys=[winner_id])
     skill = relationship("Skill")
+    challenge = relationship("PvPChallenge", foreign_keys=[challenge_id])
     results = relationship("PvPMatchResult", back_populates="match")
     history = relationship("PvPMatchHistory", back_populates="match")
 
@@ -1111,3 +1113,25 @@ class CommunityPost(Base):
 
     community = relationship("Community", back_populates="posts")
     author = relationship("User")
+
+
+# ==========================================
+# PVP SUBMISSION (code/answer submitted during a match)
+# ==========================================
+
+class PvPSubmission(Base):
+    __tablename__ = "pvp_submissions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    match_id = Column(String, ForeignKey("pvp_matches.id"), nullable=False, index=True)
+    player_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    code_content = Column(Text, nullable=True)
+    status = Column(String, default="pending")  # pending, accepted, rejected
+    ai_score = Column(Float, default=0.0)
+    speed_bonus = Column(Integer, default=0)
+    final_score = Column(Float, default=0.0)
+    feedback_json = Column(JSON, nullable=True)
+    submitted_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    match = relationship("PvPMatch")
+    player = relationship("User")

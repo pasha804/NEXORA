@@ -4,6 +4,7 @@ from sqlalchemy import or_, desc, func
 from typing import List, Optional
 
 from common.database import get_db
+from common import models
 from common.models import User, UserSkill, Skill, SkillPost, PvPMatch, Follower, UserSocialStats, UserAchievement, Achievement
 import auth as auth_module
 from common.redis_utils import cache_get, cache_set
@@ -142,45 +143,120 @@ async def unfollow_user(
 async def get_followers(
     user_id: int,
     db: Session = Depends(get_db),
-    limit: int = 20,
-    offset: int = 0
+    limit: int = 50,
+    offset: int = 0,
+    current_user: Optional[User] = Depends(auth_module.get_current_user_optional)
 ):
-    followers = db.query(Follower).filter(Follower.following_id == user_id).offset(offset).limit(limit).all()
-    follower_ids = [f.follower_id for f in followers]
+    """Get followers list with enriched profile data"""
+    follower_rows = db.query(Follower).filter(
+        Follower.following_id == user_id
+    ).offset(offset).limit(limit).all()
+
+    follower_ids = [f.follower_id for f in follower_rows]
     users = db.query(User).filter(User.id.in_(follower_ids)).all() if follower_ids else []
-    
-    return [
-        {
+
+    result = []
+    for u in users:
+        stats = db.query(UserSocialStats).filter(UserSocialStats.user_id == u.id).first()
+        skills = db.query(models.UserSkill).filter(models.UserSkill.user_id == u.id).limit(3).all()
+        is_following_back = False
+        if current_user:
+            is_following_back = db.query(Follower).filter(
+                Follower.follower_id == current_user.id,
+                Follower.following_id == u.id
+            ).first() is not None
+
+        result.append({
             "id": u.id,
             "username": u.username,
-            "display_name": u.display_name,
+            "display_name": u.display_name or u.username,
             "avatar_url": u.avatar_url,
-            "is_verified": u.is_verified
-        }
-        for u in users
-    ]
+            "bio": u.bio,
+            "is_verified": u.is_verified,
+            "rank": stats.rank_level if stats else "Novice",
+            "level": u.level or 1,
+            "xp": u.xp_points or 0,
+            "followers_count": stats.followers_count if stats else 0,
+            "skills": [{"name": s.skill_name, "level": s.skill_level} for s in skills],
+            "is_following": is_following_back,
+        })
+
+    return result
+
 
 @router.get("/following/{user_id}")
 async def get_following(
     user_id: int,
     db: Session = Depends(get_db),
-    limit: int = 20,
-    offset: int = 0
+    limit: int = 50,
+    offset: int = 0,
+    current_user: Optional[User] = Depends(auth_module.get_current_user_optional)
 ):
-    following = db.query(Follower).filter(Follower.follower_id == user_id).offset(offset).limit(limit).all()
-    following_ids = [f.following_id for f in following]
+    """Get following list with enriched profile data"""
+    following_rows = db.query(Follower).filter(
+        Follower.follower_id == user_id
+    ).offset(offset).limit(limit).all()
+
+    following_ids = [f.following_id for f in following_rows]
     users = db.query(User).filter(User.id.in_(following_ids)).all() if following_ids else []
-    
-    return [
-        {
+
+    result = []
+    for u in users:
+        stats = db.query(UserSocialStats).filter(UserSocialStats.user_id == u.id).first()
+        skills = db.query(models.UserSkill).filter(models.UserSkill.user_id == u.id).limit(3).all()
+        is_following_back = False
+        if current_user:
+            is_following_back = db.query(Follower).filter(
+                Follower.follower_id == current_user.id,
+                Follower.following_id == u.id
+            ).first() is not None
+
+        result.append({
             "id": u.id,
             "username": u.username,
-            "display_name": u.display_name,
+            "display_name": u.display_name or u.username,
             "avatar_url": u.avatar_url,
-            "is_verified": u.is_verified
-        }
-        for u in users
-    ]
+            "bio": u.bio,
+            "is_verified": u.is_verified,
+            "rank": stats.rank_level if stats else "Novice",
+            "level": u.level or 1,
+            "xp": u.xp_points or 0,
+            "followers_count": stats.followers_count if stats else 0,
+            "skills": [{"name": s.skill_name, "level": s.skill_level} for s in skills],
+            "is_following": is_following_back,
+        })
+
+    return result
+
+
+@router.delete("/followers/{follower_id}")
+async def remove_follower(
+    follower_id: int,
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Remove a follower from your followers list"""
+    follow = db.query(Follower).filter(
+        Follower.follower_id == follower_id,
+        Follower.following_id == current_user.id
+    ).first()
+
+    if not follow:
+        raise HTTPException(status_code=404, detail="Follower not found")
+
+    db.delete(follow)
+
+    # Update counts
+    their_stats = db.query(UserSocialStats).filter(UserSocialStats.user_id == follower_id).first()
+    if their_stats and their_stats.following_count > 0:
+        their_stats.following_count -= 1
+
+    my_stats = db.query(UserSocialStats).filter(UserSocialStats.user_id == current_user.id).first()
+    if my_stats and my_stats.followers_count > 0:
+        my_stats.followers_count -= 1
+
+    db.commit()
+    return {"message": "Follower removed"}
 
 @router.get("/is-following/{user_id}")
 async def check_following(

@@ -3,25 +3,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
-    Zap,
-    Swords,
-    Bot,
-    Video,
-    Users,
-    TrendingUp,
-    Code,
-    Plus,
-    Award,
-    Target,
-    Trophy,
-    Flame,
-    ArrowRight
+    Zap, Swords, Bot, Video, Users, TrendingUp,
+    Code, Plus, Award, Target, Trophy, Flame, ArrowRight
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useGamification } from "@/context/GamificationContext";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Circle, Gift } from "lucide-react";
 import { useSkillProgression, useTrendingSkills } from "@/hooks/useSkillIntelligence";
+import { getRankInfo, xpForNextLevel, xpProgressInLevel } from "@/lib/rankSystem";
+import { RankBadge, RankStars } from "@/components/ui/RankBadge";
 
 interface UserProfile {
     id: number;
@@ -45,20 +36,22 @@ export const HomeLeftSidebar = ({ user }: { user: UserProfile }) => {
     const { data: skillProgress } = useSkillProgression(user?.id);
     const { data: trendingSkills } = useTrendingSkills();
 
+    // Use rank string from auth context — ranking_score is now in User interface too
+    const rankStr = user?.rank || "Novice";
+    const rankInfo = getRankInfoFromString(rankStr);
+    const xpProgressData = xpProgressInLevel(user?.xp ?? xp);
+    const currentLevel = user?.level ?? level;
+
     const skillLevelMap: Record<string, number> = {
-        "Beginner": 1,
-        "Intermediate": 2,
-        "Advanced": 3,
-        "Expert": 4,
-        "Legend": 5
+        "Beginner": 1, "Intermediate": 2, "Advanced": 3, "Expert": 4, "Legend": 5
     };
 
     // Map real user skills to UI format
-    const getSkillColor = (level: number | string) => {
-        const numLevel = typeof level === "string" ? (skillLevelMap[level] || 1) : level;
-        if (numLevel >= 4) return "from-purple-500 to-pink-500"; // Expert/Legend
-        if (numLevel === 3) return "from-cyan-500 to-blue-500"; // Advanced
-        return "from-yellow-500 to-orange-500"; // Beginner/Intermediate
+    const getSkillColor = (lvl: number | string) => {
+        const numLevel = typeof lvl === "string" ? (skillLevelMap[lvl] || 1) : lvl;
+        if (numLevel >= 4) return "from-purple-500 to-pink-500";
+        if (numLevel === 3) return "from-cyan-500 to-blue-500";
+        return "from-yellow-500 to-orange-500";
     };
 
     const userSkills =
@@ -77,15 +70,11 @@ export const HomeLeftSidebar = ({ user }: { user: UserProfile }) => {
             return {
                 name: s.name,
                 level: numLevel * 20,
-                displayLevel: s.level, // Keep original string for display
+                displayLevel: s.level,
                 color: getSkillColor(s.level)
             };
         }) ||
         [];
-
-    const xpToNext = level * 1000;
-    const currentLevelXP = xp % 1000;
-    const xpProgress = (currentLevelXP / xpToNext) * 100;
 
     return (
         <div className="space-y-6">
@@ -120,9 +109,7 @@ export const HomeLeftSidebar = ({ user }: { user: UserProfile }) => {
                     <p className="text-sm text-muted-foreground mb-3">@{user?.username}</p>
 
                     <div className="flex flex-col items-center gap-2 mb-4">
-                        <Badge variant="outline" className="border-yellow-500/30 bg-yellow-500/10 text-yellow-400">
-                            {user?.rank || "Bronze V"}
-                        </Badge>
+                        <RankBadge rp={rp} size="sm" showStars animated />
                         <div className="flex items-center gap-1 text-[10px] font-bold text-primary/80 uppercase tracking-wider">
                             <Zap className="w-3 h-3 fill-current" />
                             Reputation: {user?.reputation_score?.toLocaleString() || "500"}
@@ -132,14 +119,14 @@ export const HomeLeftSidebar = ({ user }: { user: UserProfile }) => {
                     <div className="w-full space-y-2 mb-4">
                         <div className="flex justify-between text-xs font-medium">
                             <span className="flex items-center gap-1">
-                                Level {user?.level || level}
-                                <Badge variant="secondary" className="h-4 px-1.2 py-0 text-[8px] bg-primary/20 text-primary border-0">
-                                    {(user?.streak_days || streak) >= 7 ? "1.5x Multiplier" : "1.0x"}
+                                Level {currentLevel}
+                                <Badge variant="secondary" className="h-4 px-1.5 py-0 text-[8px] bg-primary/20 text-primary border-0">
+                                    {(user?.streak_days || streak) >= 7 ? `${Math.min(2.0, 1.0 + (Math.floor((user?.streak_days || streak) / 7) * 0.1)).toFixed(1)}x XP` : "1.0x"}
                                 </Badge>
                             </span>
-                            <span className="text-primary">{(user?.xp_points || xp).toLocaleString()} / {xpToNext.toLocaleString()} XP</span>
+                            <span className="text-primary">{xpProgressData.current.toLocaleString()} / {xpProgressData.needed.toLocaleString()} XP</span>
                         </div>
-                        <Progress value={xpProgress} className="h-2 bg-muted" />
+                        <Progress value={xpProgressData.percent} className="h-2 bg-muted" />
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 w-full">

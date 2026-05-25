@@ -54,31 +54,34 @@ async def get_chat_rooms(
 ):
     rooms = db.query(ChatRoom).filter(
         or_(ChatRoom.user1_id == current_user.id, ChatRoom.user2_id == current_user.id)
-    ).all()
+    ).order_by(ChatRoom.last_message_at.desc().nullslast()).all()
     
-    # Enrich with recipient info
     results = []
     for r in rooms:
         recipient_id = r.user2_id if r.user1_id == current_user.id else r.user1_id
         recipient = db.query(User).filter(User.id == recipient_id).first()
+        if not recipient:
+            continue
         
-        # Get last message
         last_msg = db.query(Message).filter(Message.room_id == r.id).order_by(Message.created_at.desc()).first()
+        unread = db.query(Message).filter(
+            Message.room_id == r.id,
+            Message.receiver_id == current_user.id,
+            Message.is_read == False
+        ).count()
         
         results.append({
             "room_id": r.id,
             "recipient": {
                 "id": recipient.id,
                 "username": recipient.username,
-                "display_name": recipient.display_name,
+                "display_name": recipient.display_name or recipient.username,
                 "avatar_url": recipient.avatar_url,
-                "online_status": recipient.online_status
+                "online_status": getattr(recipient, "online_status", "offline")
             },
             "last_message": last_msg.message_text if last_msg else None,
-            "last_message_time": last_msg.created_at if last_msg else None,
-            "unread_count": db.query(Message).filter(
-                (Message.room_id == r.id) & (Message.receiver_id == current_user.id) & (Message.is_read == False)
-            ).count()
+            "last_message_time": last_msg.created_at.isoformat() if last_msg else None,
+            "unread_count": unread
         })
         
     return results

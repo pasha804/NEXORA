@@ -5,18 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import {
-    UserPlus,
-    UserCheck,
-    MessageCircle,
-    Swords,
-    MapPin,
-    Sparkles,
-    Trophy,
-    Users,
-    ChevronDown,
-    Loader2
+    UserPlus, UserCheck, MessageCircle, Swords,
+    MapPin, Sparkles, Users, ChevronDown, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
+import { RankBadge } from "@/components/ui/RankBadge";
 
 interface PeopleDiscoveryProps {
     searchQuery: string;
@@ -38,7 +31,30 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [activeFilters, setActiveFilters] = useState<FilterParams>({ sort: "newest" });
+    const [activeCategory, setActiveCategory] = useState<string>("");
+    const [activeSort, setActiveSort] = useState<string>("newest");
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const CATEGORIES = [
+        { label: "All", value: "" },
+        { label: "Frontend", value: "Frontend" },
+        { label: "Backend", value: "Backend" },
+        { label: "AI/ML", value: "AI/ML" },
+        { label: "DevOps", value: "DevOps" },
+        { label: "Design", value: "Design" },
+        { label: "Mobile", value: "Mobile" },
+        { label: "Cybersecurity", value: "Cybersecurity" },
+        { label: "Blockchain", value: "Blockchain" },
+        { label: "Database", value: "Database" },
+        { label: "Game Dev", value: "Game Dev" },
+    ];
+
+    const SORTS = [
+        { label: "Newest", value: "newest" },
+        { label: "XP High", value: "xp_high" },
+        { label: "Most Followed", value: "most_followed" },
+        { label: "Most Active", value: "most_active" },
+    ];
 
     const fetchPeople = useCallback(async (pageNum: number = 1, query: string = "", filterParams: FilterParams = {}) => {
         const isFirstPage = pageNum === 1;
@@ -92,28 +108,19 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         
-        const filterParams: FilterParams = { sort: activeFilters.sort || "newest" };
+        const filterParams: FilterParams = { sort: activeSort };
+        if (activeCategory) filterParams.category = activeCategory;
         
-        // Parse skill from search query (e.g., "React Developer" -> skill: "React")
+        // Also parse skill keywords from free-text search
         if (searchQuery) {
-            const skillCategories = ["React", "Python", "AI", "ML", "Machine Learning", "DevOps", "UI", "UX", "Mobile", "Cloud", "Data", "Security", "Blockchain", "Full Stack"];
-            const matchedCategory = skillCategories.find(cat => 
-                searchQuery.toLowerCase().includes(cat.toLowerCase())
-            );
-            if (matchedCategory) {
-                filterParams.skill = matchedCategory;
-            }
-            
-            const categories = ["Frontend", "Backend", "AI/ML", "DevOps", "Design", "Mobile", "Cybersecurity"];
-            const matchedCat = categories.find(cat => 
-                searchQuery.toLowerCase().includes(cat.toLowerCase())
-            );
-            if (matchedCat) {
-                filterParams.category = matchedCat;
+            const skillKeywords = ["React", "Python", "AI", "ML", "Machine Learning", "DevOps", "UI", "UX", "Mobile", "Cloud", "Data", "Security", "Blockchain", "Full Stack", "Docker", "Kubernetes", "TypeScript", "JavaScript", "Node", "Go", "Rust"];
+            const matchedSkill = skillKeywords.find(k => searchQuery.toLowerCase().includes(k.toLowerCase()));
+            if (matchedSkill && !filterParams.category) {
+                filterParams.skill = matchedSkill;
             }
         }
         
-        setActiveFilters(prev => ({ ...prev, ...filterParams }));
+        setActiveFilters(filterParams);
         
         debounceRef.current = setTimeout(() => {
             setPage(1);
@@ -122,31 +129,38 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
         return () => {
             if (debounceRef.current) clearTimeout(debounceRef.current);
         };
-    }, [searchQuery, fetchPeople]);
+    }, [searchQuery, activeCategory, activeSort, fetchPeople]);
 
     // Handle filter changes from DiscoverHeader
     useEffect(() => {
         if (filters && Object.keys(filters).length > 0) {
             const newFilters: FilterParams = { ...activeFilters };
-            
-            if (filters.skillLevel?.length) {
-                newFilters.skill = filters.skillLevel[0];
-            }
-            if (filters.industry?.length) {
-                newFilters.category = filters.industry[0];
-            }
-            if (filters.recent) {
-                newFilters.sort = "most_active";
-            }
-            if (filters.popularity) {
-                if (filters.popularity === "Trending") newFilters.sort = "most_followed";
-                else if (filters.popularity === "Popular") newFilters.sort = "xp_high";
-            }
-            
+            if (filters.skillLevel?.length) newFilters.skill = filters.skillLevel[0];
+            if (filters.industry?.length) newFilters.category = filters.industry[0];
+            if (filters.recent) newFilters.sort = "most_active";
+            if (filters.popularity === "Trending") newFilters.sort = "most_followed";
+            else if (filters.popularity === "Popular") newFilters.sort = "xp_high";
             setActiveFilters(newFilters);
             fetchPeople(1, searchQuery, newFilters);
         }
     }, [filters]);
+
+    const handleCategoryChange = (cat: string) => {
+        setActiveCategory(cat);
+        setPage(1);
+    };
+
+    const handleSortChange = (sort: string) => {
+        setActiveSort(sort);
+        setPage(1);
+    };
+
+    const handleReset = () => {
+        setActiveCategory("");
+        setActiveSort("newest");
+        setPage(1);
+        fetchPeople(1, "", { sort: "newest" });
+    };
 
     const loadMore = () => {
         if (!loadingMore && hasMore) {
@@ -157,27 +171,60 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
     };
 
     return (
-        <div className="space-y-6">
-            {/* AI Matching Header */}
-            <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass-card p-4 border border-primary/30 bg-gradient-to-r from-blue-500/10 to-cyan-500/10"
-            >
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center animate-pulse">
-                        <Sparkles className="w-4 h-4 text-blue-400" />
+        <div className="space-y-5">
+            {/* Category Filter Pills */}
+            <div className="flex gap-2 flex-wrap">
+                {CATEGORIES.map(cat => (
+                    <button
+                        key={cat.value}
+                        onClick={() => handleCategoryChange(cat.value)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                            activeCategory === cat.value
+                                ? "bg-primary text-primary-foreground border-primary shadow-[0_0_10px_rgba(0,163,255,0.3)]"
+                                : "border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground bg-background/50"
+                        }`}
+                    >
+                        {cat.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Sort + Stats Row */}
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+                {/* AI Matching Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-3 glass-card px-4 py-2.5 border border-primary/20 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 flex-1 min-w-0"
+                >
+                    <div className="w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center animate-pulse shrink-0">
+                        <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                     </div>
-                    <div>
-                        <h3 className="font-bold text-sm">{searchQuery ? "Search Results" : "AI-Powered Matching"}</h3>
-                        <p className="text-xs text-muted-foreground">
-                            {loading
-                                ? "Scanning the nexus..."
-                                : `${people.length} ${people.length === 1 ? "person" : "people"} found${searchQuery ? ` for "${searchQuery}"` : ""}`}
+                    <div className="min-w-0">
+                        <p className="text-xs font-bold truncate">{searchQuery ? `Results for "${searchQuery}"` : activeCategory ? `${activeCategory} Developers` : "AI-Powered Matching"}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                            {loading ? "Scanning the nexus..." : `${people.length} ${people.length === 1 ? "person" : "people"} found`}
                         </p>
                     </div>
+                </motion.div>
+
+                {/* Sort Selector */}
+                <div className="flex gap-1.5 shrink-0">
+                    {SORTS.map(s => (
+                        <button
+                            key={s.value}
+                            onClick={() => handleSortChange(s.value)}
+                            className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
+                                activeSort === s.value
+                                    ? "bg-primary/10 text-primary border-primary/40"
+                                    : "border-border/40 text-muted-foreground hover:border-border hover:text-foreground"
+                            }`}
+                        >
+                            {s.label}
+                        </button>
+                    ))}
                 </div>
-            </motion.div>
+            </div>
 
             {/* People Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -223,10 +270,7 @@ export const PeopleDiscovery = ({ searchQuery, filters }: PeopleDiscoveryProps) 
                         <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => {
-                                setPage(1);
-                                fetchPeople(1, "", { sort: "newest" });
-                            }}
+                            onClick={handleReset}
                             className="border-primary/20 hover:bg-primary/5 transition-all"
                         >
                             Reset Search
@@ -422,19 +466,16 @@ const PersonCard = ({ person, index }: any) => {
             </div>
 
             {/* Stats Row */}
-            <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
                 {person.rank && (
-                    <div className="flex items-center gap-1">
-                        <Trophy className="w-3 h-3 text-yellow-400" />
-                        <span className="font-semibold text-foreground">{person.rank}</span>
-                    </div>
+                    <RankBadge rank={person.rank} size="xs" animated={false} />
                 )}
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Users className="w-3 h-3 text-blue-400" />
                     <span>{person.connections || 0} connections</span>
                 </div>
                 {person.mutualConnections > 0 && (
-                    <span className="text-primary font-medium">{person.mutualConnections} mutual</span>
+                    <span className="text-primary font-medium text-xs">{person.mutualConnections} mutual</span>
                 )}
             </div>
 

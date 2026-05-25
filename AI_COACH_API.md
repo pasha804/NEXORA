@@ -1,37 +1,30 @@
-# Nexora AI Coach - API Documentation
+# Nexora AI Coach — API Reference
 
-## Overview
-The AI Coach system provides personalized skill analysis, career guidance, and learning recommendations through a comprehensive set of RESTful endpoints.
-
-**Base URL**: `http://localhost:8000`  
-**Authentication**: All endpoints require JWT Bearer token in Authorization header
+**Version**: 5.0 | May 2026  
+**Base URL**: `http://localhost:80`  
+**Auth**: All endpoints require `Authorization: Bearer <token>`
 
 ---
 
 ## Endpoints
 
-### 1. GET /ai/skill-analysis
-**Description**: Returns comprehensive skill analysis including radar chart data and skill breakdowns.
+### GET /ai/skill-analysis
+Returns skill radar chart data and per-skill breakdown.
 
-**Authentication**: Required
-
-**Response** (200 OK):
+**Response**:
 ```json
 {
   "radar_skills": [
-    {"skill": "Programming", "level": 85, "maxLevel": 100},
-    {"skill": "Design", "level": 62, "maxLevel": 100},
-    ...
+    {"skill": "React", "level": 85, "maxLevel": 100}
   ],
   "skill_breakdown": [
     {
-      "skill": "React Development",
+      "skill": "React",
       "level": 7,
       "aiScore": 82,
-      "suggestion": "Improve performance optimization...",
+      "suggestion": "Continue practicing React and complete challenges.",
       "color": "neon-blue"
-    },
-    ...
+    }
   ],
   "overall_score": 78,
   "user_level": 12,
@@ -41,128 +34,111 @@ The AI Coach system provides personalized skill analysis, career guidance, and l
 
 ---
 
-### 2. GET /ai/roadmap
-**Description**: Generates a personalized 4-week learning roadmap based on user's skill gaps.
+### GET /ai/roadmap
+Personalized learning roadmap based on skill gaps vs trending skills.
 
-**Authentication**: Required
-
-**Response** (200 OK):
+**Response**:
 ```json
 {
   "weeks": [
     {
       "week": 1,
-      "title": "Advanced React Patterns",
-      "status": "completed",
+      "title": "Master TypeScript",
+      "status": "current",
       "tasks": [
-        {"title": "Master React Hooks", "completed": true, "type": "learning"},
-        ...
+        {"title": "Learn TypeScript basics", "completed": false, "type": "learning"},
+        {"title": "Build TypeScript project", "completed": false, "type": "project"}
       ]
-    },
-    ...
+    }
   ],
-  "estimated_completion": "4 weeks",
-  "total_tasks": 14,
-  "completed_tasks": 3
+  "estimated_completion": "3 weeks",
+  "total_tasks": 6,
+  "completed_tasks": 0
 }
 ```
 
 ---
 
-### 3. GET /ai/career-predict
-**Description**: AI-predicted career directions with compatibility scores and salary data.
+### GET /ai/career-predict
+AI-predicted career paths with compatibility scores.
 
-**Authentication**: Required
-
-**Response** (200 OK):
+**Response**:
 ```json
 {
   "career_paths": [
     {
-      "title": "Frontend Specialist",
-      "compatibilityScore": 92,
-      "requiredSkills": ["React", "TypeScript", "CSS Architecture"],
-      "timeToMastery": "3-4 months",
+      "title": "Software Engineer",
+      "compatibilityScore": 85,
+      "requiredSkills": ["Problem Solving", "System Design"],
+      "timeToMastery": "6 months",
       "marketDemand": "High",
-      "avgSalary": "$95k - $140k",
-      "description": "Master modern frontend frameworks..."
-    },
-    ...
+      "avgSalary": "$90k - $150k",
+      "description": "Focus on scalable architecture and clean code."
+    }
   ],
-  "user_profile": "John Doe"
+  "user_profile": "username"
 }
 ```
 
 ---
 
-### 4. GET /ai/recommendations
-**Description**: Personalized recommendations for courses, collaborations, battles, and projects.
+### GET /ai/recommendations
+Personalized skill recommendations based on trending skills the user doesn't have.
 
-**Authentication**: Required
-
-**Response** (200 OK):
+**Response**:
 ```json
 {
   "recommendations": [
     {
-      "id": "1",
-      "type": "course",
-      "title": "Advanced TypeScript Patterns",
-      "description": "Master advanced type systems...",
-      "matchScore": 95,
-      "tags": ["TypeScript", "Advanced", "3 hours"]
-    },
-    ...
+      "id": "rec_TypeScript",
+      "type": "skill",
+      "title": "Master TypeScript",
+      "description": "42 users have this skill - trending now!",
+      "matchScore": 90,
+      "tags": ["TypeScript", "Trending"]
+    }
   ]
 }
 ```
 
-**Recommendation Types**:
-- `course` - Learning courses
-- `collaboration` - Networking opportunities
-- `battle` - PvP challenges
-- `project` - Hands-on projects
-
 ---
 
-### 5. GET /ai/daily-missions
-**Description**: Auto-generated daily tasks tailored to user improvement areas.
+### GET /ai/daily-missions
+Auto-generated daily tasks tailored to user's skills.
 
-**Authentication**: Required
-
-**Response** (200 OK):
+**Response**:
 ```json
 {
   "missions": [
     {
-      "id": "1",
-      "title": "Solve 2 React coding challenges",
-      "description": "Practice your problem-solving skills...",
-      "xpReward": 50,
+      "id": "m1",
+      "title": "Participate in 1 PvP Battle",
+      "description": "Test your speed and logic against others.",
+      "xpReward": 100,
       "completed": false
     },
-    ...
+    {
+      "id": "m2",
+      "title": "Practice React",
+      "description": "Master the fundamentals of React.",
+      "xpReward": 50,
+      "completed": false
+    }
   ],
-  "totalXP": 285,
+  "totalXP": 150,
   "completedCount": 0
 }
 ```
 
 ---
 
-### 6. GET /ai/performance-analytics
-**Description**: Returns XP growth data, battle statistics, and skill progression over time.
+### GET /ai/performance-analytics
+Comprehensive analytics: XP growth, battle stats, weekly progress.
 
-**Authentication**: Required
-
-**Response** (200 OK):
+**Response**:
 ```json
 {
-  "xp_growth": [
-    {"date": "2026-01-01", "xp": 2800},
-    {"date": "2026-01-08", "xp": 3100},
-    ...
-  ],
+  "xp_growth": [{"date": "Current", "xp": 3500}],
   "battle_stats": {
     "total_matches": 42,
     "wins": 28,
@@ -171,61 +147,69 @@ The AI Coach system provides personalized skill analysis, career guidance, and l
     "current_streak": 5
   },
   "skill_progression": [
-    {"skill": "React", "week1": 70, "week2": 75, "week3": 80, "week4": 85},
-    ...
+    {"skill": "React", "week1": 0, "week4": 3}
   ],
-  "weekly_improvement": 12
+  "weekly_stats": {
+    "lessons_completed": 0,
+    "lessons_target": 10,
+    "battles_won": 28,
+    "battles_target": 7,
+    "streak": 5,
+    "xp_earned": 3500
+  },
+  "coaching_stats": {
+    "total_hours": 17.5,
+    "skills_improved": 3,
+    "recommendations_used": 0,
+    "career_readiness": "55%"
+  },
+  "focus_tip": {
+    "tip": "Your performance peaks when you tackle new challenges.",
+    "recommendation": "Block Focus Time for your next PvP battle."
+  }
 }
 ```
 
 ---
 
-### 7. POST /ai/chat
-**Description**: Conversational AI coach endpoint for interactive Q&A.
+### POST /ai/chat
+Conversational AI coach. Returns contextual response based on user's real data.
 
-**Authentication**: Required
-
-**Request Body**:
+**Request**:
 ```json
 {
   "message": "How can I improve my React skills?",
-  "context": {}
+  "context": {"timestamp": "2026-05-01T10:00:00Z", "platform": "web"}
 }
 ```
 
-**Response** (200 OK):
+**Response**:
 ```json
 {
-  "response": "That's a great question! When optimizing React...",
-  "context": {"user_level": 12},
-  "suggested_actions": [
-    "Take a quiz",
-    "Start a micro-lesson",
-    "Practice challenge"
-  ]
+  "response": "Based on your level 12 status and focus in React, I recommend focusing on advanced architecture patterns today.",
+  "context": {"user_level": 12, "primary_skill": "React"},
+  "suggested_actions": ["Take a quiz", "Start a micro-lesson", "Practice challenge"]
 }
 ```
 
 ---
 
-### 8. GET /ai/industry-trends
-**Description**: Provides trending skills, salary benchmarks, and job demand forecasts.
+### GET /ai/industry-trends
+Trending skills, salary benchmarks, job demand forecasts.
 
-**Authentication**: Required
-
-**Response** (200 OK):
+**Response**:
 ```json
 {
   "trending_skills": [
     {"skill": "AI/ML Engineering", "growth": "+45%", "demand": "Very High"},
-    {"skill": "React & Next.js", "growth": "+32%", "demand": "High"},
-    ...
+    {"skill": "React & Next.js", "growth": "+32%", "demand": "High"}
   ],
   "salary_trends": {
     "Frontend": "$95k - $140k",
     "Backend": "$100k - $150k",
     "Full Stack": "$110k - $165k",
-    ...
+    "DevOps": "$105k - $155k",
+    "AI/ML": "$130k - $200k"
   },
   "job_demand_forecast": {
     "next_6_months": "High demand for React/TypeScript developers",
@@ -237,122 +221,131 @@ The AI Coach system provides personalized skill analysis, career guidance, and l
 
 ---
 
-## Error Responses
+### GET /ai/alerts
+Smart alerts for the AI Coach panel.
 
-All endpoints may return the following error codes:
-
-**401 Unauthorized**:
+**Response**:
 ```json
 {
-  "detail": "Not authenticated"
+  "alerts": [
+    {
+      "id": "focus_tip",
+      "type": "tip",
+      "title": "Focus window detected",
+      "message": "Your best performance comes from uninterrupted 45-minute practice blocks.",
+      "timestamp": "2026-05-01T10:00:00Z",
+      "read": false,
+      "actionText": "Start now"
+    }
+  ]
 }
 ```
 
-**500 Internal Server Error**:
+---
+
+### POST /ai/alerts/{alert_id}/read
+Mark an alert as read.
+
+**Response**: `{"ok": true, "alert_id": "focus_tip", "user_id": 1}`
+
+---
+
+### GET /ai/goals
+Fetch user's active and completed goals.
+
+**Response**: Array of `UserGoalResponse` objects.
+
+---
+
+### POST /ai/goals
+Create a new personal goal.
+
+**Request**:
 ```json
 {
-  "detail": "Internal server error message"
+  "title": "Win 10 PvP battles",
+  "category": "pvp",
+  "target": 10.0,
+  "reward": "Gold rank badge"
 }
 ```
+
+---
+
+### GET /ai/achievements
+All achievements (earned + locked) for the current user.
+
+---
+
+### GET /ai/goals-tracker
+Unified endpoint for the GoalsTracker component — returns goals, achievements, and daily missions in one call.
 
 ---
 
 ## Authentication
 
-All AI Coach endpoints require authentication via JWT token:
-
 ```http
 GET /ai/skill-analysis HTTP/1.1
-Host: localhost:8000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-**Obtaining a Token**:
-1. Register: `POST /auth/register`
-2. Login: `POST /auth/login` (returns `access_token`)
-3. Use token in `Authorization: Bearer <token>` header
+Get a token:
+1. `POST /auth/login` with `{"email": "...", "password": "..."}`
+2. Use `access_token` from response
 
 ---
 
-## Rate Limiting
+## Error Responses
 
-Currently, there are no rate limits. In production, consider implementing:
-- 100 requests per minute per user
-- Burst allowance of 20 requests
+| Code | Meaning |
+|------|---------|
+| 401 | Token missing or expired |
+| 404 | Resource not found |
+| 500 | Server error |
 
 ---
 
-## Swagger Documentation
+## Interactive Docs
 
-Interactive API documentation is available at:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+- Swagger UI: `http://localhost:80/docs`
+- ReDoc: `http://localhost:80/redoc`
 
 ---
 
 ## SDK Examples
 
-### JavaScript/TypeScript
+### TypeScript
 ```typescript
-const API_URL = "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
 const token = localStorage.getItem("access_token");
 
-// Fetch skill analysis
-const response = await fetch(`${API_URL}/ai/skill-analysis`, {
-  headers: {
-    "Authorization": `Bearer ${token}`
-  }
-});
-const data = await response.json();
+const analysis = await fetch(`${API_URL}/ai/skill-analysis`, {
+  headers: { "Authorization": `Bearer ${token}` }
+}).then(r => r.json());
 ```
 
 ### Python
 ```python
 import requests
 
-API_URL = "http://localhost:8000"
-token = "your_jwt_token"
-
-response = requests.get(
-    f"{API_URL}/ai/skill-analysis",
+resp = requests.get(
+    "http://localhost:80/ai/skill-analysis",
     headers={"Authorization": f"Bearer {token}"}
 )
-data = response.json()
+data = resp.json()
 ```
 
 ### cURL
 ```bash
-curl -X GET "http://localhost:8000/ai/skill-analysis" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+curl -X GET "http://localhost:80/ai/skill-analysis" \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ---
 
-## Future ML Integration
+## Notes
 
-Currently, all endpoints return mock data. To integrate real ML models:
-
-1. **Skill Analysis**: Replace mock data with TensorFlow/PyTorch model predictions
-2. **Career Prediction**: Integrate career prediction algorithm based on skill matrix
-3. **Recommendations**: Implement collaborative filtering or content-based recommendations
-4. **Chat**: Integrate OpenAI GPT-4 or similar LLM
-
-Example ML integration point in `backend/routers/ai.py`:
-```python
-# Replace this:
-skill_analysis = {"radar_skills": [...]}
-
-# With this:
-from ml_models import SkillAnalyzer
-analyzer = SkillAnalyzer()
-skill_analysis = analyzer.analyze_user(current_user.id)
-```
-
----
-
-## Support
-
-For API issues or questions:
-- GitHub Issues: [project-repo]/issues
-- Email: support@nexora.dev
-- Documentation: /docs
+- All AI responses are currently rule-based (no LLM integration)
+- To integrate a real LLM, replace the response logic in `backend/routers/ai.py`
+- The `/ai/chat` endpoint uses random selection from contextual templates
+- Future: streaming responses via Server-Sent Events

@@ -16,6 +16,7 @@ export interface User {
   xp: number;
   level: number;
   rank: string;
+  ranking_score?: number;   // raw RP value from users.ranking_score
   followers_count: number;
   following_count: number;
   skills: {
@@ -43,7 +44,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, displayName?: string, avatarUrl?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
-  updateUser: (updates: Partial<User>) => Promise<void>;
+  updateUser: (updates: Partial<User>, localOnly?: boolean) => Promise<void>;
   saveOnboardingSkills: (skills: { name: string, level: string, xp: number }[]) => Promise<void>;
   saveOnboardingInterests: (interests: string[]) => Promise<void>;
   completeOnboarding: (profileData: { bio: string, learning_goals: string, collaboration_preference: string, is_private: boolean }) => Promise<void>;
@@ -152,6 +153,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (data.access_token) {
         localStorage.setItem("access_token", data.access_token);
+        // Store user_id so messaging store and other components can read it directly
+        localStorage.setItem("user_id", String(data.id ?? data.user_id ?? ""));
         console.log("[LOGIN] Token stored in localStorage");
 
         // Immediately populate user state from login response so UI isn't blocked
@@ -179,6 +182,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         // Fetch full enriched user data (stats, skills, etc.) in the background
         fetchMe(data.access_token);
+
+        // Mark user as online
+        fetch(`${API_URL}/presence/online`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${data.access_token}` }
+        }).catch(() => {});
       }
       return { error: null };
     } catch (error) {
@@ -188,18 +197,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
+    const token = localStorage.getItem("access_token");
+    // Mark offline before clearing token
+    if (token) {
+      fetch(`${API_URL}/presence/offline`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => {});
+    }
     localStorage.removeItem("access_token");
+    localStorage.removeItem("user_id");
     setUser(null);
     setSession(null);
   };
 
-  const updateUser = async (updates: Partial<User>) => {
+  const updateUser = async (updates: Partial<User>, localOnly = false) => {
     if (!user || !session) return;
 
     const token = localStorage.getItem("access_token");
+
+    // localOnly = true: just sync auth context state, don't call the API again
+    // Used when the caller already saved via their own fetch
+    if (localOnly) {
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+      setSession({ ...session, user: updatedUser });
+      return;
+    }
     
     try {
-      // ✅ FIX: Use PATCH /users/me — the correct profile update endpoint
       const res = await fetch(`${API_URL}/users/me`, {
         method: "PATCH",
         headers: {

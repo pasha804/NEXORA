@@ -328,8 +328,12 @@ export const MainFeed = () => {
                 </AnimatePresence>
             </div>
 
-            <div className="py-8 text-center">
-                <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="py-8 text-center text-muted-foreground text-sm">
+                {isLoading ? (
+                    <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                ) : posts.length > 0 ? (
+                    <p className="text-xs opacity-50">You're all caught up ✓</p>
+                ) : null}
             </div>
         </div>
     );

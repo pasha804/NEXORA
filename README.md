@@ -1,43 +1,17 @@
-# NEXORA: Premium Skill-Based Social Platform
+# NEXORA — Skill-Based Social Platform
 
-![NEXORA](https://img.shields.io/badge/Version-2.0.0-blue) ![React](https://img.shields.io/badge/React-19+-61DAFB) ![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688) ![License](https://img.shields.io/badge/License-Proprietary-green)
+![Version](https://img.shields.io/badge/Version-5.0.0-blue)
+![React](https://img.shields.io/badge/React-19+-61DAFB)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688)
+![License](https://img.shields.io/badge/License-Proprietary-green)
 
-NEXORA is a state-of-the-art, skill-based social network designed for the future of professional networking and talent development. Combining the professional utility of LinkedIn with the real-time engagement of Discord and the gamified mechanics of modern competitive gaming.
+> **LinkedIn + Discord + TikTok + GitHub + AI** — combined into one ecosystem for developers.
 
 ---
 
 ## Vision
 
-To build a high-performance ecosystem where skills are verified through action, growth is visualized through gamification, and connections are forged through shared technical expertise.
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    User Interface                        │
-│              (React 19 + Vite + Tailwind)                 │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   Nginx Gateway                        │
-│                   (Port :80)                         │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   FastAPI Backend                    │
-│              (Python 3.11+ + SQLAlchemy)                  │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│              PostgreSQL + Redis                         │
-│              (Database + Cache)                         │
-└─────────────────────────────────────────────────────────────┘
-```
+A high-performance platform where skills are verified through action, growth is visualized through gamification, and connections are forged through shared technical expertise.
 
 ---
 
@@ -45,107 +19,155 @@ To build a high-performance ecosystem where skills are verified through action, 
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | React 19, TypeScript, Vite, TailwindCSS, Framer Motion, Lucide Icons, TanStack Query |
+| **Frontend** | React 19, TypeScript, Vite, TailwindCSS, Framer Motion, TanStack Query, Zustand |
 | **Backend** | FastAPI, Python 3.11+, SQLAlchemy, Pydantic, Uvicorn, Socket.IO |
 | **Database** | PostgreSQL 15, Redis 7 |
-| **Infrastructure** | Docker, Nginx |
+| **Infrastructure** | Docker, Nginx (API Gateway + CORS), Docker Compose |
+| **Real-time** | Socket.IO (battle + social namespaces), Redis Pub/Sub |
+
+---
+
+## Architecture
+
+```
+Browser (React SPA :5173)
+        │
+        ▼
+Nginx API Gateway (:80)          ← CORS handled here only
+        │
+        ├── /auth/*  ──────────► auth_service:8000
+        └── /*       ──────────► core_api:8000  (FastAPI + Socket.IO)
+                                        │
+                                 PostgreSQL + Redis
+```
+
+Full architecture: see `architecture.md`
 
 ---
 
 ## Features
 
-### Core Features
+### Social
+- **Followers/Following** — clickable counts open animated modal with enriched user cards (skills, rank, bio, follow/unfollow, remove follower)
+- **Profile Privacy** — public/private profiles with owner bypass
+- **Connection System** — send/accept/reject requests, messaging unlocked after connection
+- **Real-time Follow** — instant UI updates + notifications
 
-- **AI-Powered Discovery** - Smart matching based on complementary skill sets and growth goals
-- **PvP Battle Arena** - Real-time technical challenges to earn XP and increase your Global Rank
-- **AI Coach** - Personalized learning roadmaps and career predictions
-- **Professional Portfolio** - LinkedIn-style profile with experience, projects, and skills
-- **Real-time Messaging** - Socket.IO powered instant messaging
-- **Communities & Reels** - Social features for content sharing
+### Profile (LinkedIn-quality)
+- Banner + avatar upload (base64)
+- XP progress bar, PvP rank badge, reputation score
+- Experience, Education, Projects, Skills sections — all editable
+- Skill endorsements with toggle (endorse/remove)
+- Verified skill badges
+- Resume upload/download
+
+### Discover
+- Category filter pills (Frontend, Backend, AI/ML, DevOps, Design, Mobile, Cybersecurity, Blockchain, Database, Game Dev)
+- Sort: Newest, XP High, Most Followed, Most Active
+- Search by username, display_name, bio, skill_name
+- Python-level deduplication (fixes PostgreSQL DISTINCT ON bug)
+- Infinite scroll with Load More
+
+### Messaging (WhatsApp/Discord-style)
+- Skill-based messaging permission (shared skill OR accepted connection)
+- Real-time via Socket.IO
+- Typing indicators, seen status
+- Conversation list with last message preview
+
+### Communities (Discord-style)
+- Create/join/leave communities
+- Text channels, events, learning hub, projects
+- AI assistant in community sidebar
+- Real-time trending skills + top contributors
+
+### Reels (TikTok/Instagram-style)
+- Vertical snap-scroll feed
+- Auto-play on viewport entry
+- Like (optimistic), comment, share, save
+- Double-tap to like
+- Upload modal with caption + hashtags
+- Empty state when no reels
+
+### PvP Battle Arena
+- ELO/MMR matchmaking (8 rank tiers: Novice → Grandmaster)
+- 4 battle types: code_challenge, knowledge_quiz, problem_solving, timed_challenge
+- AI Judge evaluates submissions
+- Anti-cheat system (rate limiting, same-opponent detection, streak detection)
+- Tournament system
+
+### AI Coach
+- Skill radar chart, learning roadmap, career predictions
+- Daily missions, goals tracker, performance analytics
+- Industry trends, AI recommendations
+- Real-time chat interface
+
+### Battle Pass
+- Connected to real API (current_season, tiers, progress, unlock_tier)
+- Graceful fallback when no season is active
 
 ### Gamification
-
-- XP Points & Level System
-- Skill Progression Tracking
-- Achievements & Badges
-- Battle Pass System
-- Global Leaderboards
-
----
-
-## Prerequisites
-
-- Node.js 20+
-- Python 3.11+
-- PostgreSQL 15+
-- Redis 7+ (optional for caching)
-- Docker & Docker Compose (recommended)
+- XP system: Level = (xp // 1000) + 1
+- Daily streak multiplier: up to 2× at 70+ days
+- Achievements with XP rewards
+- Skill endorsements + verification badges
+- Reputation score (0–100, composite)
 
 ---
 
-## Getting Started
+## Quick Start
 
-### 1. Clone the Repository
+### Docker (recommended)
 
 ```bash
-git clone https://github.com/your-org/NEXORA.git
-cd NEXORA
+# 1. Clone
+git clone <repo-url> && cd NEXORA
+
+# 2. Start all services
+docker compose up -d --build
+
+# 3. Seed 31 test users
+docker compose exec core_api python seed_test_users.py
+
+# 4. Open
+# Frontend: http://localhost:5173
+# API:      http://localhost:80
+# API Docs: http://localhost:80/docs
 ```
 
-### 2. Install Dependencies
+### Local Dev
 
 ```bash
 # Frontend
-npm install
+npm install && npm run dev
 
-# Backend (recommended: use virtual environment)
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or
-venv\Scripts\activate  # Windows
+# Backend
+cd backend
 pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 3. Configure Environment
-
-Create `.env` file in the root directory:
+### Environment Variables (`.env`)
 
 ```env
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/nexora
-
-# Redis (optional)
-REDIS_URL=redis://localhost:6379
-
-# JWT Secret
-JWT_SECRET=your-secret-key-change-in-production
-
-# API URL
+DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nexora_master
+JWT_SECRET=supersecretkey
+REDIS_URL=redis://redis:6379/0
 VITE_API_URL=http://localhost:80
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
 ```
 
-### 4. Start Backend
+---
 
-```bash
-# Direct
-cd backend
-uvicorn main:app --host 0.0.0.0 --port 80 --reload
+## Test Credentials
 
-# Docker
-docker-compose up -d backend
-```
+All 31 test users use password: `password123`
 
-### 5. Start Frontend
+See `test.txt` for the full list.
 
-```bash
-npm run dev
-```
-
-### 6. Access the Application
-
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:80
-- **API Docs**: http://localhost:80/docs
+Quick logins:
+- `cloud_engineer@nexora.test` — Gold rank, DevOps skills
+- `ml_engineer@nexora.test` — Platinum rank, AI/ML skills
+- `backend_wizard@nexora.test` — Platinum rank, Go/Microservices
 
 ---
 
@@ -153,137 +175,82 @@ npm run dev
 
 ```
 NEXORA/
-├── src/                      # React Frontend
-│   ├── components/          # Reusable UI components
-│   │   ├── discover/       # Discover page components
-│   │   ├── layout/        # Layout components
-│   │   ├── profile/       # Profile components
-│   │   ├── pvp/          # PvP Battle components
-│   │   └── ui/           # Base UI components
-│   ├── context/           # React Context providers
-│   ├── hooks/            # Custom React hooks
-│   ├── integrations/      # External integrations
-│   ├── pages/            # Page components
-│   ├── styles/           # Global styles
-│   └── types/            # TypeScript types
+├── src/                    # React frontend
+│   ├── pages/             # Route pages (lazy loaded)
+│   ├── components/        # Feature components
+│   │   ├── profile/      # Profile + FollowersModal
+│   │   ├── discover/     # PeopleDiscovery + filters
+│   │   ├── messaging/    # Chat panels
+│   │   ├── communities/  # Discord-style layout
+│   │   ├── reels/        # TikTok-style feed
+│   │   ├── pvp/          # Battle arena
+│   │   ├── ai-coach/     # AI components
+│   │   └── layout/       # AppLayout + CinematicIntro
+│   ├── hooks/             # useAuth, useMessagingStore, useSocialSocket
+│   └── context/           # GamificationContext
 │
-├── backend/               # FastAPI Backend
-│   ├── common/           # Shared utilities
-│   ├── routers/          # API route handlers
-│   ├── schemas/          # Pydantic schemas
-│   ├── services/         # Business logic services
-│   └── main.py          # Application entry point
+├── backend/
+│   ├── main.py            # FastAPI app + Socket.IO + migrations
+│   ├── routers/           # auth, users, social, pvp, ai, search, ...
+│   ├── common/            # models, database, auth, social_utils
+│   └── services/          # 22 microservices
 │
-├── public/               # Static assets
-├── package.json          # Frontend dependencies
-└── vite.config.ts        # Vite configuration
+├── nginx/nginx.conf        # API gateway + CORS
+├── docker-compose.yml      # Full stack orchestration
+├── architecture.md         # System architecture
+├── folder-structure.md     # Full directory tree
+├── rank.txt                # Rank & progression system docs
+├── detail.txt              # Full platform documentation
+└── test.txt                # Test credentials
 ```
 
 ---
 
-## API Endpoints
+## Key API Endpoints
 
-### Authentication
+| Category | Endpoint | Description |
+|----------|---------|-------------|
+| Auth | `POST /auth/login` | Login (JSON body) |
+| Auth | `GET /auth/me` | Current user |
+| Users | `GET /users/{username}` | Profile by username |
+| Users | `PATCH /users/me` | Update profile |
+| Social | `POST /social/follow/{id}` | Follow user |
+| Social | `GET /social/followers/{id}` | Followers (enriched) |
+| Social | `DELETE /social/followers/{id}` | Remove follower |
+| Search | `GET /search/users` | User search with filters |
+| PvP | `POST /pvp/queue/join` | Join matchmaking |
+| AI | `GET /ai/skill-analysis` | Skill radar data |
+| AI | `POST /ai/chat` | Chat with AI coach |
+| Skills | `POST /skills/endorse` | Endorse a skill |
+| Messages | `GET /messages/rooms` | Conversation list |
+| Notifications | `GET /notifications/` | Notifications |
 
-| Method | Endpoint | Description |
-|--------|---------|-----------|
-| POST | `/auth/register` | Register new user |
-| POST | `/auth/login` | Login user |
-| POST | `/auth/logout` | Logout user |
-| GET | `/auth/me` | Get current user |
-
-### Users & Profile
-
-| Method | Endpoint | Description |
-|--------|---------|-----------|
-| GET | `/users/me` | Get current user profile |
-| GET | `/users/{username}` | Get user profile |
-| PUT | `/users/me` | Update profile |
-| GET | `/users/{id}/skills` | Get user skills |
-
-### Discovery
-
-| Method | Endpoint | Description |
-|--------|---------|-----------|
-| GET | `/search/users` | Search users |
-| GET | `/search/skills` | Search skills |
-| GET | `/search/` | Unified search |
-
-### PvP
-
-| Method | Endpoint | Description |
-|--------|---------|-----------|
-| POST | `/pvp/queue/join` | Join matchmaking |
-| POST | `/pvp/queue/leave` | Leave matchmaking |
-| GET | `/pvp/battles` | Get active battles |
-
-### AI Coach
-
-| Method | Endpoint | Description |
-|--------|---------|-----------|
-| GET | `/ai/skill-analysis` | Get skill analysis |
-| GET | `/ai/roadmap` | Get learning roadmap |
-| GET | `/ai/recommendations` | Get AI recommendations |
-
-### Messaging
-
-| Method | Endpoint | Description |
-|--------|---------|-----------|
-| GET | `/messages` | Get conversations |
-| GET | `/messages/{userId}` | Get messages |
-| POST | `/messages` | Send message |
+Full API reference: `http://localhost:80/docs`
 
 ---
 
-## Development
+## Known Limitations
 
-### Running Tests
-
-```bash
-# Frontend tests
-npm run test
-
-# Backend tests
-cd backend && pytest
-```
-
-### Building for Production
-
-```bash
-# Frontend build
-npm run build
-
-# Backend build (Docker)
-docker-compose build
-```
-
-### Running in Production
-
-```bash
-# Using Docker Compose
-docker-compose up -d
-```
+- OAuth (Google/GitHub) buttons are UI-only — not wired to backend
+- Reels video hosting requires CDN/S3 setup (URL-only storage currently)
+- Voice/video channels in Communities are UI placeholders (WebRTC not implemented)
+- AI chat uses rule-based responses — no LLM integration yet
+- Battle Pass requires a `BattlePassSeason` row in DB for real season data
 
 ---
 
-## Contributing
+## Documentation Files
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## License
-
-Copyright © 2026 NEXORA Platform. All rights reserved.
+| File | Contents |
+|------|---------|
+| `README.md` | This file — overview and quick start |
+| `detail.txt` | Full platform documentation v5.0 |
+| `rank.txt` | Complete rank & progression system |
+| `architecture.md` | System architecture with diagrams |
+| `folder-structure.md` | Annotated directory tree |
+| `test.txt` | All 31 test user credentials |
+| `AI_COACH_API.md` | AI Coach API reference |
 
 ---
 
-## Support
-
-- **Documentation**: See the `/docs` endpoint for API docs
-- **Issues**: Report issues on GitHub
-- **Discord**: Join our community for real-time support
+© 2026 NEXORA Platform. All rights reserved.

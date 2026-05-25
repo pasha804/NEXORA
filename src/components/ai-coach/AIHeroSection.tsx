@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Bot, TrendingUp, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { xpProgressInLevel, getRankInfo } from "@/lib/rankSystem";
+import { RankBadge } from "@/components/ui/RankBadge";
 
 export const AIHeroSection = () => {
     const { user } = useAuth();
@@ -36,12 +38,13 @@ export const AIHeroSection = () => {
 
     const userLevel = data?.user_level || user?.level || 1;
     const weeklyImprovement = data?.weekly_improvement || 12;
-    const xp_points = data?.xp_points || user?.xp_points || 0;
+    const xp_points = data?.xp_points || user?.xp || 0;
     
-    // Simple logic for progress to next level
-    const nextLevelXP = (userLevel + 1) * 1000;
-    const currentLevelXP = userLevel * 1000;
-    const nextLevelProgress = Math.min(100, Math.max(0, ((xp_points - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100)) || 0;
+    // Use progressive XP formula: 1000 × (1 + level × 0.15)
+    const xpProg = xpProgressInLevel(xp_points);
+    // Use rank string from auth context (not ranking_score which isn't in User interface)
+    const rankStr = user?.rank || "Novice";
+    const rankInfo = getRankInfoFromString(rankStr);
 
     return (
         <div className="glass-card p-8 border-neon-blue/30 bg-gradient-to-br from-neon-blue/10 via-transparent to-purple-500/10 relative overflow-hidden">
@@ -176,13 +179,16 @@ export const AIHeroSection = () => {
                         className="mt-4"
                     >
                         <div className="flex justify-between text-xs text-muted-foreground mb-2">
-                            <span>Progress to Level {userLevel + 1}</span>
-                            <span>{nextLevelProgress.toFixed(0)}%</span>
+                            <span className="flex items-center gap-2">
+                                Progress to Level {userLevel + 1}
+                                <RankBadge rp={rp} size="xs" animated={false} />
+                            </span>
+                            <span>{xpProg.percent.toFixed(0)}%</span>
                         </div>
                         <div className="h-3 bg-black/50 rounded-full overflow-hidden border border-white/10">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${nextLevelProgress}%` }}
+                                animate={{ width: `${xpProg.percent}%` }}
                                 transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
                                 className="h-full bg-gradient-to-r from-neon-blue via-purple-500 to-neon-blue relative"
                             >
@@ -193,6 +199,9 @@ export const AIHeroSection = () => {
                                 />
                             </motion.div>
                         </div>
+                        <p className="text-[10px] text-muted-foreground mt-1 text-right">
+                            {xpProg.current.toLocaleString()} / {xpProg.needed.toLocaleString()} XP
+                        </p>
                     </motion.div>
                 </div>
             </div>

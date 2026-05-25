@@ -115,6 +115,7 @@ export const ProfileEditModal = ({ open, onClose, initialTab = "bio", refreshPro
         if (!token) return;
         setSaving(true);
         try {
+            // 1. Save profile fields via PATCH /users/me
             const payload: Record<string, any> = {
                 bio,
                 display_name: displayName,
@@ -137,14 +138,28 @@ export const ProfileEditModal = ({ open, onClose, initialTab = "bio", refreshPro
                 body: JSON.stringify(payload)
             });
 
-            if (resp.ok) {
-                toast.success("Profile saved!", { icon: "✅" });
-                refreshProfile?.();
-                onClose();
-            } else {
+            if (!resp.ok) {
                 const data = await resp.json();
                 toast.error(data.detail || "Failed to save profile");
+                return;
             }
+
+            // 2. Save skills via /auth/onboarding/skills if on skills tab or skills changed
+            if (skills.length > 0) {
+                const skillPayload = skills.map(name => ({ name, level: "Intermediate", xp: 0 }));
+                await fetch(`${API_URL}/auth/onboarding/skills`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ skills: skillPayload })
+                });
+            }
+
+            toast.success("Profile saved!", { icon: "✅" });
+            refreshProfile?.();
+            onClose();
         } catch {
             toast.error("Network error. Please try again.");
         } finally {

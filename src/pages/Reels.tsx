@@ -172,7 +172,27 @@ const Reels = () => {
             </div>
 
             {/* MIDDLE COLUMN: Video Feed */}
-            <ReelFeed reels={filteredReels} />
+            {filteredReels.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-zinc-950/50">
+                    <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+                        <MonitorPlay className="w-10 h-10 text-primary/60" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">No Reels Yet</h2>
+                    <p className="text-muted-foreground mb-6 max-w-xs">
+                        {activeFeed === 'following'
+                            ? "Follow creators to see their reels here."
+                            : activeFeed === 'clips'
+                            ? "You haven't uploaded any clips yet."
+                            : "Be the first to share a skill reel with the community."}
+                    </p>
+                    <Button onClick={() => setIsUploadOpen(true)} variant="hero" className="gap-2">
+                        <PlusSquare className="w-4 h-4" />
+                        Upload First Clip
+                    </Button>
+                </div>
+            ) : (
+                <ReelFeed reels={filteredReels} />
+            )}
 
             {/* RIGHT COLUMN: Activity */}
             <div className="hidden xl:flex flex-col w-80 border-l border-white/10 bg-zinc-950 p-6 z-20">

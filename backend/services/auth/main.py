@@ -478,6 +478,17 @@ async def login(request: Request, db: Session = Depends(get_db)):
             display_name = user.profile.display_name or display_name
         elif user.avatar_url:
             avatar_url = user.avatar_url
+
+        # Get real rank from stats
+        from common.models import UserSocialStats
+        stats = db.query(UserSocialStats).filter(UserSocialStats.user_id == user.id).first()
+        real_rank = stats.rank_level if stats and stats.rank_level else "Novice"
+        followers_count = stats.followers_count if stats else 0
+        following_count = stats.following_count if stats else 0
+        # Get ranking_score via fresh query
+        fresh_user = db.query(User).filter(User.id == user.id).first()
+        real_ranking_score = fresh_user.ranking_score if fresh_user and fresh_user.ranking_score else 1000
+
         return {
             "access_token": access_token,
             "token_type": "bearer",
@@ -489,9 +500,10 @@ async def login(request: Request, db: Session = Depends(get_db)):
             "avatar_url": avatar_url,
             "xp": user.xp_points or 0,
             "level": user.level or 1,
-            "rank": "Beginner",
-            "followers_count": 0,
-            "following_count": 0,
+            "rank": real_rank,
+            "ranking_score": real_ranking_score,
+            "followers_count": followers_count,
+            "following_count": following_count,
             "skills": [],
             "interests": [],
             "onboarding_completed": user.onboarding_completed or False,
@@ -725,6 +737,7 @@ def read_users_me(db: Session = Depends(get_db), token: str = Depends(OAuth2Pass
             "xp": user.xp_points,
             "level": user.level,
             "rank": rank,
+            "ranking_score": user.ranking_score or 1000,
             "followers_count": followers_count,
             "following_count": following_count,
             "skills": [

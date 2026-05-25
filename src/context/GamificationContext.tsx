@@ -55,7 +55,7 @@ export const GamificationProvider = ({ children }: { children: React.ReactNode }
                 duration: 5000,
             });
             
-            // Sync level up to backend
+            // Sync level up to backend (localOnly=false so it persists)
             updateUser({ xp: newXp, level: newLevel });
         } else {
             toast(`+${amount} XP`, {
@@ -65,8 +65,8 @@ export const GamificationProvider = ({ children }: { children: React.ReactNode }
                 duration: 2000
             });
             
-            // Sync XP to backend
-            updateUser({ xp: newXp });
+            // Only update local state — don't spam PATCH on every XP gain
+            updateUser({ xp: newXp }, true);
         }
     };
 

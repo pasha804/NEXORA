@@ -200,7 +200,7 @@ async def get_skill_activity(user_id: int, db: Session = Depends(get_db)):
             "id": a.id,
             "action_type": a.action_type,
             "skill_name": a.skill_name,
-            "metadata": a.metadata,
+            "metadata": a.activity_metadata,
             "created_at": a.created_at.isoformat() if a.created_at else None
         }
         for a in activities
@@ -294,3 +294,76 @@ async def delete_skill_proof(
     db.commit()
     
     return {"status": "deleted", "proof_id": proof_id}
+
+
+# ==========================================
+# SKILL ENDORSEMENT SYSTEM
+# ==========================================
+
+class EndorseRequest(BaseModel):
+    target_user_id: int
+    skill_name: str
+    action: str = "add"  # "add" or "remove"
+
+@router.post("/endorse")
+async def endorse_skill(
+    data: EndorseRequest,
+    current_user: models.User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Endorse or remove endorsement for a user's skill"""
+    if data.target_user_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot endorse your own skills")
+
+    target_skill = db.query(models.UserSkill).filter(
+        models.UserSkill.user_id == data.target_user_id,
+        models.UserSkill.skill_name.ilike(data.skill_name)
+    ).first()
+
+    if not target_skill:
+        raise HTTPException(status_code=404, detail="Skill not found for this user")
+
+    existing = db.query(models.SkillEndorsement).filter(
+        models.SkillEndorsement.endorser_user_id == current_user.id,
+        models.SkillEndorsement.target_user_id == data.target_user_id,
+        models.SkillEndorsement.skill_name.ilike(data.skill_name)
+    ).first()
+
+    if data.action == "add":
+        if existing:
+            raise HTTPException(status_code=400, detail="Already endorsed this skill")
+        endorsement = models.SkillEndorsement(
+            endorser_user_id=current_user.id,
+            target_user_id=data.target_user_id,
+            skill_name=data.skill_name
+        )
+        db.add(endorsement)
+        target_skill.endorsement_count = (target_skill.endorsement_count or 0) + 1
+        db.commit()
+        return {"status": "endorsed", "skill_name": data.skill_name, "endorsement_count": target_skill.endorsement_count}
+    else:
+        if not existing:
+            raise HTTPException(status_code=400, detail="No endorsement to remove")
+        db.delete(existing)
+        target_skill.endorsement_count = max(0, (target_skill.endorsement_count or 1) - 1)
+        db.commit()
+        return {"status": "removed", "skill_name": data.skill_name, "endorsement_count": target_skill.endorsement_count}
+
+
+@router.get("/endorsements/{user_id}")
+async def get_user_endorsements(user_id: int, db: Session = Depends(get_db)):
+    """Get all endorsements received by a user"""
+    endorsements = db.query(models.SkillEndorsement).filter(
+        models.SkillEndorsement.target_user_id == user_id
+    ).order_by(models.SkillEndorsement.created_at.desc()).all()
+
+    return [
+        {
+            "endorsement_id": e.id,
+            "endorser_user_id": e.endorser_user_id,
+            "target_user_id": e.target_user_id,
+            "skill_name": e.skill_name,
+            "timestamp": e.created_at.isoformat() if e.created_at else None
+        }
+        for e in endorsements
+    ]

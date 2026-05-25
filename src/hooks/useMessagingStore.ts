@@ -99,7 +99,7 @@ export const useMessagingStore = create<MessagingState>((set) => ({
         const newMsg: any = {
             id: `msg-${Date.now()}`,
             conversationId,
-            senderId: 'current-user',
+            senderId: localStorage.getItem("user_id") || 'current-user',
             content,
             type,
             createdAt: new Date(),

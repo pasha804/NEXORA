@@ -29,7 +29,11 @@ export const AppLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, loading, signOut } = useAuth();
-    const [showIntro, setShowIntro] = useState(true);
+    const [showIntro, setShowIntro] = useState(() => {
+        // Only show intro once per browser session
+        const seen = sessionStorage.getItem("nexora_intro_seen");
+        return !seen;
+    });
 
     // Must be before any conditional returns — hooks must always run in the same order
     useEffect(() => {
@@ -73,6 +77,7 @@ export const AppLayout = () => {
     };
 
     const handleIntroComplete = () => {
+        sessionStorage.setItem("nexora_intro_seen", "1");
         setShowIntro(false);
     };
 

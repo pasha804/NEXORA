@@ -84,7 +84,7 @@ async def get_dashboard_data(
     # Get recent activity
     recent_activity = db.query(models.UserActivity).filter(
         models.UserActivity.user_id == current_user.id
-    ).order_by(models.UserActivity.created_at.desc()).limit(10).all()
+    ).order_by(models.UserActivity.timestamp.desc()).limit(10).all()
     
     activity_feed = []
     for activity in recent_activity:

@@ -1,67 +1,168 @@
 ================================================================================
-                     TEST DATA & CREDENTIALS
+                     NEXORA TEST DATA & CREDENTIALS
 ================================================================================
 
-ORIGINAL TEST USERS (11 users):
+VERSION: 5.0 | May 2026
 All users have password: password123
 
-| # | Username | Email | Skills | XP | Rank |
-|---|----------|-------|--------|-----|------|
-| 1 | basha_dev | basha_dev@nexora.test | JavaScript, React, NodeJS, Python, CSS | 1500 | Bronze I |
-| 2 | react_dev | react_dev@nexora.test | React, JavaScript | 4500 | Gold III |
-| 3 | python_dev | python_dev@nexora.test | Python, FastAPI, PostgreSQL, Docker, AWS | 3200 | Silver I |
-| 4 | fullstack_dev | fullstack_dev@nexora.test | React, NodeJS, MongoDB, Express, JavaScript | 2800 | Silver II |
-| 5 | security_expert | security_expert@nexora.test | Cybersecurity, Penetration Testing, Network Security, Linux, Python | 5800 | Platinum II |
-| 6 | devops_engineer | devops_engineer@nexora.test | DevOps, Docker, Kubernetes, AWS, Terraform | 4200 | Gold II |
-| 7 | ml_engineer | ml_engineer@nexora.test | Machine Learning, Python, TensorFlow, NLP, Data Science | 6500 | Platinum III |
-| 8 | data_scientist | data_scientist@nexora.test | Data Science, Python, Pandas, SQL, Tableau | 3100 | Silver I |
-| 9 | ui_designer | ui_designer@nexora.test | UI Design, Figma, CSS, React, Design Systems | 2400 | Bronze III |
-| 10 | mobile_dev | mobile_dev@nexora.test | Flutter, Dart, Firebase, Android, iOS | 2600 | Bronze I |
-| 11 | cloud_engineer | cloud_engineer@nexora.test | AWS, GCP, Terraform, Docker, Kubernetes | 4800 | Gold I |
+================================================================================
+  LEGENDARY FOUNDER ACCOUNT
+================================================================================
 
-EXTENDED TEST USERS (20 NEW):
+  basha_dev is the NEXORA FOUNDER / SHOWCASE account.
+  Run the upgrade script to max it out:
 
-| # | Username | Email | Skills | XP | Rank |
-|---|----------|-------|--------|-----|------|
-| 12 | blockchain_dev | blockchain_dev@nexora.test | Solidity, Ethereum, Web3, JavaScript, TypeScript | 5200 | Gold III |
-| 13 | ai_researcher | ai_researcher@nexora.test | Computer Vision, PyTorch, Python, Deep Learning, Research | 7200 | Platinum II |
-| 14 | rustacean | rustacean@nexora.test | Rust, Systems Programming, WebAssembly, C++, Linux | 4100 | Gold I |
-| 15 | graphql_guru | graphql_guru@nexora.test | GraphQL, Apollo, Node.js, TypeScript, PostgreSQL | 3800 | Gold I |
-| 16 | sre_lead | sre_lead@nexora.test | SRE, Prometheus, Grafana, Kubernetes, Incident Response | 5500 | Gold III |
-| 17 | ux_researcher | ux_researcher@nexora.test | UX Research, Figma, User Testing, Data Analysis, Prototyping | 2800 | Silver II |
-| 18 | backend_wizard | backend_wizard@nexora.test | Microservices, Go, gRPC, Redis, Kafka | 6200 | Platinum I |
-| 19 | ios_ninja | ios_ninja@nexora.test | iOS, Swift, SwiftUI, Objective-C, Xcode | 4600 | Gold II |
-| 20 | data_engineer | data_engineer@nexora.test | Apache Spark, SQL, Airflow, Snowflake, Python | 4900 | Gold II |
-| 21 | security_analyst | security_analyst@nexora.test | Application Security, OWASP, Burp Suite, Python, Threat Modeling | 3400 | Silver II |
-| 22 | game_dev_pro | game_dev_pro@nexora.test | Unity, C#, Unreal Engine, Game Design, 3D Graphics | 5100 | Gold III |
-| 23 | qa_automation | qa_automation@nexora.test | Selenium, Playwright, Cypress, Python, API Testing | 2900 | Silver II |
-| 24 | tech_writer | tech_writer@nexora.test | Technical Writing, API Docs, Markdown, Git, Content Strategy | 1800 | Bronze III |
-| 25 | vim_master | vim_master@nexora.test | Vim, Bash, Neovim, Linux, Tmux | 3200 | Silver I |
-| 26 | cloud_architect | cloud_architect@nexora.test | Cloud Architecture, AWS, Azure, GCP, Serverless | 6800 | Platinum II |
-| 27 | agile_coach | agile_coach@nexora.test | Agile, Scrum, Kanban, Jira, Team Leadership | 2400 | Bronze III |
-| 28 | ml_ops_engineer | ml_ops_engineer@nexora.test | MLOps, Kubernetes, MLflow, Kubeflow, Python | 5700 | Gold III |
-| 29 | product_manager | product_manager@nexora.test | Product Management, Roadmapping, Analytics, User Research, Jira | 2100 | Bronze II |
-| 30 | dev_advocate | dev_advocate@nexora.test | Developer Relations, Public Speaking, Technical Content, Community, React | 2600 | Bronze I |
-| 31 | database_expert | database_expert@nexora.test | PostgreSQL, MySQL, Database Design, Query Optimization, Replication | 4400 | Gold II |
+    docker compose exec core_api python upgrade_basha_dev.py
 
-TOTAL TEST USERS: 31
+  After running:
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Email:       basha_dev@nexora.test                                     │
+  │  Password:    password123                                               │
+  │  Rank:        👑 Grandmaster (99,999 RP)                                │
+  │  Level:       100 (Prestige Master V)                                   │
+  │  XP:          999,999                                                   │
+  │  Wins:        4,700+ (94% win rate)                                     │
+  │  Win Streak:  47                                                        │
+  │  Followers:   250,000                                                   │
+  │  Skills:      15 skills — all Master level, all verified                │
+  │  Achievements: All rarities (Common → Mythic)                           │
+  │  Leaderboard: #1 Global                                                 │
+  │  Titles:      Founder · Nexora Legend · AI Battle King · Grandmaster    │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  This account is the platform showcase. When users open this profile they
+  should think: "This is the strongest player on the platform."
+
+================================================================================
+  ORIGINAL TEST USERS (11)
+================================================================================
+
+| # | Username              | Email                          | XP      | Level | Rank         |
+|---|-----------------------|--------------------------------|---------|-------|--------------|
+| 1 | basha_dev ⭐ FOUNDER  | basha_dev@nexora.test          | 999,999 | 100   | Grandmaster  |
+| 2 | react_dev             | react_dev@nexora.test          | 4500  | 5     | Gold     |
+| 3 | python_dev            | python_dev@nexora.test         | 3200  | 4     | Silver   |
+| 4 | fullstack_dev         | fullstack_dev@nexora.test      | 2800  | 3     | Silver   |
+| 5 | security_expert       | security_expert@nexora.test    | 5800  | 6     | Platinum |
+| 6 | devops_engineer       | devops_engineer@nexora.test    | 4200  | 5     | Gold     |
+| 7 | ml_engineer           | ml_engineer@nexora.test        | 6500  | 7     | Platinum |
+| 8 | data_scientist        | data_scientist@nexora.test     | 3100  | 4     | Silver   |
+| 9 | ui_designer           | ui_designer@nexora.test        | 2400  | 3     | Bronze   |
+|10 | mobile_dev            | mobile_dev@nexora.test         | 2600  | 3     | Bronze   |
+|11 | cloud_engineer        | cloud_engineer@nexora.test     | 4800  | 5     | Gold     |
+
+Skills per user:
+  basha_dev       → JavaScript, React, NodeJS, Python, CSS
+  react_dev       → React, JavaScript
+  python_dev      → Python, FastAPI, PostgreSQL, Docker, AWS
+  fullstack_dev   → React, NodeJS, MongoDB, Express, JavaScript
+  security_expert → Cybersecurity, Penetration Testing, Network Security, Linux, Python
+  devops_engineer → DevOps, Docker, Kubernetes, AWS, Terraform
+  ml_engineer     → Machine Learning, Python, TensorFlow, NLP, Data Science
+  data_scientist  → Data Science, Python, Pandas, SQL, Tableau
+  ui_designer     → UI Design, Figma, CSS, React, Design Systems
+  mobile_dev      → Flutter, Dart, Firebase, Android, iOS
+  cloud_engineer  → AWS, GCP, Terraform, Docker, Kubernetes
+
+================================================================================
+  EXTENDED TEST USERS (20)
+================================================================================
+
+| #  | Username              | Email                              | XP    | Level | Rank     |
+|----|-----------------------|------------------------------------|-------|-------|----------|
+| 12 | blockchain_dev        | blockchain_dev@nexora.test         | 5200  | 6     | Gold     |
+| 13 | ai_researcher         | ai_researcher@nexora.test          | 7200  | 8     | Platinum |
+| 14 | rustacean             | rustacean@nexora.test              | 4100  | 5     | Gold     |
+| 15 | graphql_guru          | graphql_guru@nexora.test           | 3800  | 4     | Gold     |
+| 16 | sre_lead              | sre_lead@nexora.test               | 5500  | 6     | Gold     |
+| 17 | ux_researcher         | ux_researcher@nexora.test          | 2800  | 3     | Silver   |
+| 18 | backend_wizard        | backend_wizard@nexora.test         | 6200  | 7     | Platinum |
+| 19 | ios_ninja             | ios_ninja@nexora.test              | 4600  | 5     | Gold     |
+| 20 | data_engineer         | data_engineer@nexora.test          | 4900  | 5     | Gold     |
+| 21 | security_analyst      | security_analyst@nexora.test       | 3400  | 4     | Silver   |
+| 22 | game_dev_pro          | game_dev_pro@nexora.test           | 5100  | 6     | Gold     |
+| 23 | qa_automation         | qa_automation@nexora.test          | 2900  | 3     | Silver   |
+| 24 | tech_writer           | tech_writer@nexora.test            | 1800  | 2     | Bronze   |
+| 25 | vim_master            | vim_master@nexora.test             | 3200  | 4     | Silver   |
+| 26 | cloud_architect       | cloud_architect@nexora.test        | 6800  | 7     | Platinum |
+| 27 | agile_coach           | agile_coach@nexora.test            | 2400  | 3     | Bronze   |
+| 28 | ml_ops_engineer       | ml_ops_engineer@nexora.test        | 5700  | 6     | Gold     |
+| 29 | product_manager       | product_manager@nexora.test        | 2100  | 3     | Bronze   |
+| 30 | dev_advocate          | dev_advocate@nexora.test           | 2600  | 3     | Bronze   |
+| 31 | database_expert       | database_expert@nexora.test        | 4400  | 5     | Gold     |
+
+Skills per user:
+  blockchain_dev   → Solidity, Ethereum, Web3, JavaScript, TypeScript
+  ai_researcher    → Computer Vision, PyTorch, Python, Deep Learning, Research
+  rustacean        → Rust, Systems Programming, WebAssembly, C++, Linux
+  graphql_guru     → GraphQL, Apollo, Node.js, TypeScript, PostgreSQL
+  sre_lead         → SRE, Prometheus, Grafana, Kubernetes, Incident Response
+  ux_researcher    → UX Research, Figma, User Testing, Data Analysis, Prototyping
+  backend_wizard   → Microservices, Go, gRPC, Redis, Kafka
+  ios_ninja        → iOS, Swift, SwiftUI, Objective-C, Xcode
+  data_engineer    → Apache Spark, SQL, Airflow, Snowflake, Python
+  security_analyst → Application Security, OWASP, Burp Suite, Python, Threat Modeling
+  game_dev_pro     → Unity, C#, Unreal Engine, Game Design, 3D Graphics
+  qa_automation    → Selenium, Playwright, Cypress, Python, API Testing
+  tech_writer      → Technical Writing, API Docs, Markdown, Git, Content Strategy
+  vim_master       → Vim, Bash, Neovim, Linux, Tmux
+  cloud_architect  → Cloud Architecture, AWS, Azure, GCP, Serverless
+  agile_coach      → Agile, Scrum, Kanban, Jira, Team Leadership
+  ml_ops_engineer  → MLOps, Kubernetes, MLflow, Kubeflow, Python
+  product_manager  → Product Management, Roadmapping, Analytics, User Research, Jira
+  dev_advocate     → Developer Relations, Public Speaking, Technical Content, Community, React
+  database_expert  → PostgreSQL, MySQL, Database Design, Query Optimization, Replication
+
+================================================================================
+  TOTAL: 31 TEST USERS
+================================================================================
 
 CATEGORY COVERAGE:
-- Frontend: React, Vue, Angular, UI Design
-- Backend: Python, Node.js, Go, Rust
-- AI/ML: Machine Learning, Deep Learning, Data Science
-- DevOps: Docker, Kubernetes, AWS, SRE
-- Design: UI/UX, Figma, Design Systems
-- Mobile: iOS, Android, Flutter
-- Cybersecurity: Security, Ethical Hacking
-- Blockchain: Solidity, Web3, Ethereum
-- Database: PostgreSQL, MySQL, MongoDB
-- Game Dev: Unity, Unreal Engine
+  Frontend:       React, Vue, Angular, UI Design, TypeScript
+  Backend:        Python, Node.js, Go, Rust, FastAPI
+  AI/ML:          Machine Learning, Deep Learning, Data Science, PyTorch
+  DevOps:         Docker, Kubernetes, AWS, SRE, Terraform
+  Design:         UI/UX, Figma, Design Systems, UX Research
+  Mobile:         iOS, Android, Flutter, Swift
+  Cybersecurity:  Security, Ethical Hacking, OWASP, Penetration Testing
+  Blockchain:     Solidity, Web3, Ethereum
+  Database:       PostgreSQL, MySQL, MongoDB, Query Optimization
+  Game Dev:       Unity, Unreal Engine, C#
+  Data Eng:       Spark, Airflow, Snowflake, SQL
+  QA:             Selenium, Playwright, Cypress
 
+================================================================================
+  HOW TO SEED
+================================================================================
 
+  # Seed all 31 test users (basic stats)
+  docker compose exec core_api python seed_test_users.py
 
+  # Upgrade basha_dev to LEGENDARY Grandmaster status
+  docker compose exec core_api python upgrade_basha_dev.py
 
+  # Run both (recommended for full demo setup)
+  docker compose exec core_api python seed_test_users.py && \
+  docker compose exec core_api python upgrade_basha_dev.py
 
-graphify watch .
+================================================================================
+  QUICK LOGIN EXAMPLES
+================================================================================
 
-graphify update .
+  # High-rank user (Platinum, AI/ML)
+  Email: ml_engineer@nexora.test
+  Password: password123
+
+  # High-rank user (Platinum, Backend)
+  Email: backend_wizard@nexora.test
+  Password: password123
+
+  # High-rank user (Platinum, Cloud)
+  Email: cloud_architect@nexora.test
+  Password: password123
+
+  # Mid-rank user (Gold, DevOps)
+  Email: devops_engineer@nexora.test
+  Password: password123
+
+================================================================================

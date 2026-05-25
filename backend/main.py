@@ -256,6 +256,43 @@ try:
             print("Migration: Added online_status column to users")
         except Exception as e:
             print(f"Users online_status migration: {e}")
+
+        # Add challenge_id to pvp_matches if missing
+        try:
+            conn.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                  WHERE table_name = 'pvp_matches' AND column_name = 'challenge_id') THEN
+                        ALTER TABLE pvp_matches ADD COLUMN challenge_id INTEGER REFERENCES pvp_challenges(id);
+                    END IF;
+                END $$;
+            """))
+            conn.commit()
+            print("Migration: Added challenge_id column to pvp_matches")
+        except Exception as e:
+            print(f"pvp_matches challenge_id migration: {e}")
+
+        # Create pvp_submissions table if not exists
+        try:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS pvp_submissions (
+                    id SERIAL PRIMARY KEY,
+                    match_id VARCHAR NOT NULL REFERENCES pvp_matches(id),
+                    player_id INTEGER NOT NULL REFERENCES users(id),
+                    code_content TEXT,
+                    status VARCHAR DEFAULT 'pending',
+                    ai_score FLOAT DEFAULT 0.0,
+                    speed_bonus INTEGER DEFAULT 0,
+                    final_score FLOAT DEFAULT 0.0,
+                    feedback_json JSON,
+                    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                );
+            """))
+            conn.commit()
+            print("Migration: Created pvp_submissions table")
+        except Exception as e:
+            print(f"pvp_submissions table migration: {e}")
 except Exception as e:
     print(f"Migration warning: {e}")
 

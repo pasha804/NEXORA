@@ -78,19 +78,23 @@ const Settings = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center w-full min-w-max p-3 rounded-lg transition-all text-left group ${activeTab === tab.id
+                                className={`relative flex items-center w-full min-w-max p-3 rounded-lg transition-all text-left group overflow-hidden ${activeTab === tab.id
                                     ? "bg-primary/10 text-primary"
                                     : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
                                     }`}
                             >
-                                <tab.icon className={`w-5 h-5 mr-3 ${activeTab === tab.id ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
+                                {activeTab === tab.id && (
+                                    <motion.div
+                                        layoutId="active-pill"
+                                        className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary rounded-r-full"
+                                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                    />
+                                )}
+                                <tab.icon className={`w-5 h-5 mr-3 shrink-0 ${activeTab === tab.id ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
                                 <div className="flex-1 mr-4">
                                     <div className={`font-medium text-sm ${activeTab === tab.id ? "font-bold" : ""}`}>{tab.label}</div>
                                 </div>
-                                {activeTab === tab.id && (
-                                    <motion.div layoutId="active-pill" className="w-1 h-full absolute left-0 bg-primary rounded-r-full" />
-                                )}
-                                <ChevronRight className={`w-4 h-4 opacity-0 transition-opacity ${activeTab === tab.id ? "opacity-100" : "group-hover:opacity-50"}`} />
+                                <ChevronRight className={`w-4 h-4 opacity-0 transition-opacity shrink-0 ${activeTab === tab.id ? "opacity-100" : "group-hover:opacity-50"}`} />
                             </button>
                         ))}
                     </nav>

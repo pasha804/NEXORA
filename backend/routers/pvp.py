@@ -87,14 +87,72 @@ def _check_anti_cheat(db: Session, user_id: int, opponent_id: int, skill_id: int
 # ==========================================
 
 def _mmr_to_rank(mmr: int) -> str:
-    if mmr >= 2200: return "Grandmaster"
-    if mmr >= 1900: return "Master"
-    if mmr >= 1600: return "Diamond"
-    if mmr >= 1300: return "Platinum"
-    if mmr >= 1100: return "Gold"
-    if mmr >= 900:  return "Silver"
-    if mmr >= 700:  return "Bronze"
+    """
+    Free Fire-style rank with subdivisions.
+    Each tier has 5 divisions (V → I), each division = 100 RP.
+    """
+    if mmr >= 4200: return "Grandmaster"
+    if mmr >= 4000: return "Master V"
+    if mmr >= 3800: return "Master IV"
+    if mmr >= 3600: return "Master III"
+    if mmr >= 3400: return "Master II"
+    if mmr >= 3200: return "Master I"
+    if mmr >= 3000: return "Heroic V"
+    if mmr >= 2800: return "Heroic IV"
+    if mmr >= 2600: return "Heroic III"
+    if mmr >= 2400: return "Heroic II"
+    if mmr >= 2200: return "Heroic I"
+    if mmr >= 2000: return "Diamond V"
+    if mmr >= 1800: return "Diamond IV"
+    if mmr >= 1600: return "Diamond III"
+    if mmr >= 1400: return "Diamond II"
+    if mmr >= 1200: return "Diamond I"
+    if mmr >= 1100: return "Platinum V"
+    if mmr >= 1050: return "Platinum IV"
+    if mmr >= 1000: return "Platinum III"
+    if mmr >= 950:  return "Platinum II"
+    if mmr >= 900:  return "Platinum I"
+    if mmr >= 850:  return "Gold V"
+    if mmr >= 800:  return "Gold IV"
+    if mmr >= 750:  return "Gold III"
+    if mmr >= 700:  return "Gold II"
+    if mmr >= 650:  return "Gold I"
+    if mmr >= 600:  return "Silver V"
+    if mmr >= 550:  return "Silver IV"
+    if mmr >= 500:  return "Silver III"
+    if mmr >= 450:  return "Silver II"
+    if mmr >= 400:  return "Silver I"
+    if mmr >= 350:  return "Bronze V"
+    if mmr >= 300:  return "Bronze IV"
+    if mmr >= 250:  return "Bronze III"
+    if mmr >= 200:  return "Bronze II"
+    if mmr >= 100:  return "Bronze I"
     return "Novice"
+
+
+def _mmr_to_tier(mmr: int) -> str:
+    """Returns just the tier name without subdivision."""
+    if mmr >= 4200: return "Grandmaster"
+    if mmr >= 3200: return "Master"
+    if mmr >= 2200: return "Heroic"
+    if mmr >= 1200: return "Diamond"
+    if mmr >= 900:  return "Platinum"
+    if mmr >= 650:  return "Gold"
+    if mmr >= 400:  return "Silver"
+    if mmr >= 100:  return "Bronze"
+    return "Novice"
+
+
+def _mmr_to_stars(mmr: int) -> int:
+    """Returns 0-5 stars within the current division."""
+    # Each division is 50 RP wide; 5 stars = 10 RP each
+    division_rp = mmr % 50
+    return min(5, division_rp // 10)
+
+
+def _mmr_to_rp_in_division(mmr: int) -> int:
+    """Returns RP progress within current division (0-49)."""
+    return mmr % 50
 
 def _get_or_create_rating(db: Session, user_id: int) -> models.PvPRating:
     rating = db.query(models.PvPRating).filter(models.PvPRating.user_id == user_id).first()
@@ -187,9 +245,21 @@ def _finalize_match(db: Session, match: models.PvPMatch, winner_id: int, scores:
         anti_cheat = {"xp_penalty": 1.0, "flags": [], "suspicious": False}
         if result == "win" and opponent_id:
             anti_cheat = _check_anti_cheat(db, pid, opponent_id, match.skill_id)
+
+        # Get rating FIRST — needed for streak bonus
+        rating = _get_or_create_rating(db, pid)
         
         xp_gain = int((200 if result == "win" else (100 if result == "draw" else 50)) * anti_cheat["xp_penalty"])
-        mmr_delta = 25 if result == "win" else (-15 if result == "loss" else 5)
+
+        # Free Fire-style RP calculation
+        base_rp = 30 if result == "win" else (5 if result == "draw" else -20)
+        # Streak bonus: +5 RP per win streak (max +25)
+        streak_bonus = 0
+        if result == "win" and rating.current_streak > 0:
+            streak_bonus = min(25, rating.current_streak * 5)
+        # Performance bonus based on score
+        perf_bonus = min(10, int(score / 10)) if result == "win" else 0
+        mmr_delta = int((base_rp + streak_bonus + perf_bonus) * anti_cheat["xp_penalty"])
 
         # Write result row
         mr = models.PvPMatchResult(
@@ -211,7 +281,6 @@ def _finalize_match(db: Session, match: models.PvPMatch, winner_id: int, scores:
             user.ranking_score = max(0, (user.ranking_score or 1000) + mmr_delta)
 
         # Update PvP rating
-        rating = _get_or_create_rating(db, pid)
         rating.mmr = max(0, rating.mmr + mmr_delta)
         rating.matches_played += 1
         if result == "win":
