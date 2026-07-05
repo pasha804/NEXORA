@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 import socketio
 from common.database import engine
 from common import models
-from routers import reels, communities, auth as auth_router, users, dashboard, pvp, ai as ai_router, tournaments, connections, posts, social, search, messages, notifications, skills, presence
+from routers import reels, communities, auth as auth_router, users, dashboard, pvp, ai as ai_router, tournaments, connections, posts, social, search, messages, notifications, skills, presence, ranking
 import social_realtime
 from battle_realtime import sio
 
@@ -271,7 +271,23 @@ try:
             conn.commit()
             print("Migration: Added challenge_id column to pvp_matches")
         except Exception as e:
-            print(f"pvp_matches challenge_id migration: {e}")
+            print(f"        pvp_matches challenge_id migration: {e}")
+
+        # Add prestige column to users if missing
+        try:
+            conn.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                  WHERE table_name = 'users' AND column_name = 'prestige') THEN
+                        ALTER TABLE users ADD COLUMN prestige INTEGER DEFAULT 0;
+                    END IF;
+                END $$;
+            """))
+            conn.commit()
+            print("Migration: Added prestige column to users")
+        except Exception as e:
+            print(f"Users prestige migration: {e}")
 
         # Create pvp_submissions table if not exists
         try:
@@ -293,6 +309,74 @@ try:
             print("Migration: Created pvp_submissions table")
         except Exception as e:
             print(f"pvp_submissions table migration: {e}")
+
+        # Add post_type and skill_tags to skill_posts if missing
+        try:
+            conn.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                                  WHERE table_name = 'skill_posts' AND column_name = 'post_type') THEN
+                        ALTER TABLE skill_posts ADD COLUMN post_type VARCHAR DEFAULT 'text';
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                                  WHERE table_name = 'skill_posts' AND column_name = 'skill_tags') THEN
+                        ALTER TABLE skill_posts ADD COLUMN skill_tags JSON DEFAULT '[]'::json;
+                    END IF;
+                END $$;
+            """))
+            conn.commit()
+            print("Migration: Added post_type, skill_tags columns to skill_posts")
+        except Exception as e:
+            print(f"Skill posts columns migration: {e}")
+
+        # Add saves_count to reels if missing
+        try:
+            conn.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                  WHERE table_name = 'reels' AND column_name = 'saves_count') THEN
+                        ALTER TABLE reels ADD COLUMN saves_count INTEGER DEFAULT 0;
+                    END IF;
+                END $$;
+            """))
+            conn.commit()
+            print("Migration: Added saves_count column to reels")
+        except Exception as e:
+            print(f"Reels saves_count migration: {e}")
+
+        # Create reel_comments table if not exists
+        try:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS reel_comments (
+                    id SERIAL PRIMARY KEY,
+                    reel_id VARCHAR NOT NULL REFERENCES reels(id),
+                    user_id INTEGER NOT NULL REFERENCES users(id),
+                    content TEXT NOT NULL,
+                    likes_count INTEGER DEFAULT 0,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                );
+            """))
+            conn.commit()
+            print("Migration: Created reel_comments table")
+        except Exception as e:
+            print(f"Reel comments table migration: {e}")
+
+        # Create reel_saves table if not exists
+        try:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS reel_saves (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id),
+                    reel_id VARCHAR NOT NULL REFERENCES reels(id),
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                );
+            """))
+            conn.commit()
+            print("Migration: Created reel_saves table")
+        except Exception as e:
+            print(f"Reel saves table migration: {e}")
 except Exception as e:
     print(f"Migration warning: {e}")
 
@@ -326,6 +410,7 @@ _fastapi_app.include_router(presence.router)
 _fastapi_app.include_router(ai_router.router)
 _fastapi_app.include_router(reels.router)
 _fastapi_app.include_router(communities.router)
+_fastapi_app.include_router(ranking.router)
 
 @_fastapi_app.get("/api")
 async def root():
@@ -369,7 +454,8 @@ async def serve_spa(full_path: str):
         "api", "auth", "media", "docs", "redoc", "openapi.json",
         "search", "users", "social", "pvp", "ai", "messages",
         "connections", "notifications", "presence", "skills",
-        "dashboard", "posts", "communities", "reels", "battle"
+        "dashboard", "posts", "communities", "reels", "battle",
+        "ranking"
     }
     first_segment = full_path.split("/", 1)[0] if full_path else ""
     if first_segment in api_prefixes:

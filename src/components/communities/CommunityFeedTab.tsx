@@ -12,16 +12,18 @@ interface CommunityPost {
     author_id: number;
 }
 
+interface CommunityFeedTabProps {
+    slug?: string;
+}
+
 const fetchCommunityFeed = async (slug: string): Promise<CommunityPost[]> => {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
     const res = await fetch(`${API_URL}/communities/${slug}/feed`);
     if (!res.ok) throw new Error('Failed to fetch feed');
     return res.json();
 };
 
-export const CommunityFeedTab = () => {
-    // Hardcoded slug for now
-    const slug = "react-devs";
+export const CommunityFeedTab = ({ slug = "react-devs" }: CommunityFeedTabProps) => {
 
     const { data: posts, isLoading } = useQuery({
         queryKey: ['community-feed', slug],

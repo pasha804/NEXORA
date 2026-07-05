@@ -25,7 +25,7 @@ const BATTLE_TYPES = [
     { id: "timed_challenge", label: "Timed Challenge", icon: Clock, desc: "Speed-focused coding" },
 ];
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const QuickMatchPanel = ({ onMatchFound }: QuickMatchPanelProps) => {
     const { token, user } = useAuth();

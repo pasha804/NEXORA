@@ -11,11 +11,13 @@ import {
     Clock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getRankInfoFromString } from "@/lib/rankSystem";
 
 interface SearchSuggestion {
     text: string;
     type: "person" | "skill" | "community" | "trending";
     icon?: React.ReactNode;
+    rank?: string;
 }
 
 interface DiscoverHeaderProps {
@@ -39,13 +41,25 @@ export const DiscoverHeader = ({ onSearchChange, onFilterChange }: DiscoverHeade
     // AI suggestions based on search query
     const getSuggestions = useCallback((query: string): SearchSuggestion[] => {
         if (!query) return [
-            { text: "React Developers", type: "trending", icon: <TrendingUp className="w-3 h-3" /> },
-            { text: "System Design", type: "trending", icon: <TrendingUp className="w-3 h-3" /> },
-            { text: "Web3 Communities", type: "trending", icon: <TrendingUp className="w-3 h-3" /> },
+            { text: "React Developers", type: "trending", icon: <TrendingUp className="w-3 h-3" />, rank: "Gold" },
+            { text: "System Design", type: "trending", icon: <TrendingUp className="w-3 h-3" />, rank: "Platinum" },
+            { text: "Web3 Communities", type: "trending", icon: <TrendingUp className="w-3 h-3" />, rank: "Silver" },
+            { text: "AI/ML Engineers", type: "trending", icon: <TrendingUp className="w-3 h-3" />, rank: "Platinum" },
+            { text: "Cloud Architects", type: "trending", icon: <TrendingUp className="w-3 h-3" />, rank: "Gold" },
         ];
 
+        const queryLower = query.toLowerCase();
+        const skillRanks: Record<string, string> = {
+            "react": "Gold", "python": "Silver", "rust": "Gold",
+            "ai": "Platinum", "ml": "Platinum", "machine learning": "Platinum",
+            "devops": "Gold", "docker": "Silver", "kubernetes": "Gold",
+            "blockchain": "Gold", "solidity": "Gold",
+            "security": "Platinum", "cybersecurity": "Platinum",
+        };
+        const matchedRank = Object.entries(skillRanks).find(([k]) => queryLower.includes(k))?.[1];
+
         return [
-            { text: "Sarah Chen - React Expert", type: "person" },
+            { text: `${query} Developers`, type: "person", rank: matchedRank || "Silver" },
             { text: `${query} Tutorial`, type: "skill" },
             { text: `${query} Community`, type: "community" },
         ];
@@ -148,19 +162,27 @@ export const DiscoverHeader = ({ onSearchChange, onFilterChange }: DiscoverHeade
                                 <Sparkles className="w-3 h-3 text-primary" />
                                 AI Suggested
                             </div>
-                            {getSuggestions(searchQuery).map((suggestion, i) => (
-                                <button
-                                    key={i}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors text-left"
-                                    onClick={() => handleSuggestionClick(suggestion)}
-                                >
-                                    {suggestion.icon || <Search className="w-4 h-4 text-muted-foreground" />}
-                                    <span className="flex-1">{suggestion.text}</span>
-                                    <Badge variant="outline" className="text-[10px] h-5">
-                                        {suggestion.type}
-                                    </Badge>
-                                </button>
-                            ))}
+                            {getSuggestions(searchQuery).map((suggestion, i) => {
+                                const sugRankInfo = suggestion.rank ? getRankInfoFromString(suggestion.rank) : null;
+                                return (
+                                    <button
+                                        key={i}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors text-left"
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                    >
+                                        {suggestion.icon || <Search className="w-4 h-4 text-muted-foreground" />}
+                                        <span className="flex-1">{suggestion.text}</span>
+                                        <div className="flex items-center gap-1.5">
+                                            {sugRankInfo && (
+                                                <span className={sugRankInfo.color + " text-[10px]"}>{sugRankInfo.icon}</span>
+                                            )}
+                                            <Badge variant="outline" className="text-[10px] h-5">
+                                                {suggestion.type}
+                                            </Badge>
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </motion.div>
                     )}
                 </AnimatePresence>

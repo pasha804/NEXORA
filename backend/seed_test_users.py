@@ -7,41 +7,31 @@ import random
 
 # Test Data from test.txt
 TEST_USERS = [
-    # ORIGINAL TEST USERS
-    # basha_dev is the LEGENDARY FOUNDER account — run upgrade_basha_dev.py to max it out
-    {"username": "basha_dev", "email": "basha_dev@nexora.test", "skills": ["JavaScript", "React", "NodeJS", "Python", "CSS"], "xp": 999999, "rank": "Grandmaster"},
-    {"username": "react_dev", "email": "react_dev@nexora.test", "skills": ["React", "JavaScript"], "xp": 4500, "rank": "Gold III"},
-    {"username": "python_dev", "email": "python_dev@nexora.test", "skills": ["Python", "FastAPI", "PostgreSQL", "Docker", "AWS"], "xp": 3200, "rank": "Silver I"},
-    {"username": "fullstack_dev", "email": "fullstack_dev@nexora.test", "skills": ["React", "NodeJS", "MongoDB", "Express", "JavaScript"], "xp": 2800, "rank": "Silver II"},
-    {"username": "security_expert", "email": "security_expert@nexora.test", "skills": ["Cybersecurity", "Penetration Testing", "Network Security", "Linux", "Python"], "xp": 5800, "rank": "Platinum II"},
-    {"username": "devops_engineer", "email": "devops_engineer@nexora.test", "skills": ["DevOps", "Docker", "Kubernetes", "AWS", "Terraform"], "xp": 4200, "rank": "Gold II"},
-    {"username": "ml_engineer", "email": "ml_engineer@nexora.test", "skills": ["Machine Learning", "Python", "TensorFlow", "NLP", "Data Science"], "xp": 6500, "rank": "Platinum III"},
-    {"username": "data_scientist", "email": "data_scientist@nexora.test", "skills": ["Data Science", "Python", "Pandas", "SQL", "Tableau"], "xp": 3100, "rank": "Silver I"},
-    {"username": "ui_designer", "email": "ui_designer@nexora.test", "skills": ["UI Design", "Figma", "CSS", "React", "Design Systems"], "xp": 2400, "rank": "Bronze III"},
-    {"username": "mobile_dev", "email": "mobile_dev@nexora.test", "skills": ["Flutter", "Dart", "Firebase", "Android", "iOS"], "xp": 2600, "rank": "Bronze I"},
-    {"username": "cloud_engineer", "email": "cloud_engineer@nexora.test", "skills": ["AWS", "GCP", "Terraform", "Docker", "Kubernetes"], "xp": 4800, "rank": "Gold I"},
+    # ═══ LEGENDARY (Grandmaster) ═══
+    {"username": "basha_dev", "email": "basha_dev@nexora.test", "skills": ["JavaScript", "React", "NodeJS", "Python", "CSS", "System Design", "AWS", "Docker"], "xp": 99999, "rank": "Grandmaster", "reputation": 9999, "followers": 250000},
     
-    # EXTENDED TEST USERS
-    {"username": "blockchain_dev", "email": "blockchain_dev@nexora.test", "skills": ["Solidity", "Ethereum", "Web3", "JavaScript", "TypeScript"], "xp": 5200, "rank": "Gold III"},
-    {"username": "ai_researcher", "email": "ai_researcher@nexora.test", "skills": ["Computer Vision", "PyTorch", "Python", "Deep Learning", "Research"], "xp": 7200, "rank": "Platinum II"},
-    {"username": "rustacean", "email": "rustacean@nexora.test", "skills": ["Rust", "Systems Programming", "WebAssembly", "C++", "Linux"], "xp": 4100, "rank": "Gold I"},
-    {"username": "graphql_guru", "email": "graphql_guru@nexora.test", "skills": ["GraphQL", "Apollo", "Node.js", "TypeScript", "PostgreSQL"], "xp": 3800, "rank": "Gold I"},
-    {"username": "sre_lead", "email": "sre_lead@nexora.test", "skills": ["SRE", "Prometheus", "Grafana", "Kubernetes", "Incident Response"], "xp": 5500, "rank": "Gold III"},
-    {"username": "ux_researcher", "email": "ux_researcher@nexora.test", "skills": ["UX Research", "Figma", "User Testing", "Data Analysis", "Prototyping"], "xp": 2800, "rank": "Silver II"},
-    {"username": "backend_wizard", "email": "backend_wizard@nexora.test", "skills": ["Microservices", "Go", "gRPC", "Redis", "Kafka"], "xp": 6200, "rank": "Platinum I"},
-    {"username": "ios_ninja", "email": "ios_ninja@nexora.test", "skills": ["iOS", "Swift", "SwiftUI", "Objective-C", "Xcode"], "xp": 4600, "rank": "Gold II"},
-    {"username": "data_engineer", "email": "data_engineer@nexora.test", "skills": ["Apache Spark", "SQL", "Airflow", "Snowflake", "Python"], "xp": 4900, "rank": "Gold II"},
-    {"username": "security_analyst", "email": "security_analyst@nexora.test", "skills": ["Application Security", "OWASP", "Burp Suite", "Python", "Threat Modeling"], "xp": 3400, "rank": "Silver II"},
-    {"username": "game_dev_pro", "email": "game_dev_pro@nexora.test", "skills": ["Unity", "C#", "Unreal Engine", "Game Design", "3D Graphics"], "xp": 5100, "rank": "Gold III"},
-    {"username": "qa_automation", "email": "qa_automation@nexora.test", "skills": ["Selenium", "Playwright", "Cypress", "Python", "API Testing"], "xp": 2900, "rank": "Silver II"},
-    {"username": "tech_writer", "email": "tech_writer@nexora.test", "skills": ["Technical Writing", "API Docs", "Markdown", "Git", "Content Strategy"], "xp": 1800, "rank": "Bronze III"},
-    {"username": "vim_master", "email": "vim_master@nexora.test", "skills": ["Vim", "Bash", "Neovim", "Linux", "Tmux"], "xp": 3200, "rank": "Silver I"},
-    {"username": "cloud_architect", "email": "cloud_architect@nexora.test", "skills": ["Cloud Architecture", "AWS", "Azure", "GCP", "Serverless"], "xp": 6800, "rank": "Platinum II"},
-    {"username": "agile_coach", "email": "agile_coach@nexora.test", "skills": ["Agile", "Scrum", "Kanban", "Jira", "Team Leadership"], "xp": 2400, "rank": "Bronze III"},
-    {"username": "ml_ops_engineer", "email": "ml_ops_engineer@nexora.test", "skills": ["MLOps", "Kubernetes", "MLflow", "Kubeflow", "Python"], "xp": 5700, "rank": "Gold III"},
-    {"username": "product_manager", "email": "product_manager@nexora.test", "skills": ["Product Management", "Roadmapping", "Analytics", "User Research", "Jira"], "xp": 2100, "rank": "Bronze II"},
-    {"username": "dev_advocate", "email": "dev_advocate@nexora.test", "skills": ["Developer Relations", "Public Speaking", "Technical Content", "Community", "React"], "xp": 2600, "rank": "Bronze I"},
-    {"username": "database_expert", "email": "database_expert@nexora.test", "skills": ["PostgreSQL", "MySQL", "Database Design", "Query Optimization", "Replication"], "xp": 4400, "rank": "Gold II"},
+    # ═══ EPIC USERS (Master/Heroic) ═══
+    {"username": "ai_researcher", "email": "ai_researcher@nexora.test", "skills": ["Computer Vision", "PyTorch", "Python", "Deep Learning", "Research"], "xp": 45000, "rank": "Master I", "reputation": 8000, "followers": 15000},
+    {"username": "backend_wizard", "email": "backend_wizard@nexora.test", "skills": ["Microservices", "Go", "gRPC", "Redis", "Kafka"], "xp": 35000, "rank": "Master V", "reputation": 7500, "followers": 12000},
+    {"username": "cloud_architect", "email": "cloud_architect@nexora.test", "skills": ["Cloud Architecture", "AWS", "Azure", "GCP", "Serverless"], "xp": 29000, "rank": "Heroic I", "reputation": 6500, "followers": 9000},
+    {"username": "security_expert", "email": "security_expert@nexora.test", "skills": ["Ethical Hacking", "Cybersecurity", "Penetration Testing", "Security Compliance"], "xp": 28500, "rank": "Heroic II", "reputation": 6200, "followers": 8500},
+
+    # ═══ HIGH RANK (Diamond/Platinum) ═══
+    {"username": "react_dev", "email": "react_dev@nexora.test", "skills": ["React", "TypeScript", "Next.js", "Tailwind CSS"], "xp": 22000, "rank": "Diamond III", "reputation": 5000, "followers": 5000},
+    {"username": "devops_engineer", "email": "devops_engineer@nexora.test", "skills": ["Kubernetes", "Docker", "Terraform", "Jenkins"], "xp": 21500, "rank": "Diamond V", "reputation": 4800, "followers": 4500},
+    {"username": "data_engineer", "email": "data_engineer@nexora.test", "skills": ["Spark", "Hadoop", "Python", "SQL", "ETL"], "xp": 15000, "rank": "Platinum I", "reputation": 4200, "followers": 3800},
+    {"username": "rustacean", "email": "rustacean@nexora.test", "skills": ["Rust", "Wasm", "Systems Programming"], "xp": 14800, "rank": "Platinum II", "reputation": 4100, "followers": 3500},
+
+    # ═══ MID RANK (Gold/Silver) ═══
+    {"username": "python_dev", "email": "python_dev@nexora.test", "skills": ["Python", "FastAPI", "Django", "PostgreSQL"], "xp": 9500, "rank": "Gold II", "reputation": 3200, "followers": 1500},
+    {"username": "fullstack_dev", "email": "fullstack_dev@nexora.test", "skills": ["Node.js", "Express", "MongoDB", "Vue.js"], "xp": 9200, "rank": "Gold III", "reputation": 3000, "followers": 1200},
+    {"username": "qa_automation", "email": "qa_automation@nexora.test", "skills": ["Selenium", "Cypress", "Pytest", "Automation"], "xp": 5800, "rank": "Silver I", "reputation": 2500, "followers": 800},
+    {"username": "product_manager", "email": "product_manager@nexora.test", "skills": ["Product Strategy", "Agile", "Jira", "User Research"], "xp": 5600, "rank": "Silver II", "reputation": 2400, "followers": 750},
+
+    # ═══ LOW RANK (Bronze/Novice) ═══
+    {"username": "ui_designer", "email": "ui_designer@nexora.test", "skills": ["Figma", "UI/UX", "Design Systems"], "xp": 2800, "rank": "Bronze I", "reputation": 1500, "followers": 300},
+    {"username": "tech_writer", "email": "tech_writer@nexora.test", "skills": ["Technical Writing", "Documentation", "API Docs"], "xp": 2600, "rank": "Bronze II", "reputation": 1400, "followers": 250},
+    {"username": "agile_coach", "email": "agile_coach@nexora.test", "skills": ["Scrum", "Kanban", "Facilitation"], "xp": 800, "rank": "Novice", "reputation": 500, "followers": 100},
 ]
 
 def seed_test_users():
@@ -74,13 +64,16 @@ def seed_test_users():
         print(f"Creating user: {user_data['username']}")
         
         # 1. Create User
+        xp_val = user_data["xp"]
+        level_val = min(100, 1 + int(xp_val ** 0.45))  # Progressive level: 1 XP→1, 1000→8, 5000→16, 100000→100
         new_user = User(
             username=user_data["username"],
             email=user_data["email"],
             hashed_password=get_password_hash("password123"),
             display_name=user_data["username"].replace("_", " ").title(),
-            xp_points=user_data["xp"],
-            level=random.randint(1, 10),
+            xp_points=xp_val,
+            level=level_val,
+            ranking_score=user_data.get("ranking_score", xp_val // 2 + 500),
             onboarding_completed=True,
             is_active=True
         )
@@ -97,12 +90,16 @@ def seed_test_users():
         db.add(new_profile)
         
         # 3. Create Social Stats
+        reputation = user_data.get("reputation", random.randint(100, 500))
+        followers = user_data.get("followers", random.randint(50, 500))
         new_stats = UserSocialStats(
             user_id=new_user.id,
             xp_total=user_data["xp"],
             rank_level=user_data["rank"],
-            followers_count=random.randint(10, 500),
-            following_count=random.randint(10, 500)
+            followers_count=followers,
+            following_count=random.randint(10, max(50, followers // 10)),
+            reputation_score=reputation,
+            streak_days=random.randint(0, min(30, reputation // 100)),
         )
         db.add(new_stats)
         

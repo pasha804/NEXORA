@@ -52,15 +52,42 @@ export const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
         }
     };
 
-    const handlePublish = () => {
-        toast.success("Reel published successfully!");
-        onClose();
-        // Reset state
-        setTimeout(() => {
-            setStep(1);
-            setFile(null);
-            setDetails({ caption: "", tags: "", skill: "General", type: "showcase" });
-        }, 500);
+    const handlePublish = async () => {
+        const token = localStorage.getItem("access_token");
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+        try {
+            const videoUrl = file ? URL.createObjectURL(file) : "";
+            const resp = await fetch(`${API_URL}/reels/upload`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    video_url: videoUrl,
+                    caption: details.caption,
+                    type: details.type,
+                    skill_tags: details.tags ? details.tags.split(",").map((t) => t.trim().replace(/^#/, "")) : [],
+                    title: details.caption.slice(0, 80),
+                }),
+            });
+
+            if (resp.ok) {
+                toast.success("Reel published successfully!");
+                onClose();
+                setTimeout(() => {
+                    setStep(1);
+                    setFile(null);
+                    setDetails({ caption: "", tags: "", skill: "General", type: "showcase" });
+                }, 500);
+            } else {
+                const errData = await resp.json().catch(() => ({}));
+                toast.error(errData.detail || "Failed to publish reel");
+            }
+        } catch (err) {
+            toast.error("Network error while publishing reel");
+        }
     };
 
     return (

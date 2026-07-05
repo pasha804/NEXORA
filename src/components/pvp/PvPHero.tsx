@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getRankInfo } from "@/lib/rankSystem";
 import { RankBadge, RankStars, RankCard } from "@/components/ui/RankBadge";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 interface PvPStats {
     mmr: number;

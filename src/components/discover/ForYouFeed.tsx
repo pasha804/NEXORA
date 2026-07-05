@@ -29,7 +29,7 @@ export const ForYouFeed = ({ searchQuery, filters }: ForYouFeedProps) => {
     const [refreshing, setRefreshing] = useState(false);
     const [people, setPeople] = useState<any[]>([]);
     const { data: skillIntel } = useSkillIntelligence(user?.id);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchRecommendations = async () => {
         try {

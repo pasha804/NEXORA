@@ -17,7 +17,7 @@ export const CareerPathPanel = () => {
     const [careerPaths, setCareerPaths] = useState<CareerPath[]>([]);
     const [userName, setUserName] = useState<string>("");
     const [loading, setLoading] = useState(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchCareerPaths = async () => {
         try {

@@ -2,20 +2,28 @@
                   NEXORA FREE FIRE-STYLE RANK & PROGRESSION SYSTEM
 ================================================================================
 
-VERSION: 6.0 | May 2026
+VERSION: 6.1 | July 2026
 Sources: backend/routers/pvp.py, src/lib/rankSystem.ts,
-         src/components/ui/RankBadge.tsx, src/components/pvp/PvPHero.tsx
+         src/components/ui/RankBadge.tsx, src/components/pvp/PvPHero.tsx,
+         src/components/profile/RankAura.tsx,
+         src/components/profile/RankBadgeAnimated.tsx,
+         src/components/profile/GrandmasterEffects.tsx,
+         src/components/profile/DynamicProfileTheme.tsx,
+         src/components/profile/PrestigeOverlay.tsx,
+         src/lib/profileDistinctiveness.ts,
+         src/styles/discover-animations.css
 
 ================================================================================
   OVERVIEW
 ================================================================================
 
 Nexora uses a competitive gaming-style progression system inspired by
-Free Fire, PUBG Mobile, and Valorant. There are THREE parallel systems:
+Free Fire, PUBG Mobile, Valorant, and League of Legends. There are FOUR parallel systems:
 
-  1. PvP RANK (RP-based)    — 8 tiers × 5 divisions + Grandmaster
+  1. PvP RANK (RP-based)    — 9 tiers × 5 divisions + Grandmaster
   2. USER LEVEL (XP-based)  — Level 1–100+ with progressive XP formula
   3. PRESTIGE SYSTEM        — Resets at Level 100, earns exclusive rewards
+  4. PROFILE EVOLUTION      — Visual system: profiles transform based on rank/prestige/XP
 
 ================================================================================
   SYSTEM 1 — PvP RANK (RP-BASED, FREE FIRE STYLE)
@@ -53,6 +61,10 @@ STAR SYSTEM:
   Displayed as: ★★★☆☆ (3/5 stars)
 
 STARTING RP: 1000 (Platinum III)
+
+NOTE: The seed_test_users.py script assigns explicit RP values per user tier
+      (Grandmaster=99999, Master=35000–45000, etc.). In production, users
+      start at 1000 RP and climb via PvP battles.
 
 RP CHANGES PER MATCH:
   Win  → +30 base RP
@@ -166,24 +178,88 @@ REPUTATION TIERS:
   Streak 70+ days = 2.0× XP on everything.
 
 ================================================================================
-  RANK UI COMPONENTS
-================================================================================
+RANK UI COMPONENTS
+===============================================================================
 
-  RankBadge     — Animated badge with tier icon, name, optional stars + RP
-                  Sizes: xs, sm, md, lg, xl
-                  Used in: Profile, Discover cards, PvP Hero, Leaderboard
+  RankBadge           — Static badge with tier icon, name, stars, RP
+                        Sizes: xs, sm, md, lg, xl
 
-  RankStars     — Animated 5-star row for current division progress
-                  Used in: RankCard, PvP Hero
+  RankBadgeAnimated   — Enhanced animated badge: RGB cycle (Grandmaster),
+                        hover scale effect, animated stars per division
+                        Used in: HeroProfileHeader, HomeLeftSidebar
 
-  RankCard      — Full rank card with RP bar, stars, W/L/WR stats, streak
-                  Used in: PvP Hero right panel, Profile PvP section
+  RankAura            — Animated glow ring behind avatars; opacity scales with tier
+                        Used in: HeroProfileHeader, HomeLeftSidebar, PeopleDiscovery
 
-  getRankInfo() — Pure function: RP → { full, tier, division, stars, color, glow, icon }
+  RankParticles       — Floating particles with tier-specific colors; count scales with tier
+                        Used in: HeroProfileHeader, HomeLeftSidebar
+
+  RankAvatarRing      — Avatar ring with tier-specific glow/animation (CSS class `avatar-ring-{tier}`)
+                        Used in: HeroProfileHeader, PeopleDiscovery
+
+  RankCard            — Full rank card with RP bar, stars, W/L/WR stats, streak
+                        Used in: PvP Hero right panel, Profile PvP section
+
+  DynamicProfileTheme — Wraps children with rank-based card BG, border glow, gradient theme
+                        Used in: HeroProfileHeader (outer wrapper)
+
+  PrestigeOverlay     — 5 prestige levels (I–V): border glow → animated → full RGB cinematic
+                        Used in: HeroProfileHeader
+
+  GrandmasterEffects  — Cosmic background, energy waves, floating particles, RGB crown,
+                        animated "THE GRANDMASTER" title
+                        Used in: HeroProfileHeader, Profile.tsx, Dashboard.tsx
+
+  GrandmasterCrown    — RGB animated crown icon overlay
+  GrandmasterTitle    — Animated title with RGB text-shadow
+
+  UserCard            — Reusable card with rank aura + particles + avatar ring
+  UserPreviewCard     — Hover preview card (appears after 400ms)
+                        Used in: PeopleDiscovery
+
+  getRankInfo()           — Pure function: RP → RankInfo
   getRankInfoFromString() — "Diamond III" → RankInfo
 
+PROFILE EVOLUTION — VISUAL BREAKDOWN BY TIER:
+  Novice   → Flat dark card, simple border, static badge, no aura
+  Bronze   → Orange border glow, bronze gradient, minimal aura opacity
+  Silver   → Pulsing silver ring, silver shimmer, few floating particles
+  Gold     → Gold shimmer border, gradient background, animated XP bar
+  Platinum → Cyan aura ring, glassmorphism, moderate particles, platinum XP bar
+  Diamond  → RGB sparkle texture on ring, crystal frame card, diamond XP bar glow
+  Heroic   → Purple aura, red-purple gradient card, cyberpunk border, heroic XP bar
+  Master   → Red pulse ring, legendary frame card, shimmer animated XP bar
+  Grandmaster → RGB cosmic ring, fire trail top+bottom borders, cosmic background
+                energy wave effects, floating particles, animated crown,
+                RGB cycling XP bar, "THE GRANDMASTER" animated title
+
 ================================================================================
-  RANK DISPLAY LOCATIONS
+  CSS ANIMATION KEYFRAMES (src/styles/discover-animations.css):
+  aura-pulse           → Aura glow oscillation (all tiers Mid+)
+  particle-float       → Floating particle motion (Silver+)
+  shimmer-border       → Animated gradient border sweep (Gold+)
+  rgb-cycle            → Rainbow color cycling (Grandmaster)
+  rgb-glow             → Rainbow glowing shadow (Grandmaster)
+  crown-float          → Crown bob animation (Grandmaster)
+  energy-wave          → Expanding energy ring effect (Grandmaster)
+  fire-trail           → Animated fire border path (Grandmaster)
+  diamond-sparkle      → Star sparkle overlay (Diamond+)
+  prestige-aura        → Prestige level aura glow (Prestige III+)
+  holographic-overlay  → Shimmering holographic scan (Master+)
+  lightning-flash      → Random lightning bursts (Grandmaster)
+  fame-shine           → Fame indicator gradient sweep (Platinum+)
+  text-gradient-anim   → Animated text color cycling (Diamond+)
+  legendary-frame      → Legendary card frame border (Master+)
+
+UTILITY CLASSES PER TIER:
+  rank-bg-{tier}       → Background color/gradient
+  rank-border-{tier}   → Border color/gradient
+  rank-glow-{tier}     → Box shadow glow color
+  avatar-ring-{tier}   → Avatar ring style
+  xp-bar-{tier}        → XP progress bar gradient
+  rank-glow-text-{tier} → Text glow/shadow
+
+RANK DISPLAY LOCATIONS
 ================================================================================
 
   Profile header      → RankBadge (sm, showStars) + Level

@@ -85,6 +85,10 @@ async def handle_social_message(sid, data):
 
     db = _get_db()
     try:
+        # Get sender for notification
+        sender = db.query(User).filter(User.id == sender_id).first()
+        sender_name = sender.display_name or sender.username if sender else f"user {sender_id}"
+
         # Save message to DB
         new_msg = Message(
             room_id=room_id,
@@ -95,6 +99,22 @@ async def handle_social_message(sid, data):
         )
         db.add(new_msg)
         db.flush() # Get ID
+
+        # Update room's last_message_at
+        room = db.query(ChatRoom).filter(ChatRoom.id == room_id).first()
+        if room:
+            room.last_message_at = datetime.utcnow()
+
+        # Create Notification DB record
+        notification = Notification(
+            user_id=recipient_id,
+            type="NEW_MESSAGE",
+            title="New Message",
+            message=f"New message from {sender_name}",
+            related_id=str(room_id)
+        )
+        db.add(notification)
+        db.flush()
         
         payload = {
             "id": new_msg.id,
@@ -108,11 +128,15 @@ async def handle_social_message(sid, data):
         # Emit to room
         await sio.emit('MESSAGE_RECEIVED', payload, room=f"chat_room_{room_id}", namespace='/social')
         
-        # Emit notification to recipient if they aren't in the room
+        # Emit notification to recipient's personal room
         await sio.emit('NEW_NOTIFICATION', {
-            "type": "message",
-            "message": f"New message from user {sender_id}",
-            "reference_id": str(room_id)
+            "id": notification.id,
+            "type": notification.type,
+            "title": notification.title,
+            "message": notification.message,
+            "related_id": notification.related_id,
+            "is_read": notification.is_read,
+            "created_at": notification.created_at.isoformat() if notification.created_at else None
         }, room=f"user_{recipient_id}", namespace='/social')
         
         db.commit()
@@ -128,6 +152,7 @@ async def handle_typing(sid, data):
     
     if room_id and user_id:
         await sio.emit('USER_TYPING', {
+            "room_id": room_id,
             "user_id": user_id,
             "is_typing": is_typing
         }, room=f"chat_room_{room_id}", skip_sid=sid, namespace='/social')

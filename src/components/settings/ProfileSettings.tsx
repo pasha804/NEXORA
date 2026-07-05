@@ -89,7 +89,7 @@ export const ProfileSettings = () => {
     const handleSave = async () => {
         setIsLoading(true);
         try {
-            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
             const token = localStorage.getItem("access_token");
 
             const response = await fetch(`${API_URL}/users/me`, {

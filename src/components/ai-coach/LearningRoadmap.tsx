@@ -19,7 +19,7 @@ interface RoadmapWeek {
 export const LearningRoadmap = () => {
     const [roadmap, setRoadmap] = useState<RoadmapWeek[]>([]);
     const [loading, setLoading] = useState(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchRoadmap = async () => {
         try {

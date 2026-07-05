@@ -10,7 +10,7 @@ interface ProjectMarketplaceProps {
     filters: any;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const ProjectMarketplace = ({ searchQuery, filters }: ProjectMarketplaceProps) => {
     const navigate = useNavigate();

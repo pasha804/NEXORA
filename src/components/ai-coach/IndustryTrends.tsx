@@ -26,7 +26,7 @@ export const IndustryTrends = () => {
     const [forecast, setForecast] = useState<MarketForecast | null>(null);
     const [personalInsight, setPersonalInsight] = useState<string>("");
     const [loading, setLoading] = useState(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchTrends = async () => {
         try {

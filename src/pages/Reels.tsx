@@ -1,104 +1,55 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import { Search, PlusSquare, MonitorPlay, Zap, Users, MessageSquare, UserPlus, Upload } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { Search, PlusSquare, MonitorPlay, Zap, Users, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ReelFeed } from "@/components/reels/ReelFeed";
 import { UploadModal } from "@/components/reels/UploadModal";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Reel } from "@/types/reels";
+import { useReelStore } from "@/hooks/useReelStore";
 
 const Reels = () => {
-    const [reels, setReels] = useState<Reel[]>([]);
+    const { reels, hasMore, isLoading, fetchReels } = useReelStore();
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [learningMode, setLearningMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeFeed, setActiveFeed] = useState<'foryou' | 'following' | 'clips'>('foryou');
-    
-    // Fetch reels from API on mount
+
     useEffect(() => {
-        const fetchReels = async () => {
-            try {
-                const token = localStorage.getItem("access_token");
-                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
-                const resp = await fetch(`${API_URL}/reels/feed`, {
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-                
-                if (resp.ok) {
-                    const data = await resp.json();
-                    
-                    // Map backend snake_case to frontend camelCase
-                    const mappedReels = data.map((r: any) => ({
-                        id: r.id,
-                        type: r.type,
-                        videoUrl: r.video_url,
-                        thumbnailUrl: r.thumbnail_url,
-                        caption: r.caption || r.title || "",
-                        skillTags: r.skill_tags || [],
-                        likes: r.likes_count || 0,
-                        comments: r.comments_count || 0,
-                        shares: 0,
-                        saves: 0,
-                        views: 0,
-                        isLiked: r.is_liked,
-                        createdAt: new Date(r.created_at),
-                        creator: {
-                            id: r.creator_id,
-                            username: r.creator?.username || "anonymous",
-                            name: r.creator?.display_name || r.creator?.full_name || "Nexus User",
-                            avatarUrl: r.creator?.avatar_url,
-                            isVerified: r.creator?.is_verified || false,
-                            isFollowed: false
-                        }
-                    }));
-                    
-                    setReels(mappedReels);
-                }
-            } catch (err) {
-                console.error("Failed to fetch reels:", err);
-            }
-        };
-        fetchReels();
+        fetchReels(true);
     }, []);
+
+    const handleLoadMore = useCallback(() => {
+        if (!isLoading && hasMore) fetchReels();
+    }, [isLoading, hasMore, fetchReels]);
+
+    const currentUserId = localStorage.getItem("user_id");
 
     const filteredReels = useMemo(() => {
         return reels.filter(reel => {
-            // Feed Filter
             if (activeFeed === 'following') {
                 if (!reel.creator.isFollowed) return false;
             } else if (activeFeed === 'clips') {
-                const currentUserId = localStorage.getItem("user_id");
-                if (reel.creator.id.toString() !== (currentUserId || "0")) return false;
+                if (reel.creator.id !== currentUserId) return false;
             }
-
-            // Learning Mode Filter
             if (learningMode && reel.type !== 'skill-tutorial' && reel.type !== 'ai-learning') {
                 return false;
             }
-
-            // Search Filter
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 const matchesCaption = reel.caption.toLowerCase().includes(query);
                 const matchesTags = reel.skillTags.some(tag => tag.toLowerCase().includes(query));
                 if (!matchesCaption && !matchesTags) return false;
             }
-
             return true;
         });
-    }, [reels, activeFeed, learningMode, searchQuery]);
-
-    const handleFeedChange = (feed: 'foryou' | 'following' | 'clips') => {
-        setActiveFeed(feed);
-    };
+    }, [reels, activeFeed, learningMode, searchQuery, currentUserId]);
 
     return (
         <div className="h-[calc(100vh-0px)] bg-black flex overflow-hidden relative">
             <UploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} />
 
-            {/* LEFT COLUMN: Navigation & Filters */}
+            {/* LEFT COLUMN */}
             <div className="hidden lg:flex flex-col w-72 border-r border-white/10 bg-zinc-950 p-6 z-20 shadow-2xl">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="font-display text-3xl font-bold text-white flex items-center gap-2">
@@ -141,7 +92,7 @@ const Reels = () => {
                         <Button
                             variant="ghost"
                             className={`w-full justify-start font-medium rounded-xl h-11 ${activeFeed === 'foryou' ? "bg-white/10 text-white" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
-                            onClick={() => handleFeedChange('foryou')}
+                            onClick={() => setActiveFeed('foryou')}
                         >
                             <MonitorPlay className={`w-4 h-4 mr-3 ${activeFeed === 'foryou' ? "text-primary" : ""}`} />
                             For You
@@ -149,7 +100,7 @@ const Reels = () => {
                         <Button
                             variant="ghost"
                             className={`w-full justify-start font-medium rounded-xl h-11 ${activeFeed === 'following' ? "bg-white/10 text-white" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
-                            onClick={() => handleFeedChange('following')}
+                            onClick={() => setActiveFeed('following')}
                         >
                             <Users className={`w-4 h-4 mr-3 ${activeFeed === 'following' ? "text-primary" : ""}`} />
                             Following
@@ -157,7 +108,7 @@ const Reels = () => {
                         <Button
                             variant="ghost"
                             className={`w-full justify-start font-medium rounded-xl h-11 ${activeFeed === 'clips' ? "bg-white/10 text-white" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
-                            onClick={() => handleFeedChange('clips')}
+                            onClick={() => setActiveFeed('clips')}
                         >
                             <Upload className={`w-4 h-4 mr-3 ${activeFeed === 'clips' ? "text-primary" : ""}`} />
                             Your Clips
@@ -171,7 +122,7 @@ const Reels = () => {
                 </Button>
             </div>
 
-            {/* MIDDLE COLUMN: Video Feed */}
+            {/* MIDDLE COLUMN */}
             {filteredReels.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-zinc-950/50">
                     <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
@@ -191,21 +142,19 @@ const Reels = () => {
                     </Button>
                 </div>
             ) : (
-                <ReelFeed reels={filteredReels} />
+                <ReelFeed reels={filteredReels} onLoadMore={handleLoadMore} hasMore={hasMore} isLoading={isLoading} />
             )}
 
-            {/* RIGHT COLUMN: Activity */}
+            {/* RIGHT COLUMN */}
             <div className="hidden xl:flex flex-col w-80 border-l border-white/10 bg-zinc-950 p-6 z-20">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="font-bold text-lg text-white">Platform Activity</h2>
                 </div>
-
                 <div className="space-y-4 mb-8">
                     <p className="text-xs text-muted-foreground leading-relaxed">
                         Follow creators to see their latest activity here.
                     </p>
                 </div>
-
                 <div className="p-4 rounded-xl bg-gradient-to-br from-neon-purple/10 to-transparent border border-neon-purple/20">
                     <h3 className="font-bold text-white mb-2 flex items-center gap-2">
                         <Zap className="w-4 h-4 text-yellow-400" />

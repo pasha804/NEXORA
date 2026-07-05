@@ -21,7 +21,7 @@ export const AIChatInterface = () => {
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;

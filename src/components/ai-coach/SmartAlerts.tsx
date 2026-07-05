@@ -17,7 +17,7 @@ export const SmartAlerts = () => {
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAlerts, setShowAlerts] = useState(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchAlerts = async () => {
         try {

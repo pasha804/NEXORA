@@ -669,6 +669,8 @@ class SkillPost(Base):
     content = Column(Text, nullable=False)
     media_url = Column(String, nullable=True)
     skill_id = Column(Integer, ForeignKey("skills.id"), nullable=True)
+    post_type = Column(String, default="text")
+    skill_tags = Column(JSON, default=[])
     likes_count = Column(Integer, default=0)
     comments_count = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -1052,10 +1054,13 @@ class Reel(Base):
     
     likes_count = Column(Integer, default=0)
     comments_count = Column(Integer, default=0)
+    saves_count = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     creator = relationship("User", back_populates="reels")
     likes = relationship("ReelLike", back_populates="reel", cascade="all, delete-orphan")
+    comments = relationship("ReelComment", back_populates="reel", cascade="all, delete-orphan")
+    saves = relationship("ReelSave", back_populates="reel", cascade="all, delete-orphan")
 
 class ReelLike(Base):
     __tablename__ = "reel_likes"
@@ -1066,6 +1071,29 @@ class ReelLike(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     reel = relationship("Reel", back_populates="likes")
+
+class ReelComment(Base):
+    __tablename__ = "reel_comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    reel_id = Column(String, ForeignKey("reels.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    content = Column(Text, nullable=False)
+    likes_count = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    reel = relationship("Reel", back_populates="comments")
+    user = relationship("User")
+
+class ReelSave(Base):
+    __tablename__ = "reel_saves"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    reel_id = Column(String, ForeignKey("reels.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    reel = relationship("Reel", back_populates="saves")
 
 class Community(Base):
     __tablename__ = "communities"

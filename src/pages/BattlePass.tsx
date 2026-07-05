@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 // Fallback tier data when no season is active
 const FALLBACK_TIERS = [

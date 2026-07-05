@@ -15,9 +15,10 @@ export const ChatWindow = () => {
     const { sendMessage: socketSendMessage, joinChat, emitTyping } = useSocialSocket();
     const [inputValue, setInputValue] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const activeConversation = conversations.find(c => c.id === activeConversationId);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     // Join room on change and fetch history
     useEffect(() => {
@@ -186,7 +187,21 @@ export const ChatWindow = () => {
                             placeholder={`Message ${displayName.split(' ')[0]}...`}
                             rows={1}
                             value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
+                            onChange={(e) => {
+                                setInputValue(e.target.value);
+                                if (activeConversationId) {
+                                    emitTyping(Number(activeConversationId), true);
+                                    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                                    typingTimeoutRef.current = setTimeout(() => {
+                                        emitTyping(Number(activeConversationId), false);
+                                    }, 2000);
+                                }
+                            }}
+                            onBlur={() => {
+                                if (activeConversationId) {
+                                    emitTyping(Number(activeConversationId), false);
+                                }
+                            }}
                             onKeyDown={handleKeyDown}
                             style={{ minHeight: '40px' }}
                         />

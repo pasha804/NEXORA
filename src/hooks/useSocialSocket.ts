@@ -2,15 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './useAuth';
 import { useMessagingStore } from './useMessagingStore';
+import { useNotificationStore } from './useNotificationStore';
 import { toast } from 'sonner';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const useSocialSocket = () => {
     const { user, token } = useAuth();
     const socketRef = useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
-    const { addMessageToConversation, updateConversationStatus } = useMessagingStore();
+    const { addMessageToConversation, updateConversationStatus, updateTypingStatus } = useMessagingStore();
+    const { addNotification } = useNotificationStore();
 
     useEffect(() => {
         if (!user || !token) return;
@@ -52,10 +54,17 @@ export const useSocialSocket = () => {
             updateConversationStatus(payload.user_id, payload.status);
         });
 
+        socket.on('USER_TYPING', (payload) => {
+            updateTypingStatus(payload.room_id, payload.user_id, payload.is_typing);
+        });
+
         socket.on('NEW_NOTIFICATION', (payload) => {
+            if (payload.id) {
+                addNotification(payload);
+            }
             toast(payload.message, {
-                description: payload.type === 'message' ? 'Click to view' : '',
-                action: payload.type === 'message' ? {
+                description: payload.type === 'message' || payload.type === 'NEW_MESSAGE' ? 'Click to view' : '',
+                action: payload.type === 'message' || payload.type === 'NEW_MESSAGE' ? {
                     label: 'View',
                     onClick: () => console.log("Navigate to room", payload.reference_id)
                 } : undefined

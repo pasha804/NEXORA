@@ -15,8 +15,12 @@ import { ProfileEditModal } from "@/components/profile/ProfileEditModal";
 import { useSkillProgression } from "@/hooks/useSkillIntelligence";
 import { SkillActivityTimeline } from "@/components/profile/SkillActivityTimeline";
 import { Briefcase, GraduationCap, Lightbulb, UserRoundPen, Wrench } from "lucide-react";
+import { getRankInfoFromString } from "@/lib/rankSystem";
+import { DynamicProfileTheme } from "@/components/profile/DynamicProfileTheme";
+import { GrandmasterEffects } from "@/components/profile/GrandmasterEffects";
+import { ProfileOverviewTabs } from "@/components/profile/ProfileOverviewTabs";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const Profile = () => {
     const { username } = useParams();
@@ -49,8 +53,10 @@ const Profile = () => {
                     setProfile({
                         ...data,
                         display_name: data.display_name || data.username,
-                        rank: data.rank || "Novice",
-                        xp: data.xp || 0,
+                        rank: data.rank || data.rank_level || "Novice",
+                        xp: data.xp || data.xp_total || 0,
+                        ranking_score: data.ranking_score ?? data.rp,
+                        prestige: data.prestige ?? (data.level >= 50 ? 5 : data.level >= 30 ? 3 : 0),
                         followers: data.followers_count || 0,
                         following: data.following_count || 0,
                     });
@@ -84,8 +90,11 @@ const Profile = () => {
                 display_name: userData.display_name || userData.username,
                 rank: userData.rank_level || userData.rank || "Novice",
                 xp: userData.xp_total || userData.xp || 0,
+                ranking_score: userData.ranking_score ?? userData.rp,
+                prestige: userData.prestige ?? 0,
                 followers: userData.followers_count || 0,
                 following: userData.following_count || 0,
+                skills: userData.skills,
             });
         } catch (error) {
             console.error("Error fetching profile:", error);
@@ -143,8 +152,20 @@ const Profile = () => {
         );
     }
 
+    const profileRank = profile.rank || "Novice";
+    const rankInfo = getRankInfoFromString(profileRank);
+    const isGrandmaster = rankInfo.isGrandmaster;
+
     return (
-        <div className="min-h-screen bg-transparent pb-20">
+        <div className="min-h-screen bg-transparent pb-20 relative">
+            {/* Rank-based ambient background */}
+            <DynamicProfileTheme rank={profileRank} className="absolute inset-0 -z-10 pointer-events-none" />
+            {isGrandmaster && (
+                <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+                    <GrandmasterEffects rank={profileRank} type="full" />
+                </div>
+            )}
+
             {/* Profile Edit Modal */}
             <ProfileEditModal
                 open={editing}
@@ -159,6 +180,10 @@ const Profile = () => {
                     isOwnProfile={!!isOwnProfile}
                     onEdit={() => openEdit("bio")}
                 />
+
+                {isGrandmaster && (
+                    <ProfileOverviewTabs profile={profile} isGrandmaster />
+                )}
 
                 {isOwnProfile && (
                     <div className="px-4 md:px-8 pb-2">

@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export const RealTimeEvents = () => {
     const { user } = useAuth();
-    const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
     useEffect(() => {
         if (!user) return;

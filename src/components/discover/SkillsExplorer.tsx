@@ -42,7 +42,7 @@ interface SkillsExplorerProps {
 export const SkillsExplorer = ({ searchQuery, filters }: SkillsExplorerProps) => {
     const [skills, setSkills] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchSkills = async () => {
         setLoading(true);

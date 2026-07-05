@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { CreateCommunityModal } from "./CreateCommunityModal";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 // Types
 interface Community {
@@ -17,7 +18,7 @@ interface Community {
 
 const fetchMyCommunities = async (): Promise<Community[]> => {
     const token = localStorage.getItem("access_token");
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
     const res = await fetch(`${API_URL}/communities/me`, {
         headers: { "Authorization": `Bearer ${token}` }
     });
@@ -26,13 +27,14 @@ const fetchMyCommunities = async (): Promise<Community[]> => {
 };
 
 const fetchDiscoverCommunities = async (): Promise<Community[]> => {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
     const res = await fetch(`${API_URL}/communities/discover`);
     if (!res.ok) throw new Error('Failed to fetch communities to discover');
     return res.json();
 };
 
 export const SidebarLeft = () => {
+    const navigate = useNavigate();
     const { data: joinedCommunities, isLoading: isJoinedLoading } = useQuery({
         queryKey: ['my-communities'],
         queryFn: fetchMyCommunities
@@ -68,7 +70,7 @@ export const SidebarLeft = () => {
                             <p className="text-xs text-muted-foreground px-2 py-2">You haven't joined any communities yet.</p>
                         ) : (
                             joinedCommunities?.map((c) => (
-                                <div key={c.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer group transition-colors">
+                                <div key={c.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer group transition-colors" onClick={() => navigate(`/communities/${c.slug}`)}>
                                     <Avatar className="w-8 h-8 rounded-lg border border-white/10">
                                         <AvatarImage src={c.logo_url} />
                                         <AvatarFallback className="rounded-lg bg-zinc-900 text-xs font-bold">{c.name[0]}</AvatarFallback>
@@ -92,7 +94,7 @@ export const SidebarLeft = () => {
                         {isDiscoverLoading ? (
                             <div className="flex justify-center p-4"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
                         ) : discoverCommunities?.map((c) => (
-                            <div key={c.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer group transition-colors opacity-80 hover:opacity-100">
+                            <div key={c.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer group transition-colors opacity-80 hover:opacity-100" onClick={() => navigate(`/communities/${c.slug}`)}>
                                 <Avatar className="h-9 w-9 border border-white/10 group-hover:border-neon-purple/50 transition-colors rounded-lg overflow-hidden">
                                     <AvatarImage src={c.logo_url} />
                                     <AvatarFallback className="rounded-lg bg-zinc-900 border border-white/5">{c.name.substring(0, 2)}</AvatarFallback>

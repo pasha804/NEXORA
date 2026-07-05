@@ -7,7 +7,8 @@ from pydantic import BaseModel
 from common.database import get_db
 from common.models import User, ChatRoom, Message, Notification
 import auth as auth_module
-from common.social_utils import can_users_message, get_messaging_status
+from common.social_utils import can_users_message, get_messaging_status, are_users_connected, get_user_skill_names
+from common.realtime_utils import emit_realtime_notification
 import schemas
 
 router = APIRouter(prefix="/messages", tags=["Messages"])
@@ -70,8 +71,17 @@ async def get_chat_rooms(
             Message.is_read == False
         ).count()
         
+        # Determine category
+        if are_users_connected(db, current_user.id, recipient_id):
+            category = "friends"
+        elif get_user_skill_names(db, current_user.id) & get_user_skill_names(db, recipient_id):
+            category = "skill-matches"
+        else:
+            category = "all"
+
         results.append({
             "room_id": r.id,
+            "category": category,
             "recipient": {
                 "id": recipient.id,
                 "username": recipient.username,
@@ -152,6 +162,8 @@ async def send_message(
     db.add(notification)
     
     db.commit()
+    db.refresh(notification)
+    await emit_realtime_notification(notification)
     return new_msg
 
 @router.get("/status/{user_id}")

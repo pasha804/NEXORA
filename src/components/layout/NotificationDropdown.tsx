@@ -1,21 +1,19 @@
-import { useState, useEffect } from "react";
-import { Bell, Check, Trash2, UserPlus, MessageSquare, Swords, Zap } from "lucide-react";
+import { useEffect } from "react";
+import { Bell, UserPlus, MessageSquare, Swords, Zap, UserCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { useNotificationStore } from "@/hooks/useNotificationStore";
 
 export const NotificationDropdown = () => {
-    const [notifications, setNotifications] = useState<any[]>([]);
-    const [unreadCount, setUnreadCount] = useState(0);
+    const { notifications, unreadCount, initialized, setNotifications, markAsRead, markAllAsRead } = useNotificationStore();
     const { token } = useAuth();
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchNotifications = async () => {
         try {
@@ -25,7 +23,6 @@ export const NotificationDropdown = () => {
             if (resp.ok) {
                 const data = await resp.json();
                 setNotifications(data);
-                setUnreadCount(data.filter((n: any) => !n.is_read).length);
             }
         } catch (err) {
             console.error("Notifications fetch error:", err);
@@ -33,47 +30,91 @@ export const NotificationDropdown = () => {
     };
 
     useEffect(() => {
-        if (token) {
+        if (token && !initialized) {
             fetchNotifications();
-            // Optional: poll every 60s as backup to WebSockets
-            const interval = setInterval(fetchNotifications, 60000);
-            return () => clearInterval(interval);
         }
-    }, [token]);
+    }, [token, initialized]);
 
-    const markRead = async (id: number) => {
+    const handleMarkRead = async (id: number) => {
+        markAsRead(id);
         try {
             await fetch(`${API_URL}/notifications/${id}/read`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });
-            fetchNotifications();
         } catch (err) {
             console.error("Mark read error:", err);
         }
     };
 
-    const markAllRead = async () => {
+    const handleMarkAllRead = async () => {
+        markAllAsRead();
         try {
             await fetch(`${API_URL}/notifications/read-all`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });
-            fetchNotifications();
         } catch (err) {
             console.error("Mark all read error:", err);
         }
     };
 
+    const acceptConnection = async (senderId: number) => {
+        try {
+            const resp = await fetch(`${API_URL}/connections/accept-by-sender/${senderId}`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (resp.ok) {
+                toast.success("Connection accepted!");
+                fetchNotifications();
+            } else {
+                const data = await resp.json();
+                toast.error(data.detail || "Failed to accept");
+            }
+        } catch {
+            toast.error("Network error");
+        }
+    };
+
+    const rejectConnection = async (senderId: number) => {
+        try {
+            const resp = await fetch(`${API_URL}/connections/reject-by-sender/${senderId}`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (resp.ok) {
+                toast.success("Connection request rejected");
+                fetchNotifications();
+            } else {
+                const data = await resp.json();
+                toast.error(data.detail || "Failed to reject");
+            }
+        } catch {
+            toast.error("Network error");
+        }
+    };
+
     const getIcon = (type: string) => {
         switch (type) {
+            case 'CONNECTION_REQUEST':
             case 'connection_request': return <UserPlus className="w-4 h-4 text-blue-400" />;
-            case 'message': return <MessageSquare className="w-4 h-4 text-green-400" />;
-            case 'pvp_challenge': return <Swords className="w-4 h-4 text-red-400" />;
-            case 'endorsement': return <Zap className="w-4 h-4 text-yellow-400" />;
+            case 'CONNECTION_ACCEPTED':
+            case 'connection_accepted': return <UserCheck className="w-4 h-4 text-green-400" />;
+            case 'NEW_FOLLOWER':
+            case 'new_follower': return <UserPlus className="w-4 h-4 text-cyan-400" />;
+            case 'message':
+            case 'NEW_MESSAGE': return <MessageSquare className="w-4 h-4 text-green-400" />;
+            case 'pvp_challenge':
+            case 'MATCH_FOUND': return <Swords className="w-4 h-4 text-red-400" />;
+            case 'endorsement':
+            case 'SKILL_VERIFIED': return <Zap className="w-4 h-4 text-yellow-400" />;
             default: return <Bell className="w-4 h-4 text-primary" />;
         }
     };
+
+    const isConnectionRequest = (type: string) =>
+        type === 'CONNECTION_REQUEST' || type === 'connection_request';
 
     return (
         <DropdownMenu>
@@ -91,7 +132,7 @@ export const NotificationDropdown = () => {
                 <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                     <h3 className="font-bold text-sm">Notifications</h3>
                     {unreadCount > 0 && (
-                        <button onClick={markAllRead} className="text-[10px] text-primary hover:underline">Mark all as read</button>
+                        <button onClick={handleMarkAllRead} className="text-[10px] text-primary hover:underline">Mark all as read</button>
                     )}
                 </div>
                 <div className="max-h-96 overflow-y-auto scrollbar-thin">
@@ -101,12 +142,11 @@ export const NotificationDropdown = () => {
                         </div>
                     ) : (
                         notifications.map((n) => (
-                            <DropdownMenuItem
+                            <div
                                 key={n.id}
-                                className={`p-4 border-b border-white/5 flex gap-3 items-start cursor-pointer hover:bg-white/5 focus:bg-white/5 transition-colors ${!n.is_read ? 'bg-primary/5' : ''}`}
-                                onClick={() => markRead(n.id)}
+                                className={`p-4 border-b border-white/5 flex gap-3 items-start transition-colors ${!n.is_read ? 'bg-primary/5' : ''}`}
                             >
-                                <div className="mt-1">{getIcon(n.type)}</div>
+                                <div className="mt-1 shrink-0">{getIcon(n.type)}</div>
                                 <div className="flex-1 min-w-0">
                                     <p className={`text-xs leading-relaxed ${!n.is_read ? 'text-white font-medium' : 'text-muted-foreground'}`}>
                                         {n.message}
@@ -114,9 +154,32 @@ export const NotificationDropdown = () => {
                                     <p className="text-[10px] text-muted-foreground/50 mt-1">
                                         {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
+                                    {isConnectionRequest(n.type) && (
+                                        <div className="flex gap-2 mt-2">
+                                            <Button
+                                                size="sm"
+                                                className="h-7 px-3 text-[10px] font-bold bg-green-500 hover:bg-green-600 text-white"
+                                                onClick={() => acceptConnection(Number(n.related_id))}
+                                            >
+                                                <UserCheck className="w-3 h-3 mr-1" /> Accept
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-7 px-3 text-[10px] border-white/10 text-muted-foreground hover:text-white"
+                                                onClick={() => rejectConnection(Number(n.related_id))}
+                                            >
+                                                <X className="w-3 h-3 mr-1" /> Reject
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
-                                {!n.is_read && <div className="w-2 h-2 rounded-full bg-primary mt-1 shadow-[0_0_5px_rgba(0,240,255,0.5)]" />}
-                            </DropdownMenuItem>
+                                {!n.is_read && (
+                                    <button onClick={() => handleMarkRead(n.id)} className="shrink-0 mt-1">
+                                        <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_5px_rgba(0,240,255,0.5)] hover:opacity-50 transition-opacity" />
+                                    </button>
+                                )}
+                            </div>
                         ))
                     )}
                 </div>

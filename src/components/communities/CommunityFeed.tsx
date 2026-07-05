@@ -9,8 +9,28 @@ import { CommunityLearningTab } from "./CommunityLearningTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const CommunityFeed = () => {
+interface CommunityFeedProps {
+    community?: {
+        id: number;
+        name: string;
+        slug: string;
+        description?: string;
+        logo_url?: string;
+        banner_url?: string;
+        member_count: number;
+        tags: string[];
+    };
+}
+
+export const CommunityFeed = ({ community }: CommunityFeedProps) => {
     const [activeTab, setActiveTab] = useState("feed");
+
+    const slug = community?.slug || "react-devs";
+    const name = community?.name || "React Developers";
+    const description = community?.description || "The largest community for React & Next.js developers. Share projects, find teammates, and level up together.";
+    const memberCount = community ? `${community.member_count}` : "45k";
+    const onlineCount = "1,240";
+    const tags = community?.tags || ["React", "Next.js", "Frontend", "JavaScript"];
 
     const TABS = [
         { id: "feed", label: "Feed" },
@@ -22,13 +42,14 @@ export const CommunityFeed = () => {
 
     return (
         <div className="flex-1 flex flex-col bg-zinc-950/50">
-            {/* Header Component */}
             <CommunityHeader
-                name="React Developers"
-                description="The largest community for React & Next.js developers. Share projects, find teammates, and level up together."
-                memberCount="45k"
-                onlineCount="1,240"
-                tags={["React", "Next.js", "Frontend", "JavaScript"]}
+                name={name}
+                description={description}
+                memberCount={memberCount}
+                onlineCount={onlineCount}
+                logoUrl={community?.logo_url}
+                bannerUrl={community?.banner_url}
+                tags={tags}
             />
 
             {/* Main Content Area with integrated Tabs */}
@@ -69,7 +90,7 @@ export const CommunityFeed = () => {
                             >
                                 {activeTab === "feed" && (
                                     <TabsContent value="feed" className="mt-0 outline-none">
-                                        <CommunityFeedTab />
+                                        <CommunityFeedTab slug={slug} />
                                     </TabsContent>
                                 )}
 

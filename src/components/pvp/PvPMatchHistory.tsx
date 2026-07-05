@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Swords, Trophy, TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 interface HistoryEntry {
     match_id: string;

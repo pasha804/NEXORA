@@ -1,6 +1,6 @@
 # Nexora — Folder Structure
 
-> Version 3.0 | May 2026
+> Version 5.1 | July 2026
 
 ```
 NEXORA/
@@ -22,6 +22,7 @@ NEXORA/
 ├── architecture.md               # System architecture documentation
 ├── folder-structure.md           # This file
 ├── detail.txt                    # Full platform documentation
+├── documentation.md              # 14-section comprehensive guide
 ├── AI_COACH_API.md               # AI Coach API reference
 │
 │
@@ -98,15 +99,23 @@ NEXORA/
 │   │   │
 │   │   ├── messaging/            # Messaging UI components
 │   │   │
-│   │   ├── profile/              # Profile page components
-│   │   │   ├── HeroProfileHeader.tsx     # Banner + avatar + stats
+│   │   ├── profile/              # Profile page components (28 files)
+│   │   │   ├── HeroProfileHeader.tsx     # Banner + avatar + stats + rank evolution
 │   │   │   ├── ProfileEditModal.tsx      # Edit modal (all sections)
 │   │   │   ├── SkillReputation.tsx       # Skills with endorsements
 │   │   │   ├── ProfessionalPortfolio.tsx # Experience/Education/Projects
 │   │   │   ├── ContentShowcase.tsx       # Posts and activity
 │   │   │   ├── PvPStats.tsx              # Battle stats widget
 │   │   │   ├── AIGrowth.tsx              # AI growth insights
-│   │   │   └── SkillActivityTimeline.tsx # Skill activity log
+│   │   │   ├── SkillActivityTimeline.tsx # Skill activity log
+│   │   │   ├── RankAura.tsx              # Animated aura + floating rank particles
+│   │   │   ├── RankBadgeAnimated.tsx     # Enhanced badge with RGB/Grandmaster effects
+│   │   │   ├── PrestigeOverlay.tsx       # Prestige I–V visual overlays
+│   │   │   ├── GrandmasterEffects.tsx    # Cosmic BG, energy waves, RGB crown
+│   │   │   ├── DynamicProfileTheme.tsx   # Rank-based card/ring theming
+│   │   │   ├── UserCard.tsx              # Reusable card + hover preview
+│   │   │   ├── RecommendationCards.tsx   # Multi-section recommendation engine
+│   │   │   └── ... (12 more)
 │   │   │
 │   │   ├── pvp/                  # PvP arena components
 │   │   │   ├── ActiveBattleContainer.tsx # Floating active match widget
@@ -147,11 +156,13 @@ NEXORA/
 │   │   └── reels.ts              # Reel types
 │   │
 │   ├── lib/
+│   │   ├── rankSystem.ts         # Rank definitions, progression math (261 lines)
+│   │   ├── profileDistinctiveness.ts # Visual variance engine (XP/reputation/followers)
 │   │   ├── utils.ts              # cn() and other utilities
 │   │   └── mockData/             # Legacy mock data (not used in production)
 │   │
 │   ├── styles/
-│   │   ├── discover-animations.css
+│   │   ├── discover-animations.css      # Rank evolution keyframes (25+ animations)
 │   │   └── scrollbar-theme.css
 │   │
 │   ├── integrations/

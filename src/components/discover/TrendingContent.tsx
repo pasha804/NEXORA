@@ -51,7 +51,7 @@ export const TrendingContent = ({ searchQuery, filters }: TrendingContentProps) 
     const [filter, setFilter] = useState<"all" | "videos" | "articles" | "discussions">("all");
     const [timeRange, setTimeRange] = useState<"today" | "week" | "month">("today");
     const [trendingContent, setTrendingContent] = useState<TrendingContent[]>([]);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     useEffect(() => {
         const fetchTrending = async () => {

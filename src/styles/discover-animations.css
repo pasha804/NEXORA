@@ -116,3 +116,635 @@
         backdrop-filter: blur(12px) saturate(160%);
     }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   RANK EVOLUTION ANIMATIONS — Dynamic Profile Evolution System
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Rank Aura Pulse ─── */
+@keyframes rank-aura-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50%      { opacity: 0.6; transform: scale(1.08); }
+}
+
+@keyframes rank-aura-pulse-intense {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50%      { opacity: 0.9; transform: scale(1.15); }
+}
+
+.aura-pulse {
+    animation: rank-aura-pulse 3s ease-in-out infinite;
+}
+
+.aura-pulse-intense {
+    animation: rank-aura-pulse-intense 2s ease-in-out infinite;
+}
+
+/* ─── Particle Float ─── */
+@keyframes particle-float {
+    0%   { transform: translateY(0) scale(1); opacity: 0; }
+    20%  { opacity: 0.8; }
+    80%  { opacity: 0.8; }
+    100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
+}
+
+@keyframes particle-float-sideways {
+    0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+    20%  { opacity: 0.7; }
+    80%  { opacity: 0.7; }
+    100% { transform: translate(20px, -50px) scale(0.3); opacity: 0; }
+}
+
+.particle-float {
+    animation: particle-float 3s ease-out infinite;
+}
+
+.particle-float-sideways {
+    animation: particle-float-sideways 4s ease-out infinite;
+}
+
+/* ─── Shimmering Border ─── */
+@keyframes shimmer-border {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+.shimmer-border {
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.1) 25%,
+        rgba(255,255,255,0.2) 50%,
+        rgba(255,255,255,0.1) 75%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-border 3s linear infinite;
+}
+
+/* ─── RGB Cycling Border ─── */
+@keyframes rgb-border {
+    0%   { border-color: rgb(255, 0, 0); }
+    16%  { border-color: rgb(255, 165, 0); }
+    33%  { border-color: rgb(255, 255, 0); }
+    50%  { border-color: rgb(0, 255, 0); }
+    66%  { border-color: rgb(0, 150, 255); }
+    83%  { border-color: rgb(150, 0, 255); }
+    100% { border-color: rgb(255, 0, 0); }
+}
+
+.rgb-border {
+    animation: rgb-border 4s linear infinite;
+}
+
+/* ─── RGB Glow Shadow ─── */
+@keyframes rgb-glow {
+    0%   { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+    16%  { box-shadow: 0 0 20px rgba(255, 165, 0, 0.5); }
+    33%  { box-shadow: 0 0 20px rgba(255, 255, 0, 0.5); }
+    50%  { box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+    66%  { box-shadow: 0 0 20px rgba(0, 150, 255, 0.5); }
+    83%  { box-shadow: 0 0 20px rgba(150, 0, 255, 0.5); }
+    100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+}
+
+.rgb-glow {
+    animation: rgb-glow 4s linear infinite;
+}
+
+/* ─── Crown Float ─── */
+@keyframes crown-float {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    25%      { transform: translateY(-6px) rotate(0deg); }
+    50%      { transform: translateY(-10px) rotate(3deg); }
+    75%      { transform: translateY(-4px) rotate(0deg); }
+}
+
+.crown-float {
+    animation: crown-float 3s ease-in-out infinite;
+}
+
+/* ─── Grandmaster Energy Wave ─── */
+@keyframes energy-wave {
+    0%   { transform: scaleX(0); opacity: 0.8; }
+    50%  { opacity: 0.4; }
+    100% { transform: scaleX(1); opacity: 0; }
+}
+
+.energy-wave {
+    animation: energy-wave 2.5s ease-out infinite;
+}
+
+/* ─── Floating Particles ─── */
+@keyframes float-particle {
+    0%   { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateY(-100px) translateX(var(--drift, 30px)) scale(1); opacity: 0; }
+}
+
+.float-particle {
+    animation: float-particle var(--duration, 4s) ease-out infinite;
+    animation-delay: var(--delay, 0s);
+}
+
+/* ─── Moving Gradient Border ─── */
+@keyframes gradient-border-move {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.gradient-border {
+    background: linear-gradient(90deg, var(--gradient-from, #3b82f6), var(--gradient-to, #8b5cf6), var(--gradient-from, #3b82f6));
+    background-size: 200% 100%;
+    animation: gradient-border-move 3s ease infinite;
+}
+
+/* ─── Cinematic Grandmaster Background ─── */
+@keyframes cosmic-drift {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(20px, -15px) scale(1.05); }
+    66%  { transform: translate(-15px, 10px) scale(0.95); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+.cosmic-drift {
+    animation: cosmic-drift 20s ease-in-out infinite;
+}
+
+/* ─── Holographic Overlay ─── */
+@keyframes holographic-shift {
+    0%   { opacity: 0.1; filter: hue-rotate(0deg); }
+    50%  { opacity: 0.3; filter: hue-rotate(180deg); }
+    100% { opacity: 0.1; filter: hue-rotate(360deg); }
+}
+
+.holographic-overlay {
+    animation: holographic-shift 6s linear infinite;
+    pointer-events: none;
+}
+
+/* ─── Lightning Flash ─── */
+@keyframes lightning-flash {
+    0%, 90%, 96% { opacity: 0; }
+    92% { opacity: 0.6; }
+    94% { opacity: 0; }
+    98% { opacity: 0.3; }
+    100% { opacity: 0; }
+}
+
+.lightning-flash {
+    animation: lightning-flash 8s ease-in infinite;
+}
+
+/* ─── Elite Title Reveal ─── */
+@keyframes title-reveal {
+    0%   { clip-path: inset(0 100% 0 0); opacity: 0; }
+    60%  { clip-path: inset(0 0% 0 0); opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0.9; }
+}
+
+.title-reveal {
+    animation: title-reveal 1.5s ease-out forwards;
+}
+
+/* ─── Fire/Energy Border Trail ─── */
+@keyframes fire-trail {
+    0%   { box-shadow: 0 0 5px rgba(255, 100, 0, 0.3), 0 0 10px rgba(255, 50, 0, 0.2); }
+    25%  { box-shadow: 0 0 10px rgba(255, 150, 0, 0.5), 0 0 20px rgba(255, 100, 0, 0.3); }
+    50%  { box-shadow: 0 0 15px rgba(255, 200, 0, 0.6), 0 0 30px rgba(255, 150, 0, 0.4); }
+    75%  { box-shadow: 0 0 10px rgba(255, 150, 0, 0.5), 0 0 20px rgba(255, 100, 0, 0.3); }
+    100% { box-shadow: 0 0 5px rgba(255, 100, 0, 0.3), 0 0 10px rgba(255, 50, 0, 0.2); }
+}
+
+.fire-trail {
+    animation: fire-trail 2s ease-in-out infinite;
+}
+
+/* ─── Diamond Sparkle ─── */
+@keyframes diamond-sparkle {
+    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50%      { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+.diamond-sparkle {
+    animation: diamond-sparkle 2s ease-in-out infinite;
+}
+
+/* ─── Prestige Aura Layers ─── */
+@keyframes prestige-aura {
+    0%   { transform: scale(1); opacity: 0.15; }
+    50%  { transform: scale(1.1); opacity: 0.3; }
+    100% { transform: scale(1); opacity: 0.15; }
+}
+
+.prestige-aura {
+    animation: prestige-aura 4s ease-in-out infinite;
+}
+
+/* ─── Rank-Specific Card Backgrounds ─── */
+.rank-card-novice {
+    background: linear-gradient(135deg, rgba(75, 75, 75, 0.1), rgba(40, 40, 40, 0.2));
+}
+
+.rank-card-bronze {
+    background: linear-gradient(135deg, rgba(180, 100, 30, 0.08), rgba(120, 60, 20, 0.15));
+}
+
+.rank-card-silver {
+    background: linear-gradient(135deg, rgba(180, 190, 200, 0.08), rgba(140, 150, 160, 0.12));
+}
+
+.rank-card-gold {
+    background: linear-gradient(135deg, rgba(255, 200, 50, 0.08), rgba(200, 150, 30, 0.15));
+}
+
+.rank-card-platinum {
+    background: linear-gradient(135deg, rgba(0, 200, 255, 0.08), rgba(150, 50, 255, 0.12));
+}
+
+.rank-card-diamond {
+    background: linear-gradient(135deg, rgba(100, 150, 255, 0.08), rgba(255, 50, 150, 0.12));
+}
+
+.rank-card-heroic {
+    background: linear-gradient(135deg, rgba(200, 50, 50, 0.08), rgba(150, 0, 200, 0.15));
+}
+
+.rank-card-master {
+    background: linear-gradient(135deg, rgba(50, 150, 255, 0.08), rgba(255, 200, 50, 0.15));
+}
+
+.rank-card-grandmaster {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.05), rgba(0, 150, 255, 0.05));
+    animation: rgb-glow 4s linear infinite;
+}
+
+/* ─── Avatar Ring by Rank ─── */
+.avatar-ring-novice {
+    box-shadow: 0 0 0 2px rgba(156,163,175,0.3);
+}
+.avatar-ring-bronze {
+    box-shadow: 0 0 0 2px rgba(251,146,60,0.4), 0 0 10px rgba(251,146,60,0.2);
+}
+.avatar-ring-silver {
+    box-shadow: 0 0 0 2px rgba(203,213,225,0.4), 0 0 12px rgba(203,213,225,0.3);
+}
+.avatar-ring-gold {
+    box-shadow: 0 0 0 2px rgba(250,204,21,0.5), 0 0 15px rgba(250,204,21,0.3);
+}
+.avatar-ring-platinum {
+    box-shadow: 0 0 0 2px rgba(103,232,249,0.5), 0 0 18px rgba(103,232,249,0.3), 0 0 30px rgba(103,232,249,0.1);
+}
+.avatar-ring-diamond {
+    box-shadow: 0 0 0 2px rgba(147,197,253,0.6), 0 0 20px rgba(147,197,253,0.4), 0 0 40px rgba(147,197,253,0.15);
+}
+.avatar-ring-heroic {
+    box-shadow: 0 0 0 2px rgba(192,132,252,0.6), 0 0 25px rgba(192,132,252,0.4), 0 0 50px rgba(192,132,252,0.2);
+}
+.avatar-ring-master {
+    box-shadow: 0 0 0 2px rgba(248,113,113,0.7), 0 0 30px rgba(248,113,113,0.5), 0 0 60px rgba(248,113,113,0.2);
+    animation: rank-aura-pulse 2.5s ease-in-out infinite;
+}
+.avatar-ring-grandmaster {
+    animation: rgb-glow 3s linear infinite;
+}
+
+/* ─── XP Bar Rank Colors ─── */
+.xp-bar-novice { background: linear-gradient(90deg, #6b7280, #9ca3af); }
+.xp-bar-bronze { background: linear-gradient(90deg, #d97706, #f59e0b); }
+.xp-bar-silver { background: linear-gradient(90deg, #9ca3af, #e5e7eb); }
+.xp-bar-gold   { background: linear-gradient(90deg, #ca8a04, #eab308, #facc15); }
+.xp-bar-platinum { background: linear-gradient(90deg, #06b6d4, #8b5cf6, #c084fc); }
+.xp-bar-diamond { background: linear-gradient(90deg, #3b82f6, #ec4899, #f472b6); }
+.xp-bar-heroic { background: linear-gradient(90deg, #dc2626, #9333ea, #a855f7); }
+.xp-bar-master { background: linear-gradient(90deg, #3b82f6, #facc15, #3b82f6); background-size: 200% 100%; animation: shimmer-border 2s linear infinite; }
+.xp-bar-grandmaster { background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000); background-size: 300% 100%; animation: shimmer-border 1.5s linear infinite; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   GRANDMASTER FIRE / ENERGY BORDER TRAIL
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes fire-trail-move {
+    0%   { transform: translateX(-100%) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateX(200%) rotate(360deg); opacity: 0; }
+}
+
+.fire-trail-top {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 100, 0, 0.8) 10%,
+        rgba(255, 200, 0, 1) 30%,
+        rgba(255, 50, 0, 0.8) 50%,
+        rgba(255, 200, 0, 1) 70%,
+        rgba(255, 100, 0, 0.8) 90%,
+        transparent 100%
+    );
+    filter: blur(1px);
+    animation: fire-trail-move 2s linear infinite;
+    pointer-events: none;
+}
+
+.fire-trail-bottom {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(270deg,
+        transparent 0%,
+        rgba(255, 100, 0, 0.8) 10%,
+        rgba(255, 200, 0, 1) 30%,
+        rgba(255, 50, 0, 0.8) 50%,
+        rgba(255, 200, 0, 1) 70%,
+        rgba(255, 100, 0, 0.8) 90%,
+        transparent 100%
+    );
+    filter: blur(1px);
+    animation: fire-trail-move 2s linear infinite;
+    animation-delay: 1s;
+    pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PROFILE DISTINCTIVENESS — Unique variations per user
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Reputation-based glow intensity classes */
+.rep-low    { filter: brightness(0.8) saturate(0.7); }
+.rep-medium { filter: brightness(1.0) saturate(1.0); }
+.rep-high   { filter: brightness(1.2) saturate(1.3); }
+.rep-elite  { filter: brightness(1.4) saturate(1.5) drop-shadow(0 0 8px rgba(255,200,0,0.3)); }
+
+/* Achievement-based particle color variants */
+.particles-common { background-color: rgba(156,163,175,0.6); }
+.particles-uncommon { background-color: rgba(59,130,246,0.6); }
+.particles-rare { background-color: rgba(139,92,246,0.6); }
+.particles-epic { background-color: rgba(236,72,153,0.6); }
+.particles-legendary { background-color: rgba(251,191,36,0.6); }
+.particles-mythic { background-color: rgba(255,0,0,0.6); }
+
+/* Fame-based border shine (more followers = brighter border) */
+@keyframes fame-shine {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+.fame-shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.fame-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.03) 30%,
+        rgba(255,255,255,0.06) 50%,
+        rgba(255,255,255,0.03) 70%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: fame-shine 4s linear infinite;
+    pointer-events: none;
+}
+
+/* XP-based animation speed variant */
+@keyframes aura-pulse-fast {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.12); opacity: 0.7; }
+}
+
+.aura-pulse-fast {
+    animation: aura-pulse-fast 1.5s ease-in-out infinite;
+}
+
+@keyframes aura-pulse-slow {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.05); opacity: 0.4; }
+}
+
+.aura-pulse-slow {
+    animation: aura-pulse-slow 5s ease-in-out infinite;
+}
+
+/* ─── Animated text gradient for usernames (Master+) ─── */
+@keyframes text-gradient-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.text-gradient-animated {
+    background: linear-gradient(90deg, #3b82f6, #facc15, #3b82f6);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: text-gradient-shift 3s ease infinite;
+}
+
+.text-gradient-heroic {
+    background: linear-gradient(90deg, #dc2626, #9333ea, #dc2626);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: text-gradient-shift 4s ease infinite;
+}
+
+.text-gradient-diamond {
+    background: linear-gradient(90deg, #3b82f6, #ec4899, #3b82f6);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: text-gradient-shift 3.5s ease infinite;
+}
+
+/* ─── Achievement badge sparkle ─── */
+@keyframes badge-sparkle {
+    0%, 100% { box-shadow: 0 0 2px currentColor; }
+    50% { box-shadow: 0 0 8px currentColor, 0 0 16px currentColor; }
+}
+
+.badge-sparkle {
+    animation: badge-sparkle 2s ease-in-out infinite;
+}
+
+/* ─── Legendary frame for Master+ cards ─── */
+@keyframes legendary-frame {
+    0%   { border-color: rgba(59, 130, 246, 0.3); }
+    25%  { border-color: rgba(250, 204, 21, 0.3); }
+    50%  { border-color: rgba(59, 130, 246, 0.3); }
+    75%  { border-color: rgba(168, 85, 247, 0.3); }
+    100% { border-color: rgba(59, 130, 246, 0.3); }
+}
+
+.legendary-frame {
+    border-width: 2px;
+    border-style: solid;
+    animation: legendary-frame 4s linear infinite;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   RANK UTILITY CLASSES — All 9 tiers
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* rank-bg-{tier} */
+.rank-bg-novice      { background: linear-gradient(135deg, rgba(75,85,99,0.15),  rgba(31,41,55,0.25)); }
+.rank-bg-bronze      { background: linear-gradient(135deg, rgba(180,90,20,0.12), rgba(80,40,10,0.2)); }
+.rank-bg-silver      { background: linear-gradient(135deg, rgba(148,163,184,0.1),rgba(71,85,105,0.18)); }
+.rank-bg-gold        { background: linear-gradient(135deg, rgba(234,179,8,0.1),  rgba(161,98,7,0.18)); }
+.rank-bg-platinum    { background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(88,28,135,0.15)); }
+.rank-bg-diamond     { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(236,72,153,0.12)); }
+.rank-bg-heroic      { background: linear-gradient(135deg, rgba(168,85,247,0.12),rgba(220,38,38,0.12)); }
+.rank-bg-master      { background: linear-gradient(135deg, rgba(220,38,38,0.1),  rgba(234,179,8,0.1)); }
+.rank-bg-grandmaster { background: linear-gradient(135deg, rgba(251,191,36,0.08),rgba(239,68,68,0.06),rgba(59,130,246,0.06)); animation: rgb-glow 4s linear infinite; }
+
+/* rank-border-{tier} */
+.rank-border-novice      { border: 1px solid rgba(107,114,128,0.3); }
+.rank-border-bronze      { border: 1px solid rgba(217,119,6,0.3); }
+.rank-border-silver      { border: 1px solid rgba(148,163,184,0.35); }
+.rank-border-gold        { border: 1px solid rgba(234,179,8,0.45); }
+.rank-border-platinum    { border: 1px solid rgba(34,211,238,0.45); }
+.rank-border-diamond     { border: 1px solid rgba(96,165,250,0.55); }
+.rank-border-heroic      { border: 1px solid rgba(168,85,247,0.6); }
+.rank-border-master      { border: 1px solid rgba(220,38,38,0.65); }
+.rank-border-grandmaster { animation: rgb-border 3s linear infinite; }
+
+/* rank-glow-{tier} (box-shadow) */
+.rank-glow-novice      { box-shadow: 0 0 8px  rgba(107,114,128,0.2); }
+.rank-glow-bronze      { box-shadow: 0 0 14px rgba(217,119,6,0.3); }
+.rank-glow-silver      { box-shadow: 0 0 18px rgba(148,163,184,0.3); }
+.rank-glow-gold        { box-shadow: 0 0 25px rgba(234,179,8,0.4); }
+.rank-glow-platinum    { box-shadow: 0 0 32px rgba(34,211,238,0.4); }
+.rank-glow-diamond     { box-shadow: 0 0 40px rgba(96,165,250,0.5); }
+.rank-glow-heroic      { box-shadow: 0 0 50px rgba(168,85,247,0.55); }
+.rank-glow-master      { box-shadow: 0 0 60px rgba(220,38,38,0.6); animation: rank-aura-pulse 2.5s ease-in-out infinite; }
+.rank-glow-grandmaster { animation: rgb-glow 3s linear infinite; }
+
+/* rank-glow-text-{tier} (text-shadow) */
+.rank-glow-text-novice      { text-shadow: 0 0 8px  rgba(107,114,128,0.3); }
+.rank-glow-text-bronze      { text-shadow: 0 0 10px rgba(217,119,6,0.4); }
+.rank-glow-text-silver      { text-shadow: 0 0 12px rgba(148,163,184,0.4); }
+.rank-glow-text-gold        { text-shadow: 0 0 16px rgba(234,179,8,0.5); }
+.rank-glow-text-platinum    { text-shadow: 0 0 18px rgba(34,211,238,0.5); }
+.rank-glow-text-diamond     { text-shadow: 0 0 20px rgba(96,165,250,0.6); }
+.rank-glow-text-heroic      { text-shadow: 0 0 22px rgba(168,85,247,0.65); }
+.rank-glow-text-master      { text-shadow: 0 0 24px rgba(220,38,38,0.7); }
+.rank-glow-text-grandmaster { text-shadow: 0 0 30px rgba(251,191,36,0.7); animation: rgb-glow 3s linear infinite; }
+
+/* RGB Cycle keyframe + class */
+@keyframes rgb-cycle {
+    0%   { color: #ff4444; }
+    16%  { color: #ffaa00; }
+    33%  { color: #ffff00; }
+    50%  { color: #44ff44; }
+    66%  { color: #44aaff; }
+    83%  { color: #aa44ff; }
+    100% { color: #ff4444; }
+}
+
+.rgb-cycle { animation: rgb-cycle 4s linear infinite; }
+
+/* Grandmaster Energy Bar (referenced in GrandmasterProfileHeader) */
+.gm-energy-bar {
+    background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0000);
+    background-size: 400% 100%;
+    animation: shimmer-border 2s linear infinite;
+}
+
+/* Holographic Scan Line */
+@keyframes holo-scan {
+    0%   { top: -5%; opacity: 0.4; }
+    100% { top: 105%; opacity: 0; }
+}
+
+.holo-scan-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(168,85,247,0.6), rgba(59,130,246,0.6), transparent);
+    animation: holo-scan 3s ease-in infinite;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Simplify on small screens (mobile)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+    .rank-card-grandmaster,
+    .rank-bg-grandmaster { animation-duration: 8s; }
+    .fire-trail-top,
+    .fire-trail-bottom   { height: 2px; filter: blur(0.5px); }
+    .avatar-ring-grandmaster { animation-duration: 6s; }
+    /* Reduce particle size on mobile */
+    .float-particle { --duration: 6s; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY — prefers-reduced-motion
+   All animations replaced with static equivalents (WCAG 2.1 §2.3.3)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+    /* Disable all animation on animated classes */
+    .aura-pulse, .aura-pulse-intense, .aura-pulse-fast, .aura-pulse-slow,
+    .particle-float, .particle-float-sideways, .float-particle,
+    .shimmer-border, .rgb-border, .rgb-glow, .rgb-cycle,
+    .crown-float, .energy-wave, .fire-trail,
+    .diamond-sparkle, .prestige-aura, .cosmic-drift,
+    .holographic-overlay, .holo-scan-line, .lightning-flash,
+    .title-reveal, .gradient-border,
+    .text-gradient-animated, .text-gradient-heroic, .text-gradient-diamond,
+    .badge-sparkle, .legendary-frame,
+    .rank-card-grandmaster, .rank-bg-grandmaster,
+    .rank-glow-master, .rank-glow-grandmaster,
+    .rank-border-grandmaster, .rank-glow-text-grandmaster,
+    .avatar-ring-master, .avatar-ring-grandmaster,
+    .xp-bar-master, .xp-bar-grandmaster, .gm-energy-bar {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    /* Static fallback values */
+    .avatar-ring-grandmaster {
+        box-shadow: 0 0 0 2px rgba(251,191,36,0.7), 0 0 20px rgba(251,191,36,0.4);
+    }
+    .avatar-ring-master {
+        box-shadow: 0 0 0 2px rgba(220,38,38,0.7), 0 0 20px rgba(220,38,38,0.4);
+    }
+    .rank-glow-grandmaster { box-shadow: 0 0 30px rgba(251,191,36,0.5); }
+    .rank-glow-master      { box-shadow: 0 0 24px rgba(220,38,38,0.5); }
+    .gm-energy-bar         { background: linear-gradient(90deg, #fbbf24, #ef4444, #3b82f6); }
+    .xp-bar-grandmaster    { background: linear-gradient(90deg, #fbbf24, #ef4444, #3b82f6); }
+    .xp-bar-master         { background: linear-gradient(90deg, #dc2626, #fbbf24); }
+    .text-gradient-animated {
+        background: linear-gradient(90deg, #3b82f6, #fbbf24);
+        background-size: 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .fire-trail-top, .fire-trail-bottom { opacity: 0; }
+    .cosmic-drift    { opacity: 0.15; transform: none; }
+    .holographic-overlay { opacity: 0; }
+    .fame-shine::after { animation: none !important; }
+}

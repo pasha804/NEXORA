@@ -16,11 +16,14 @@ import {
     GraduationCap,
     Clock,
     UserCircle2,
-    MessageCircle
+    MessageCircle,
+    Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getRankInfoFromString } from "@/lib/rankSystem";
+import { RankBadge } from "@/components/ui/RankBadge";
 
 export const HomeRightSidebar = () => {
     const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
@@ -28,7 +31,7 @@ export const HomeRightSidebar = () => {
     const [userStats, setUserStats] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     useEffect(() => {
         const fetchData = async () => {
@@ -183,37 +186,50 @@ export const HomeRightSidebar = () => {
 
             {/* AI Discovery - Real recommendations */}
             <div className="glass-card p-5 border-primary/20 bg-gradient-to-br from-card/50 to-primary/5">
-                <h4 className="font-bold flex items-center gap-2">
+                <h4 className="font-bold flex items-center gap-2 mb-3">
                     <UserCircle2 className="w-5 h-5 text-primary" />
                     Talent Hub
                 </h4>
                 {isLoading ? (
                     <div className="py-4 text-center text-muted-foreground text-sm">Loading...</div>
                 ) : recommendedUsers.length > 0 ? (
-                    <div className="space-y-3">
-                        {recommendedUsers.slice(0, 5).map((user) => (
-                            <div key={user.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                                <Avatar className="w-10 h-10">
-                                    <AvatarFallback className="bg-primary/20 text-primary text-sm">
-                                        {(user.display_name || user.username || "U").charAt(0).toUpperCase()}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-bold truncate">{user.display_name || user.username}</div>
-                                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                        Level {user.level || 1} <Zap className="w-2 h-2 fill-primary text-primary" /> {user.xp_points || 0}
+                    <div className="space-y-2">
+                        {recommendedUsers.slice(0, 5).map((u) => {
+                            const uRankInfo = getRankInfoFromString(u.rank || "Novice");
+                            const isHighRank = ["Diamond", "Heroic", "Master", "Grandmaster"].includes(uRankInfo.tier);
+                            return (
+                                <div key={u.id} className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors ${isHighRank ? "bg-white/5 border border-primary/10 hover:bg-white/10" : "bg-white/5 hover:bg-white/10"}`}>
+                                    <div className="relative">
+                                        <Avatar className="w-10 h-10">
+                                            <AvatarImage src={u.avatar_url} />
+                                            <AvatarFallback className="bg-primary/20 text-primary text-sm">
+                                                {(u.display_name || u.username || "U").charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        {isHighRank && (
+                                            <div className="absolute -inset-0.5 rounded-full opacity-30" style={{ boxShadow: `0 0 8px ${uRankInfo.glowColor}` }} />
+                                        )}
                                     </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-sm font-bold truncate flex items-center gap-1">
+                                            {u.display_name || u.username}
+                                            {uRankInfo.isGrandmaster && <span className="text-xs">👑</span>}
+                                        </div>
+                                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                            <RankBadge rank={u.rank || "Novice"} size="xs" showStars animated={false} />
+                                        </div>
+                                    </div>
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8 text-primary hover:bg-primary/20 rounded-full shrink-0"
+                                        onClick={() => handleConnect(u.id)}
+                                    >
+                                        <UserPlus className="w-4 h-4" />
+                                    </Button>
                                 </div>
-                                <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-8 w-8 text-primary hover:bg-primary/20 rounded-full"
-                                    onClick={() => handleConnect(user.id)}
-                                >
-                                    <UserPlus className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="py-4 text-center text-muted-foreground text-sm">No recommendations yet</div>

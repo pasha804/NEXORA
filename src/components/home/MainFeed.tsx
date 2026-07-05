@@ -27,31 +27,34 @@ import { toast } from "sonner";
 import { CreatePostModal } from "./CreatePostModal";
 
 export const MainFeed = () => {
-    const { posts, setPosts, updatePost } = useFeedStore();
+    const { posts, setPosts, appendPosts, toggleLike, skip, hasMore } = useFeedStore();
     const [activeTab, setActiveTab] = useState("For You");
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
 
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+    const fetchFeed = async (skipVal: number = 0) => {
+        const token = localStorage.getItem("access_token");
+        const headers: Record<string, string> = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const resp = await fetch(`${API_URL}/posts/feed?skip=${skipVal}&limit=20`, { headers });
+        if (!resp.ok) throw new Error("Failed to fetch feed");
+        return resp.json();
+    };
 
     const { isLoading, refetch } = useQuery({
         queryKey: ["feed", activeTab],
         queryFn: async () => {
             try {
-                const response = await fetch(`${API_URL}/posts/feed?limit=20`);
-                if (!response.ok) throw new Error("Failed to fetch feed");
-                const data = await response.json();
-
-                // Map backend fields to frontend Post type
+                const data = await fetchFeed(0);
                 const mappedPosts = data.map((p: any) => ({
                     ...p,
                     author_name: p.author?.display_name || p.author?.username || "Unknown",
                     author_username: p.author?.username || "unknown",
                     author_avatar: p.author?.avatar_url,
                     author_id: p.author?.id,
-                    skill_tags: p.skill_id ? [p.skill_id] : [],
-                    post_type: p.post_type || "text"
                 }));
-
                 setPosts(mappedPosts);
                 return mappedPosts;
             } catch (error) {
@@ -62,22 +65,43 @@ export const MainFeed = () => {
     });
 
     const handleLike = async (postId: number) => {
+        const token = localStorage.getItem("access_token");
+        if (!token) { toast.error("Login to like posts"); return; }
+
+        toggleLike(postId);
+
         try {
-            const token = localStorage.getItem("access_token");
             const response = await fetch(`${API_URL}/posts/${postId}/like`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
             });
+            if (!response.ok) {
+                toggleLike(postId);
+                toast.error("Failed to like post");
+            }
+        } catch {
+            toggleLike(postId);
+            toast.error("Network error");
+        }
+    };
 
-            if (!response.ok) throw new Error("Failed to like post");
-
-            // Refetch to get updated counts
-            refetch();
-        } catch (error) {
-            toast.error("Failed to like post");
+    const handleLoadMore = async () => {
+        if (loadingMore || !hasMore) return;
+        setLoadingMore(true);
+        try {
+            const data = await fetchFeed(skip);
+            const mappedPosts = data.map((p: any) => ({
+                ...p,
+                author_name: p.author?.display_name || p.author?.username || "Unknown",
+                author_username: p.author?.username || "unknown",
+                author_avatar: p.author?.avatar_url,
+                author_id: p.author?.id,
+            }));
+            appendPosts(mappedPosts);
+        } catch (err) {
+            console.error("Load more error:", err);
+        } finally {
+            setLoadingMore(false);
         }
     };
 
@@ -299,9 +323,9 @@ export const MainFeed = () => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleLike(Number(post.id))}
-                                        className="hover:text-red-500 hover:bg-red-500/10 gap-2 transition-all active:scale-95"
+                                        className={`hover:text-red-500 hover:bg-red-500/10 gap-2 transition-all active:scale-95 ${post.is_liked ? 'text-red-500 bg-red-500/10' : ''}`}
                                     >
-                                        <Heart className={`w-4 h-4 ${post.likes_count > 100 ? 'fill-red-500 text-red-500' : ''}`} />
+                                        <Heart className={`w-4 h-4 ${post.is_liked ? 'fill-red-500 text-red-500' : ''}`} />
                                         <span className="text-xs font-medium">{post.likes_count}</span>
                                     </Button>
                                     <Button variant="ghost" size="sm" className="hover:text-blue-500 hover:bg-blue-500/10 gap-2 transition-all">
@@ -331,6 +355,20 @@ export const MainFeed = () => {
             <div className="py-8 text-center text-muted-foreground text-sm">
                 {isLoading ? (
                     <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                ) : hasMore ? (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleLoadMore}
+                        disabled={loadingMore}
+                        className="gap-2"
+                    >
+                        {loadingMore ? (
+                            <><div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" /> Loading...</>
+                        ) : (
+                            'Load More'
+                        )}
+                    </Button>
                 ) : posts.length > 0 ? (
                     <p className="text-xs opacity-50">You're all caught up ✓</p>
                 ) : null}

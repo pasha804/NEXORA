@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "./useAuth";
 
-const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:80/realtime/ws";
+const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8080/realtime/ws";
 
 export const useSocket = () => {
     const { token } = useAuth();

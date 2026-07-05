@@ -47,7 +47,7 @@ services:
     container_name: nexora_gateway
     restart: always
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -371,9 +371,9 @@ services:
     container_name: nexora_frontend
     env_file: .env
     environment:
-      # IMPORTANT: Use localhost:80 because nginx is exposed to host on port 80
+      # IMPORTANT: Use localhost:8080 because nginx is exposed to host on port 8080
       # Browser runs on host machine and can resolve localhost, not Docker hostnames
-      - VITE_API_URL=http://localhost:80
+      - VITE_API_URL=http://localhost:8080
     ports:
       - "5173:5173"
     volumes:

@@ -20,7 +20,7 @@ export const ActivityFeed = () => {
         const fetchNotifications = async () => {
             if (!user) return;
             try {
-                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
                 const token = localStorage.getItem("token") || localStorage.getItem("access_token");
                 if (!token) return;
 

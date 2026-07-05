@@ -12,6 +12,7 @@ import { EventsCalendar } from "@/components/discover/EventsCalendar";
 import { TrendingContent } from "@/components/discover/TrendingContent";
 import { RealTimeIndicator, PullToRefresh } from "@/components/discover/EnhancedFeatures";
 import { Sparkles } from "lucide-react";
+import { RecommendationCards } from "@/components/profile/RecommendationCards";
 
 const Discover = () => {
     const [activeTab, setActiveTab] = useState<DiscoverTab>("for-you");
@@ -117,6 +118,13 @@ const Discover = () => {
                             {renderTabContent()}
                         </motion.div>
                     </AnimatePresence>
+
+                    {/* Recommendation Cards */}
+                    {activeTab === "people" && (
+                        <div className="mt-10">
+                            <RecommendationCards />
+                        </div>
+                    )}
                 </div>
             </main>
 

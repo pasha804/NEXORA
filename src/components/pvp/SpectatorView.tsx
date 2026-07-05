@@ -19,7 +19,7 @@ export const SpectatorView = ({ matchId, onClose }: SpectatorViewProps) => {
 
     // Socket Connection
     useEffect(() => {
-        const socket = io("http://localhost:80", {
+        const socket = io("http://localhost:8080", {
             path: "/battle/socket.io",
             transports: ["websocket"],
             auth: { token }

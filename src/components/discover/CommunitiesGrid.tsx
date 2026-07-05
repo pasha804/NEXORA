@@ -11,7 +11,7 @@ interface CommunitiesGridProps {
     filters: any;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const CommunitiesGrid = ({ searchQuery, filters }: CommunitiesGridProps) => {
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ export const CommunitiesGrid = ({ searchQuery, filters }: CommunitiesGridProps) 
             setLoading(true);
             try {
                 const token = localStorage.getItem("access_token");
-                const params = new URLSearchParams({ limit: "20", offset: "0" });
+                const params = new URLSearchParams({ limit: "20", skip: "0" });
                 if (searchQuery.trim()) params.set("q", searchQuery.trim());
 
                 const resp = await fetch(`${API_URL}/communities/?${params}`, {
@@ -31,7 +31,7 @@ export const CommunitiesGrid = ({ searchQuery, filters }: CommunitiesGridProps) 
                 });
                 if (resp.ok) {
                     const data = await resp.json();
-                    setCommunities(data.communities || data || []);
+                    setCommunities(data || []);
                 }
             } catch (err) {
                 console.error("Fetch communities error:", err);
@@ -42,18 +42,17 @@ export const CommunitiesGrid = ({ searchQuery, filters }: CommunitiesGridProps) 
         fetchCommunities();
     }, [searchQuery]);
 
-    const handleJoin = async (e: React.MouseEvent, communityId: number) => {
+    const handleJoin = async (e: React.MouseEvent, slug: string) => {
         e.stopPropagation();
         const token = localStorage.getItem("access_token");
         if (!token) return toast.error("Please login to join communities");
         try {
-            const resp = await fetch(`${API_URL}/communities/${communityId}/join`, {
+            const resp = await fetch(`${API_URL}/communities/${slug}/join`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (resp.ok) {
                 toast.success("Joined community!");
-                navigate(`/communities`);
             } else {
                 const data = await resp.json();
                 toast.error(data.detail || "Failed to join");
@@ -112,9 +111,8 @@ export const CommunitiesGrid = ({ searchQuery, filters }: CommunitiesGridProps) 
                             transition={{ delay: i * 0.04 }}
                             whileHover={{ y: -4 }}
                             className="glass-card p-6 cursor-pointer hover:border-primary/50 transition-all group"
-                            onClick={() => navigate(`/communities`)}
+                            onClick={() => navigate(`/communities/${community.slug}`)}
                         >
-                            {/* Community Banner */}
                             <div
                                 className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center text-white font-bold text-lg shadow-lg"
                                 style={{ background: community.theme_color || "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
@@ -146,7 +144,7 @@ export const CommunitiesGrid = ({ searchQuery, filters }: CommunitiesGridProps) 
                                     size="sm"
                                     variant="outline"
                                     className="h-7 text-xs hover:bg-primary hover:text-primary-foreground transition-all"
-                                    onClick={(e) => handleJoin(e, community.id)}
+                                    onClick={(e) => handleJoin(e, community.slug)}
                                 >
                                     Join
                                 </Button>

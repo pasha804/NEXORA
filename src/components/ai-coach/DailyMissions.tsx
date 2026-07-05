@@ -14,7 +14,7 @@ interface Mission {
 export const DailyMissions = () => {
     const [missions, setMissions] = useState<Mission[]>([]);
     const [loading, setLoading] = useState(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchMissions = async () => {
         try {

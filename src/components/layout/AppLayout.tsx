@@ -12,7 +12,8 @@ import {
     Bell,
     LogOut,
     Menu,
-    Clapperboard
+    Clapperboard,
+    Trophy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,6 +25,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { ActiveBattleContainer } from "../pvp/ActiveBattleContainer";
+import { SidebarProfile } from "@/components/profile/SidebarProfile";
 
 export const AppLayout = () => {
     const navigate = useNavigate();
@@ -69,6 +71,7 @@ export const AppLayout = () => {
         { icon: Users, label: "Communities", path: "/communities" },
         { icon: Clapperboard, label: "Reels", path: "/reels" },
         { icon: Bot, label: "AI Coach", path: "/ai-coach" },
+        { icon: Trophy, label: "Leaderboard", path: "/leaderboard" },
     ];
 
     const handleSignOut = async () => {
@@ -118,20 +121,9 @@ export const AppLayout = () => {
                     ))}
                 </div>
 
-                <div className="p-4 border-t border-border/50 space-y-2">
+                <div className="p-4 border-t border-border/50 space-y-3">
                     <NotificationDropdown />
-                    <Button onClick={() => navigate("/settings")} variant="ghost" className="w-full justify-start gap-3 text-muted-foreground">
-                        <Settings className="w-5 h-5" />
-                        Settings
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={handleSignOut}
-                    >
-                        <LogOut className="w-5 h-5" />
-                        Sign Out
-                    </Button>
+                    <SidebarProfile />
                 </div>
             </aside>
 
@@ -178,21 +170,8 @@ export const AppLayout = () => {
                                         ))}
                                     </div>
 
-                                    <div className="p-6 border-t border-white/10 space-y-3">
-                                        <SheetTrigger asChild>
-                                            <Button onClick={() => navigate("/settings")} variant="outline" className="w-full justify-start gap-3 border-white/10 hover:bg-white/5">
-                                                <Settings className="w-5 h-5" />
-                                                Settings
-                                            </Button>
-                                        </SheetTrigger>
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                            onClick={handleSignOut}
-                                        >
-                                            <LogOut className="w-5 h-5" />
-                                            Sign Out
-                                        </Button>
+                                    <div className="p-4 border-t border-white/10 space-y-3">
+                                        <SidebarProfile />
                                     </div>
                                 </div>
                             </SheetContent>

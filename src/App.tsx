@@ -21,9 +21,11 @@ const Messages     = lazy(() => import("./pages/Messages"));
 const Discover     = lazy(() => import("./pages/Discover"));
 const PvP          = lazy(() => import("./pages/PvP"));
 const Communities  = lazy(() => import("./pages/Communities"));
+const CommunityDetail = lazy(() => import("./pages/CommunityDetail"));
 const Reels        = lazy(() => import("./pages/Reels"));
 const AICoach      = lazy(() => import("./pages/AICoach"));
 const BattlePassPage = lazy(() => import("./pages/BattlePass"));
+const LeaderboardPage = lazy(() => import("./pages/Leaderboard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -170,9 +172,11 @@ const AppContent = () => {
         <Route path="/discover"         element={<Page name="Discover"><Discover /></Page>} />
         <Route path="/pvp"              element={<Page name="PvP"><PvP /></Page>} />
         <Route path="/communities"      element={<Page name="Communities"><Communities /></Page>} />
+        <Route path="/communities/:slug" element={<Page name="Community"><CommunityDetail /></Page>} />
         <Route path="/reels"            element={<Page name="Reels"><Reels /></Page>} />
         <Route path="/ai-coach"         element={<Page name="AI Coach"><AICoach /></Page>} />
         <Route path="/battle-pass"      element={<Page name="Battle Pass"><BattlePassPage /></Page>} />
+        <Route path="/leaderboard"      element={<Page name="Leaderboard"><LeaderboardPage /></Page>} />
         <Route path="/settings"         element={<Page name="Settings"><Settings /></Page>} />
         <Route path="/profile/:username?" element={<Page name="Profile"><Profile /></Page>} />
         <Route path="/messages"         element={<Page name="Messages"><Messages /></Page>} />

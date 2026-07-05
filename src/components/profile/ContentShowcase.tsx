@@ -6,7 +6,7 @@ import { Grid, MonitorPlay, Briefcase, Bookmark, Heart, MessageCircle, Share2, L
 import { ProfessionalPortfolio } from "./ProfessionalPortfolio";
 import { motion } from "framer-motion";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const formatRelativeTime = (dateStr: string) => {
     const d = new Date(dateStr);

@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 
 // Home Components
 import { HomeLeftSidebar } from "@/components/home/HomeLeftSidebar";
@@ -8,12 +9,19 @@ import { HomeRightSidebar } from "@/components/home/HomeRightSidebar";
 import { MainFeed } from "@/components/home/MainFeed";
 import { CreatePostFab } from "@/components/home/CreatePostFab";
 import { TrendingDiscoveryStrip } from "@/components/home/TrendingDiscoveryStrip";
+import { RecommendationCards, TrendingCreators } from "@/components/profile/RecommendationCards";
+import { getRankInfoFromString } from "@/lib/rankSystem";
+import { DynamicProfileTheme } from "@/components/profile/DynamicProfileTheme";
+import { GrandmasterEffects } from "@/components/profile/GrandmasterEffects";
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
 
   // 'user' from useAuth is our single source of truth for the profile data
   const profile = user;
+  const userRank = profile?.rank || "Novice";
+  const rankInfo = getRankInfoFromString(userRank);
+  const isGrandmaster = rankInfo.isGrandmaster;
 
   if (authLoading) {
     return (
@@ -28,7 +36,15 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen bg-transparent relative">
+      {/* Rank-based ambient background */}
+      <DynamicProfileTheme rank={userRank} className="fixed inset-0 -z-10 pointer-events-none" />
+      {isGrandmaster && (
+        <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+          <GrandmasterEffects rank={userRank} type="full" />
+        </div>
+      )}
+
       {/* FAB */}
       <CreatePostFab />
 
@@ -54,11 +70,23 @@ const Dashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               className="mb-4"
             >
-              <h1 className="font-display text-2xl md:text-3xl font-bold">
-                Welcome back, <span className="text-glow text-primary animate-pulse">{profile.display_name || profile.username}</span>
+              <h1 className={`font-display text-2xl md:text-3xl font-bold`}>
+                Welcome back,{' '}
+                <span className={`${isGrandmaster ? "rgb-glow" : "text-glow"} ${rankInfo.color} animate-pulse`}>
+                  {profile.display_name || profile.username}
+                </span>
               </h1>
               <p className="text-muted-foreground">Your skill journey continues. Here's your personalized engine.</p>
             </motion.div>
+
+            {/* Trending Creators strip */}
+            <div className="space-y-3">
+              <h3 className="font-display font-bold text-lg flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                Trending Creators
+              </h3>
+              <TrendingCreators />
+            </div>
 
             <TrendingDiscoveryStrip />
 
@@ -66,8 +94,9 @@ const Dashboard = () => {
           </div>
 
           {/* RIGHT COLUMN: Discovery & Updates (Width 3) - Sticky */}
-          <div className="hidden lg:block lg:col-span-3 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto scroll-container pl-1">
+          <div className="hidden lg:block lg:col-span-3 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto scroll-container pl-1 space-y-6">
             <HomeRightSidebar />
+            <RecommendationCards />
           </div>
 
         </div>

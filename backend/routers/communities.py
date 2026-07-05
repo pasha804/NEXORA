@@ -23,6 +23,13 @@ def get_my_communities(db: Session = Depends(get_db), current_user: models.User 
     
     return db.query(models.Community).filter(models.Community.id.in_(community_ids)).all()
 
+@router.get("/", response_model=List[schemas.Community])
+def list_communities(q: str = "", skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+    query = db.query(models.Community)
+    if q.strip():
+        query = query.filter(models.Community.name.ilike(f"%{q}%"))
+    return query.order_by(models.Community.member_count.desc()).offset(skip).limit(limit).all()
+
 @router.get("/discover", response_model=List[schemas.Community])
 def discover_communities(db: Session = Depends(get_db)):
     # Return featured or most popular communities

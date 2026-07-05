@@ -6,6 +6,7 @@ from datetime import datetime
 from common.database import get_db
 from common.models import User, ConnectionRequest, UserConnection, Notification
 import auth as auth_module
+from common.realtime_utils import emit_realtime_notification
 import schemas
 from pydantic import BaseModel
 
@@ -62,6 +63,8 @@ async def send_connection_request(
     db.add(notification)
     
     db.commit()
+    db.refresh(notification)
+    await emit_realtime_notification(notification)
     return {"message": "Connection request sent"}
 
 @router.post("/accept")
@@ -100,7 +103,65 @@ async def accept_connection_request(
     db.add(notification)
     
     db.commit()
+    db.refresh(notification)
+    await emit_realtime_notification(notification)
     return {"message": "Connection accepted"}
+
+@router.post("/accept-by-sender/{sender_id}")
+async def accept_connection_request_by_sender(
+    sender_id: int,
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    conn_request = db.query(ConnectionRequest).filter(
+        (ConnectionRequest.sender_id == sender_id) &
+        (ConnectionRequest.receiver_id == current_user.id) &
+        (ConnectionRequest.status == "pending")
+    ).first()
+
+    if not conn_request:
+        raise HTTPException(status_code=404, detail="Connection request not found")
+
+    conn_request.status = "accepted"
+
+    new_connection = UserConnection(
+        user1_id=conn_request.sender_id,
+        user2_id=conn_request.receiver_id
+    )
+    db.add(new_connection)
+
+    notification = Notification(
+        user_id=conn_request.sender_id,
+        type="CONNECTION_ACCEPTED",
+        title="Connection Accepted",
+        message=f"{current_user.display_name or current_user.username} accepted your connection request",
+        related_id=str(current_user.id)
+    )
+    db.add(notification)
+
+    db.commit()
+    db.refresh(notification)
+    await emit_realtime_notification(notification)
+    return {"message": "Connection accepted"}
+
+@router.post("/reject-by-sender/{sender_id}")
+async def reject_connection_request_by_sender(
+    sender_id: int,
+    current_user: User = Depends(auth_module.get_current_user),
+    db: Session = Depends(get_db)
+):
+    conn_request = db.query(ConnectionRequest).filter(
+        (ConnectionRequest.sender_id == sender_id) &
+        (ConnectionRequest.receiver_id == current_user.id) &
+        (ConnectionRequest.status == "pending")
+    ).first()
+
+    if not conn_request:
+        raise HTTPException(status_code=404, detail="Connection request not found")
+
+    conn_request.status = "rejected"
+    db.commit()
+    return {"message": "Connection request rejected"}
 
 @router.post("/reject")
 async def reject_connection_request(

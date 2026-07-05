@@ -20,7 +20,7 @@ export const ConversationList = () => {
         setActiveCategory
     } = useMessagingStore();
 
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     useEffect(() => {
         const fetchRooms = async () => {
@@ -37,9 +37,12 @@ export const ConversationList = () => {
                         const recipientData = room.recipient;
                         const roomId = (room.room_id || room.id || "").toString();
 
+                        const rawCategory = room.category || "all";
+
                         return {
                             id: roomId,
                             type: 'direct' as const,
+                            category: rawCategory as ConversationCategory,
                             participants: [
                                 {
                                     id: currentUser?.id.toString() || "0",
@@ -72,7 +75,6 @@ export const ConversationList = () => {
                             unreadCount: room.unread_count || 0,
                             isPinned: false,
                             isMuted: false,
-                            category: 'all' as const,
                             typingUsers: [],
                             createdAt: new Date(),
                             updatedAt: new Date(room.last_message_time || Date.now()),
@@ -120,8 +122,6 @@ export const ConversationList = () => {
         { id: "all", label: "All", icon: "💬" },
         { id: "friends", label: "Friends", icon: "👥" },
         { id: "skill-matches", label: "Matches", icon: "🎯" },
-        { id: "projects", label: "Projects", icon: "💼" },
-        { id: "ai", label: "AI", icon: "🤖" },
     ];
 
     const formatTimestamp = (date: Date): string => {
@@ -199,7 +199,8 @@ export const ConversationList = () => {
                     </div>
                 ) : (
                     filteredConversations.map((conversation) => {
-                        const otherUser = conversation.participants.find((p) => p.id !== "current-user");
+                        const currentUserId = currentUser?.id.toString() || "0";
+                        const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
                         const displayName = conversation.name || otherUser?.name || "Unknown";
                         const isActive = activeConversationId === conversation.id;
 

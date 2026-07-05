@@ -59,7 +59,7 @@ interface MatchEndResult {
     reason?: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const BattleRoom = ({ matchId, onClose }: BattleRoomProps) => {
     const { token, user } = useAuth();

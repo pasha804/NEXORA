@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send, Heart, MoreHorizontal, Flag, MessageCircle } from "lucide-react";
+import { Send, Heart, Flag, MessageCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useReelStore } from "@/hooks/useReelStore";
 
 interface Comment {
     id: string;
@@ -22,29 +23,83 @@ interface Comment {
 interface ReelCommentsProps {
     isOpen: boolean;
     onClose: () => void;
-    reelId: string; // To fetch comments in real app
+    reelId: string;
 }
 
-const COMMENTS: Comment[] = [];
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const ReelComments = ({ isOpen, onClose, reelId }: ReelCommentsProps) => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState("");
+    const updateReelComments = useReelStore((s) => s.updateReelComments);
 
-    const handleSend = () => {
+    useEffect(() => {
+        if (isOpen && reelId) {
+            fetchComments();
+        }
+    }, [isOpen, reelId]);
+
+    const fetchComments = async () => {
+        const token = localStorage.getItem("access_token");
+        try {
+            const resp = await fetch(`${API_URL}/reels/${reelId}/comments`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                setComments(data.map((c: any) => ({
+                    id: String(c.id),
+                    user: {
+                        username: c.user?.username || "anonymous",
+                        avatarUrl: c.user?.avatar_url || "",
+                        isVerified: c.user?.is_verified || false,
+                    },
+                    content: c.content,
+                    likes: c.likes_count || 0,
+                    timestamp: new Date(c.created_at).toLocaleDateString(),
+                    isLiked: c.is_liked || false,
+                })));
+            }
+        } catch (err) {
+            console.error("Failed to fetch comments:", err);
+        }
+    };
+
+    const handleSend = async () => {
         if (!newComment.trim()) return;
+        const token = localStorage.getItem("access_token");
 
-        const comment: Comment = {
-            id: Date.now().toString(),
-            user: { username: "You", avatarUrl: "" }, // Current user
-            content: newComment,
-            likes: 0,
-            timestamp: "Just now",
-            isLiked: false,
-        };
+        try {
+            const resp = await fetch(`${API_URL}/reels/${reelId}/comments`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ content: newComment }),
+            });
 
-        setComments([comment, ...comments]);
-        setNewComment("");
+            if (resp.ok) {
+                const c = await resp.json();
+                const newCommentObj: Comment = {
+                    id: String(c.id),
+                    user: {
+                        username: c.user?.username || "You",
+                        avatarUrl: c.user?.avatar_url || "",
+                        isVerified: c.user?.is_verified || false,
+                    },
+                    content: c.content,
+                    likes: c.likes_count || 0,
+                    timestamp: "Just now",
+                    isLiked: false,
+                };
+                setComments([newCommentObj, ...comments]);
+                updateReelComments(reelId, 1);
+                setNewComment("");
+            }
+        } catch (err) {
+            console.error("Failed to post comment:", err);
+        }
     };
 
     return (

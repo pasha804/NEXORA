@@ -11,8 +11,10 @@ import { useGamification } from "@/context/GamificationContext";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Circle, Gift } from "lucide-react";
 import { useSkillProgression, useTrendingSkills } from "@/hooks/useSkillIntelligence";
-import { getRankInfo, xpForNextLevel, xpProgressInLevel } from "@/lib/rankSystem";
+import { getRankInfo, getRankInfoFromString, xpForNextLevel, xpProgressInLevel } from "@/lib/rankSystem";
 import { RankBadge, RankStars } from "@/components/ui/RankBadge";
+import { RankAura, RankParticles } from "@/components/profile/RankAura";
+import { RankBadgeAnimated } from "@/components/profile/RankBadgeAnimated";
 
 interface UserProfile {
     id: number;
@@ -87,47 +89,79 @@ export const HomeLeftSidebar = ({ user }: { user: UserProfile }) => {
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                <div className="flex flex-col items-center text-center relative z-10">
-                    <div className="relative mb-4 group/avatar">
-                        <div className="absolute inset-0 rounded-full bg-primary/40 blur-xl opacity-50 group-hover/avatar:opacity-100 transition-opacity animate-pulse shadow-[0_0_30px_rgba(59,130,246,0.6)]" />
+                    <div className="flex flex-col items-center text-center relative z-10">
+                        <div className="relative mb-4 group/avatar">
+                            <RankAura rank={rankStr} size="lg" intensity={rankInfo.isGrandmaster ? "high" : "low"} />
+                            <RankParticles rank={rankStr} count={rankInfo.isGrandmaster ? 8 : 4} />
+                            <div className="absolute inset-0 rounded-full bg-primary/40 blur-xl opacity-50 group-hover/avatar:opacity-100 transition-opacity animate-pulse shadow-[0_0_30px_rgba(59,130,246,0.6)]" />
 
-                        <Avatar className="w-24 h-24 border-2 border-primary shadow-lg shadow-primary/20 relative z-10">
-                            <AvatarImage src={user?.avatar_url} />
-                            <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-purple-600">
-                                {user?.display_name?.[0]}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-2 -right-2 bg-background rounded-full p-1.5 shadow-lg z-20">
-                            <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-sm font-bold text-black border-2 border-yellow-600 shadow-[0_0_10px_rgba(234,179,8,0.5)]">
-                                {user?.level || level}
+                            <Avatar className={`w-24 h-24 border-2 relative z-10 shadow-lg ${
+                                rankInfo.tier === "Grandmaster" ? "rgb-border" :
+                                rankInfo.tier === "Master" ? "avatar-ring-master" :
+                                rankInfo.tier === "Heroic" ? "avatar-ring-heroic" :
+                                rankInfo.tier === "Diamond" ? "avatar-ring-diamond" :
+                                "border-primary shadow-primary/20"
+                            }`}>
+                                <AvatarImage src={user?.avatar_url} />
+                                <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-purple-600">
+                                    {user?.display_name?.[0]}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-2 -right-2 bg-background rounded-full p-1.5 shadow-lg z-20">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 shadow-[0_0_10px_rgba(234,179,8,0.5)] ${
+                                    rankInfo.isGrandmaster ? "xp-bar-grandmaster text-white" : "bg-yellow-500 text-black border-yellow-600"
+                                }`}>
+                                    {user?.level || level}
+                                </div>
+                            </div>
+                            <div className="absolute top-0 right-0 w-4 h-4 bg-green-500 border-2 border-background rounded-full z-20" />
+                            {rankInfo.isGrandmaster && (
+                                <span className="absolute -top-3 -left-2 text-xl z-20 crown-float">👑</span>
+                            )}
+                        </div>
+
+                        <h3 className={`font-bold text-lg truncate w-full ${
+                            rankInfo.isGrandmaster ? "text-amber-300" :
+                            rankInfo.tier === "Master" ? "text-red-400" : ""
+                        }`}>{user?.display_name}</h3>
+                        <p className="text-sm text-muted-foreground mb-3">@{user?.username}</p>
+
+                        <div className="flex flex-col items-center gap-2 mb-4">
+                            <RankBadgeAnimated rank={rankStr} size="sm" showPrestige />
+                            <div className="flex items-center gap-1 text-[10px] font-bold text-primary/80 uppercase tracking-wider">
+                                <Zap className="w-3 h-3 fill-current" />
+                                Reputation: {user?.reputation_score?.toLocaleString() || "500"}
                             </div>
                         </div>
-                        <div className="absolute top-0 right-0 w-4 h-4 bg-green-500 border-2 border-background rounded-full z-20" />
-                    </div>
 
-                    <h3 className="font-bold text-lg truncate w-full">{user?.display_name}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">@{user?.username}</p>
-
-                    <div className="flex flex-col items-center gap-2 mb-4">
-                        <RankBadge rp={rp} size="sm" showStars animated />
-                        <div className="flex items-center gap-1 text-[10px] font-bold text-primary/80 uppercase tracking-wider">
-                            <Zap className="w-3 h-3 fill-current" />
-                            Reputation: {user?.reputation_score?.toLocaleString() || "500"}
+                        <div className="w-full space-y-2 mb-4">
+                            <div className="flex justify-between text-xs font-medium">
+                                <span className="flex items-center gap-1">
+                                    Level {currentLevel}
+                                    <Badge variant="secondary" className="h-4 px-1.5 py-0 text-[8px] bg-primary/20 text-primary border-0">
+                                        {(user?.streak_days || streak) >= 7 ? `${Math.min(2.0, 1.0 + (Math.floor((user?.streak_days || streak) / 7) * 0.1)).toFixed(1)}x XP` : "1.0x"}
+                                    </Badge>
+                                </span>
+                                <span className={rankInfo.isGrandmaster ? "text-amber-300" : "text-primary"}>{xpProgressData.current.toLocaleString()} / {xpProgressData.needed.toLocaleString()} XP</span>
+                            </div>
+                            <div className="h-2 bg-muted/50 rounded-full overflow-hidden">
+                                <motion.div
+                                    className={`h-full rounded-full transition-all duration-500 ${
+                                        rankInfo.isGrandmaster ? "xp-bar-grandmaster" :
+                                        rankInfo.tier === "Master" ? "xp-bar-master" :
+                                        rankInfo.tier === "Heroic" ? "xp-bar-heroic" :
+                                        rankInfo.tier === "Diamond" ? "xp-bar-diamond" :
+                                        rankInfo.tier === "Platinum" ? "xp-bar-platinum" :
+                                        rankInfo.tier === "Gold" ? "xp-bar-gold" :
+                                        rankInfo.tier === "Silver" ? "xp-bar-silver" :
+                                        "from-primary to-purple-500 bg-gradient-to-r"
+                                    }`}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${xpProgressData.percent}%` }}
+                                    transition={{ duration: 1, ease: "easeOut" }}
+                                />
+                            </div>
                         </div>
-                    </div>
-
-                    <div className="w-full space-y-2 mb-4">
-                        <div className="flex justify-between text-xs font-medium">
-                            <span className="flex items-center gap-1">
-                                Level {currentLevel}
-                                <Badge variant="secondary" className="h-4 px-1.5 py-0 text-[8px] bg-primary/20 text-primary border-0">
-                                    {(user?.streak_days || streak) >= 7 ? `${Math.min(2.0, 1.0 + (Math.floor((user?.streak_days || streak) / 7) * 0.1)).toFixed(1)}x XP` : "1.0x"}
-                                </Badge>
-                            </span>
-                            <span className="text-primary">{xpProgressData.current.toLocaleString()} / {xpProgressData.needed.toLocaleString()} XP</span>
-                        </div>
-                        <Progress value={xpProgressData.percent} className="h-2 bg-muted" />
-                    </div>
 
                     <div className="grid grid-cols-3 gap-2 w-full">
                         <div className="bg-background/40 p-2 rounded-lg text-center border border-white/5 hover:border-primary/30 transition-colors cursor-pointer">

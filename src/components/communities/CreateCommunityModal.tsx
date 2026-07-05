@@ -4,11 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Upload, Sparkles, Globe, Lock } from "lucide-react";
+import { Plus, Upload, Sparkles, Globe, Lock, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const CreateCommunityModal = () => {
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [open, setOpen] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -19,8 +26,44 @@ export const CreateCommunityModal = () => {
     const handleNext = () => setStep(step + 1);
     const handleBack = () => setStep(step - 1);
 
+    const handleLaunch = async () => {
+        const token = localStorage.getItem("access_token");
+        if (!token) return toast.error("Please login first");
+        setSubmitting(true);
+        try {
+            const resp = await fetch(`${API_URL}/communities/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    description: formData.description,
+                    slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, "-"),
+                    privacy: formData.privacy,
+                }),
+            });
+            if (resp.ok) {
+                const community = await resp.json();
+                toast.success(`Community "${community.name}" created!`);
+                setOpen(false);
+                navigate(`/communities/${community.slug}`);
+                setStep(1);
+                setFormData({ name: "", description: "", slug: "", privacy: "public" });
+            } else {
+                const err = await resp.json().catch(() => ({}));
+                toast.error(err.detail || "Failed to create community");
+            }
+        } catch {
+            toast.error("Network error");
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-white/10">
                     <Plus className="w-5 h-5" />
@@ -159,9 +202,9 @@ export const CreateCommunityModal = () => {
                                 Continue
                             </Button>
                         ) : (
-                            <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:opacity-90">
-                                <Sparkles className="w-4 h-4 mr-2" />
-                                Launch Community
+                            <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:opacity-90" onClick={handleLaunch} disabled={submitting}>
+                                {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                                {submitting ? "Creating..." : "Launch Community"}
                             </Button>
                         )}
                     </div>

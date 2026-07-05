@@ -867,8 +867,73 @@ REAL-TIME:
       (only visible when viewing another user's profile)
 
 ================================================================================
-                    KNOWN ISSUES & LIMITATIONS
-================================================================================
+                    ===============================================================================
+           13. PROFILE EVOLUTION SYSTEM — RANK-BASED VISUALS
+===============================================================================
+
+IMPLEMENTED: Free Fire–style rank evolution where every profile visually
+transforms based on rank, prestige, XP, achievements, and reputation.
+
+RANK TIERS (9 tiers × up to 5 divisions):
+- Novice (0-699), Bronze (700-899), Silver (900-1099), Gold (1100-1299)
+- Platinum (1300-1599), Diamond (1600-2199), Heroic (2200-3199)
+- Master (3200-4199), Grandmaster (4200+)
+
+NEW COMPONENTS CREATED:
+- RankAura.tsx — Animated aura glow + floating rank particles
+- RankBadgeAnimated.tsx — Enhanced badge with RGB cycling (Grandmaster),
+  hover scaling, animated stars
+- PrestigeOverlay.tsx — Prestige I–V visual overlays with escalating effects
+- GrandmasterEffects.tsx — Cosmic background, energy waves, RGB crown,
+  floating particles, animated "THE GRANDMASTER" title
+- DynamicProfileTheme.tsx — Rank-based card backgrounds, border glows,
+  gradient themes + RankAvatarRing with tier-specific ring styles
+- UserCard.tsx — Reusable user card + UserPreviewCard for hover previews
+- RecommendationCards.tsx — Multi-section engine (Trending, Top Ranked,
+  Rising Stars, AI Experts, Legendary Creators) + TrendingCreators strip
+- profileDistinctiveness.ts — Profile variance utility using XP, reputation,
+  followers, achievements, prestige → unique visual params per user
+
+CSS ANIMATIONS (discover-animations.css, 25+ keyframes):
+- aura-pulse, particle-float, shimmer-border, rgb-cycle, crown-float
+- energy-wave, holographic-overlay, lightning-flash, fire-trail
+- diamond-sparkle, prestige-aura, fame-shine, text-gradient-anim
+- legendary-frame, xp-bar-grandmaster, xp-bar-master
+- Rank utility classes: rank-bg-{tier}, rank-border-{tier},
+  rank-glow-{tier}, avatar-ring-{tier}, xp-bar-{tier}
+
+MODIFIED COMPONENTS:
+- HeroProfileHeader.tsx — DynamicProfileTheme, RankAura/Particles,
+  RankAvatarRing, GrandmasterCrown/Title, fire trail, PrestigeOverlay,
+  rank-colored animated XP bar
+- Profile.tsx — Dynamic ambient background, Grandmaster full-screen effects
+- PeopleDiscovery.tsx — Rank aura/avatar rings, glow borders, crown icon,
+  hover preview cards
+- Dashboard.tsx — Rank ambient BG, TrendingCreators strip,
+  RecommendationCards sidebar
+- HomeLeftSidebar.tsx — Rank aura/particles, RankBadgeAnimated,
+  rank-colored XP bar, Grandmaster crown
+- HomeRightSidebar.tsx — Rank badges, glow borders on Talent Hub
+- Discover.tsx — RecommendationCards on People tab
+- DiscoverHeader.tsx — Rank-based search suggestion icons
+
+SEED DATA (16 users, 5 tiers):
+| Tier | Users |
+|------|-------|
+| Grandmaster | basha_dev |
+| Master/Heroic | ai_researcher, backend_wizard, cloud_architect, security_expert |
+| Diamond/Platinum | react_dev, devops_engineer, data_engineer, rustacean |
+| Gold/Silver | python_dev, fullstack_dev, qa_automation, product_manager |
+| Bronze/Novice | ui_designer, tech_writer, agile_coach |
+
+KNOWN RUNTIME ISSUES FIXED:
+[✓] HeroProfileHeader.tsx: showGrandmasterBg changed to isGrandmaster
+    (was undefined, causing crash on profile page load)
+[✓] AIHeroSection.tsx: getRankInfoFromString added to imports
+    (was missing, causing crash on AI Coach page)
+
+===============================================================================
+                     KNOWN ISSUES & LIMITATIONS=
 
 - React Router v6 future flag warnings (v7_startTransition, v7_relativeSplatPath)
   → Non-breaking. Add future flags to BrowserRouter props to silence them.
@@ -880,6 +945,9 @@ REAL-TIME:
 - Reels video upload stores URL only — actual video hosting requires CDN/S3 setup.
 - Voice/video channels in Communities are UI placeholders (WebRTC not implemented).
 - AI chat uses rule-based responses — no LLM integration yet.
+- /auth/me returns 401 on expired/cleared token — expected behavior (auto-redirect to login)
+- /communities/{slug}/feed returns 404 — endpoint not yet implemented in backend
+- Battle socket.io CORS error — duplicate 'Access-Control-Allow-Origin' header in Nginx config
 
 ================================================================================
                           END OF DOCUMENTATION

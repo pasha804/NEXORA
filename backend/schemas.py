@@ -60,13 +60,14 @@ class UserResponse(BaseModel):
     xp: int = 0
     level: int = 1
     rank: str = "Novice"
+    prestige: int = 0
 
     # Social counts (default 0 until follow system is built)
     followers_count: int = 0
     following_count: int = 0
 
     # Nested / derived data (empty defaults ensure frontend doesn't crash)
-    skills: List[dict] = []
+    skills: List[Any] = []
     interests: List[str] = []
     onboarding_completed: bool = False
 
@@ -75,15 +76,31 @@ class UserResponse(BaseModel):
     @field_serializer('created_at')
     def serialize_created_at(self, v: Optional[datetime]) -> Optional[str]:
         return v.isoformat() if v else None
+
+    @field_serializer('skills')
+    def serialize_skills(self, v: Any) -> List[dict]:
+        if not v:
+            return []
+        result = []
+        for item in v:
+            if hasattr(item, '__dict__'):
+                d = {k: v for k, v in item.__dict__.items() if not k.startswith('_')}
+                result.append(d)
+            elif isinstance(item, dict):
+                result.append(item)
+            else:
+                result.append({'name': str(item)})
+        return result
+
     location: Optional[str] = None
     website: Optional[str] = None
     experience_level: Optional[str] = None
     github_url: Optional[str] = None
     linkedin_url: Optional[str] = None
     portfolio_links: List[str] = []
-    experience_data: List[dict] = []
-    education_data: List[dict] = []
-    projects_data: List[dict] = []
+    experience_data: List[Any] = []
+    education_data: List[Any] = []
+    projects_data: List[Any] = []
 
     @classmethod
     def from_orm_user(cls, user) -> "UserResponse":
@@ -107,6 +124,7 @@ class UserResponse(BaseModel):
             xp=user.xp_points or 0, # Map xp_points to xp for frontend
             level=user.level or 1,
             rank=rank,
+            prestige=getattr(user, 'prestige', 0) or 0,
             followers_count=stats.followers_count if stats else 0,
             following_count=stats.following_count if stats else 0,
             skills=[{"id": s.id, "name": s.skill_name, "level": s.skill_level} for s in (user.skills or [])],
@@ -291,15 +309,42 @@ class ReelResponse(ReelBase):
     creator_id: int
     likes_count: int
     comments_count: int
+    saves_count: int = 0
     created_at: datetime
     creator: Optional[UserResponse] = None
     is_liked: bool = False
+    is_saved: bool = False
 
     class Config:
         from_attributes = True
 
 class Reel(ReelResponse):
     pass
+
+class ReelCommentCreate(BaseModel):
+    content: str
+
+class ReelCommentUser(BaseModel):
+    id: int
+    username: str
+    avatar_url: Optional[str] = None
+    is_verified: bool = False
+
+    class Config:
+        from_attributes = True
+
+class ReelCommentResponse(BaseModel):
+    id: int
+    reel_id: str
+    user_id: int
+    content: str
+    likes_count: int = 0
+    created_at: datetime
+    user: Optional[ReelCommentUser] = None
+    is_liked: bool = False
+
+    class Config:
+        from_attributes = True
 
 class CommunityBase(BaseModel):
     name: str

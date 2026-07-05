@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Bot, TrendingUp, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { xpProgressInLevel, getRankInfo } from "@/lib/rankSystem";
+import { xpProgressInLevel, getRankInfoFromString } from "@/lib/rankSystem";
 import { RankBadge } from "@/components/ui/RankBadge";
 
 export const AIHeroSection = () => {
     const { user } = useAuth();
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     const fetchAnalysis = async () => {
         try {
@@ -181,7 +181,7 @@ export const AIHeroSection = () => {
                         <div className="flex justify-between text-xs text-muted-foreground mb-2">
                             <span className="flex items-center gap-2">
                                 Progress to Level {userLevel + 1}
-                                <RankBadge rp={rp} size="xs" animated={false} />
+                                <RankBadge rank={rankStr} size="xs" animated={false} />
                             </span>
                             <span>{xpProg.percent.toFixed(0)}%</span>
                         </div>

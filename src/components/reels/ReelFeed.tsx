@@ -1,18 +1,21 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ReelPlayer } from "./ReelPlayer";
-import { useInView } from "framer-motion";
-import { Reel } from "@/types/reels"; // Assuming we will update types/reels.ts or map backend data to this
+import { Reel } from "@/types/reels";
+import { Loader2 } from "lucide-react";
 
 interface ReelFeedProps {
-    reels: any[]; // Using any for now until we unify backend/frontend types
+    reels: Reel[];
     onLoadMore?: () => void;
+    hasMore?: boolean;
+    isLoading?: boolean;
 }
 
-export const ReelFeed = ({ reels, onLoadMore }: ReelFeedProps) => {
+export const ReelFeed = ({ reels, onLoadMore, hasMore, isLoading }: ReelFeedProps) => {
     const [currentReelIndex, setCurrentReelIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const observerRef = useRef<IntersectionObserver | null>(null);
+    const sentinelRef = useRef<HTMLDivElement>(null);
 
-    // Intersection Observer logic to handle snap index
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -32,6 +35,18 @@ export const ReelFeed = ({ reels, onLoadMore }: ReelFeedProps) => {
         return () => observer.disconnect();
     }, [reels]);
 
+    useEffect(() => {
+        if (!sentinelRef.current || !onLoadMore || !hasMore || isLoading) return;
+        observerRef.current = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) onLoadMore();
+            },
+            { threshold: 0.1 }
+        );
+        observerRef.current.observe(sentinelRef.current);
+        return () => observerRef.current?.disconnect();
+    }, [onLoadMore, hasMore, isLoading]);
+
     return (
         <div
             ref={containerRef}
@@ -43,23 +58,23 @@ export const ReelFeed = ({ reels, onLoadMore }: ReelFeedProps) => {
                     data-index={index}
                     className="reel-container w-full h-full snap-start snap-always relative flex justify-center items-center bg-zinc-950/80 backdrop-blur-sm"
                 >
-                    {/* Immersive Background Blur - Optimized */}
                     <div className="absolute inset-0 opacity-20 pointer-events-none overflow-hidden">
-                        {/* Only render blur if active or adjacent to improve performance */}
                         {Math.abs(currentReelIndex - index) <= 1 && (
                             <div className="w-full h-full scale-150 blur-3xl bg-gradient-to-tr from-primary/30 to-neon-purple/30 animate-pulse-slow" />
                         )}
                     </div>
-
-                    {/* Video Player Container */}
                     <div className="w-full h-full md:h-[95%] md:w-auto md:aspect-[9/16] md:max-w-[550px] relative border-x border-white/5 shadow-2xl rounded-sm overflow-hidden ring-1 ring-white/10">
-                        {/* Only render player content if active or adjacent to conserve resources */}
                         {Math.abs(currentReelIndex - index) <= 2 && (
                             <ReelPlayer data={reel} isActive={currentReelIndex === index} />
                         )}
                     </div>
                 </div>
             ))}
+            {hasMore && (
+                <div ref={sentinelRef} className="h-20 flex items-center justify-center">
+                    {isLoading && <Loader2 className="w-6 h-6 animate-spin text-primary" />}
+                </div>
+            )}
         </div>
     );
 };

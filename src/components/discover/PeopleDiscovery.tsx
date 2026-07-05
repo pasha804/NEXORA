@@ -1,22 +1,25 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import {
     UserPlus, UserCheck, MessageCircle, Swords,
-    MapPin, Sparkles, Users, ChevronDown, Loader2
+    MapPin, Sparkles, Users, ChevronDown, Loader2, Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import { RankBadge } from "@/components/ui/RankBadge";
+import { getRankInfoFromString } from "@/lib/rankSystem";
+import { RankAura } from "@/components/profile/RankAura";
+import { UserPreviewCard } from "@/components/profile/UserCard";
 
 interface PeopleDiscoveryProps {
     searchQuery: string;
     filters: any;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 interface FilterParams {
     skill?: string;
@@ -323,8 +326,23 @@ const PersonCard = ({ person, index }: any) => {
     const navigate = useNavigate();
     const [isFollowing, setIsFollowing] = useState(false);
     const [followLoading, setFollowLoading] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
     const [messagingStatus, setMessagingStatus] = useState<{ can_message: boolean; reason: string } | null>(null);
     const [statusLoading, setStatusLoading] = useState(true);
+    const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const rankStr = person.rank || "Novice";
+    const rankInfo = getRankInfoFromString(rankStr);
+    const isHighRank = ["Diamond", "Heroic", "Master", "Grandmaster"].includes(rankInfo.tier);
+    const theme = rankInfo.theme;
+
+    const handleMouseEnter = () => {
+        if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current);
+        previewTimeoutRef.current = setTimeout(() => setShowPreview(true), 400);
+    };
+    const handleMouseLeave = () => {
+        if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current);
+        setShowPreview(false);
+    };
 
     useEffect(() => {
         const fetchStatus = async () => {
@@ -427,96 +445,121 @@ const PersonCard = ({ person, index }: any) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.04, duration: 0.3 }}
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="glass-card p-6 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all cursor-pointer group"
+            whileHover={{ y: -8, transition: { duration: 0.3 } }}
+            className={`relative overflow-hidden rounded-[2rem] border transition-all cursor-pointer group shadow-xl p-6`}
+            style={{
+              background: `linear-gradient(135deg, rgba(0,0,0,0.8), rgba(20,20,20,0.9))`,
+              borderColor: isHighRank ? theme.primary.replace("rgb", "rgba").replace(")", ", 0.2)") : "rgba(255,255,255,0.05)",
+              boxShadow: isHighRank ? `0 10px 30px ${theme.primary.replace("rgb", "rgba").replace(")", ", 0.1)")}` : "none",
+            }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             onClick={() => navigate(`/profile/${person.username}`)}
         >
+            {/* Hover preview card */}
+            <AnimatePresence>
+                {showPreview && (
+                    <div className="absolute -top-2 right-0 z-50 translate-x-[calc(100%+8px)] hidden lg:block">
+                        <UserPreviewCard user={{
+                            id: person.id,
+                            username: person.username,
+                            display_name: person.name,
+                            avatar_url: person.avatar,
+                            bio: person.bio || person.aiReason,
+                            rank: person.rank,
+                            level: person.level,
+                            prestige: person.prestige || 0,
+                            followers_count: person.connections || person.followers_count,
+                            skills: person.skills,
+                        }} />
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Dynamic Animated background for High Ranks */}
+            {isHighRank && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10 group-hover:opacity-20 transition-opacity">
+                    <motion.div
+                        className="absolute -inset-[100%]"
+                        animate={{ rotate: [0, 360] }}
+                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                        style={{ background: `conic-gradient(from 0deg at 50% 50%, transparent, ${theme.primary}, transparent 40%)` }}
+                    />
+                </div>
+            )}
+
             {/* Header — Avatar & Match Score */}
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex items-start gap-3">
+            <div className="flex items-start justify-between mb-5 relative z-10">
+                <div className="flex items-start gap-4">
                     <div className="relative">
-                        <Avatar className="w-16 h-16 ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all">
-                            <AvatarImage src={person.avatar} alt={person.name} />
-                            <AvatarFallback className="bg-gradient-to-br from-primary to-purple-600 text-white font-bold text-lg">
+                        <RankAura rank={rankStr} size="sm" intensity="high" />
+                        <Avatar className={`w-16 h-16 ring-2 transition-transform duration-300 group-hover:scale-110 shadow-2xl`}
+                            style={{ ringColor: isHighRank ? theme.primary : 'rgba(255,255,255,0.1)' }}
+                        >
+                            <AvatarImage src={person.avatar} alt={person.name} className="object-cover" />
+                            <AvatarFallback className="bg-gray-800 text-white font-black text-xl">
                                 {initials}
                             </AvatarFallback>
                         </Avatar>
+                        {rankInfo.isGrandmaster && (
+                            <span className="absolute -top-2 -right-2 text-xl select-none">👑</span>
+                        )}
                         {person.onlineStatus === "online" && (
-                            <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-background rounded-full" />
+                            <span className="absolute bottom-0.5 right-0.5 w-4 h-4 bg-green-500 border-2 border-black rounded-full" />
                         )}
                     </div>
                     <div>
-                        <h3 className="font-bold group-hover:text-primary transition-colors leading-tight">
+                        <h3 className={`font-black text-lg leading-tight transition-colors text-white group-hover:text-primary`}>
                             {person.name}
                         </h3>
-                        <p className="text-sm text-muted-foreground">@{person.username}</p>
+                        <p className="text-xs text-white/40 font-medium">@{person.username}</p>
                         {person.location && (
-                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                                <MapPin className="w-3 h-3 flex-shrink-0" />
+                            <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest flex items-center gap-1 mt-1">
+                                <MapPin className="w-2.5 h-2.5" />
                                 {person.location}
                             </p>
                         )}
                     </div>
                 </div>
                 {person.aiMatch && (
-                    <Badge className="bg-green-500/15 text-green-400 border-green-500/30 text-xs shrink-0">
-                        {person.aiMatch}% Match
+                    <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black uppercase tracking-tighter h-6">
+                        {person.aiMatch}% MATCH
                     </Badge>
                 )}
             </div>
 
-            {/* Stats Row */}
-            <div className="flex items-center gap-3 mb-4 flex-wrap">
-                {person.rank && (
-                    <RankBadge rank={person.rank} size="xs" animated={false} />
-                )}
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Users className="w-3 h-3 text-blue-400" />
-                    <span>{person.connections || 0} connections</span>
-                </div>
-                {person.mutualConnections > 0 && (
-                    <span className="text-primary font-medium text-xs">{person.mutualConnections} mutual</span>
-                )}
+            {/* Rank & Level Info */}
+            <div className="flex items-center gap-3 mb-5 relative z-10">
+                 <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 text-lg">
+                        {rankInfo.icon}
+                    </div>
+                    <div className={`text-[10px] font-black uppercase tracking-widest ${rankInfo.isGrandmaster ? 'text-gradient-animated' : ''}`} style={{ color: !rankInfo.isGrandmaster ? theme.primary : undefined }}>
+                        {rankStr}
+                    </div>
+                 </div>
+                 <div className="h-4 w-px bg-white/5" />
+                 <span className="text-[10px] font-black text-white/30 uppercase tracking-widest flex items-center gap-1">
+                    <Zap className="w-2.5 h-2.5" /> LV {person.level || 1}
+                 </span>
             </div>
 
-            {/* Skills */}
-            {person.skills && person.skills.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                    {person.skills.slice(0, 3).map((skill: any, i: number) => (
-                        <Badge key={i} variant="outline" className="text-xs hover:border-primary/50 transition-colors">
-                            {skill.name || skill}
-                        </Badge>
-                    ))}
-                    {person.skills.length > 3 && (
-                        <Badge variant="outline" className="text-xs text-muted-foreground">
-                            +{person.skills.length - 3}
-                        </Badge>
-                    )}
-                </div>
-            )}
-
-            {/* AI Reasoning */}
-            <div className="text-xs text-muted-foreground mb-4 p-2.5 rounded-lg bg-primary/5 border border-primary/15 flex items-start gap-2">
-                <Sparkles className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
-                <span className="line-clamp-2">{person.aiReason}</span>
+            {/* AI Reasoning / Bio */}
+            <div className="text-xs text-white/60 mb-5 p-3 rounded-2xl bg-white/5 border border-white/5 flex items-start gap-2 italic leading-relaxed">
+                <Sparkles className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                <span className="line-clamp-2">"{person.aiReason || person.bio || 'Highly compatible developer profile detected.'}"</span>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+            <div className="flex gap-2 relative z-10" onClick={e => e.stopPropagation()}>
                 <Button
                     size="sm"
                     variant={isFollowing ? "outline" : "default"}
-                    className="flex-1 transition-all"
+                    className={`flex-1 rounded-xl font-black uppercase tracking-widest text-[10px] h-9 ${!isFollowing ? 'bg-white text-black hover:bg-white/90 shadow-xl' : 'border-white/10 text-white/70'}`}
                     onClick={handleFollow}
                     disabled={followLoading}
                 >
-                    {followLoading ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : isFollowing ? (
-                        <><UserCheck className="w-3 h-3 mr-1" />Following</>
-                    ) : (
-                        <><UserPlus className="w-3 h-3 mr-1" />Follow</>
-                    )}
+                    {followLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : isFollowing ? "FOLLOWING" : "FOLLOW"}
                 </Button>
 
                 {(!messagingStatus || messagingStatus.can_message) ? (
@@ -525,10 +568,9 @@ const PersonCard = ({ person, index }: any) => {
                         variant="outline"
                         onClick={handleMessage}
                         disabled={statusLoading}
-                        className="hover:border-blue-500/50 hover:text-blue-400 transition-all"
-                        title="Message"
+                        className="h-9 w-9 rounded-xl border-white/10 bg-white/5 text-white/70 hover:text-white hover:bg-white/10"
                     >
-                        <MessageCircle className="w-3.5 h-3.5" />
+                        <MessageCircle className="w-4 h-4" />
                     </Button>
                 ) : (
                     <Button
@@ -536,14 +578,9 @@ const PersonCard = ({ person, index }: any) => {
                         variant="outline"
                         onClick={messagingStatus.reason === "pending_connection" ? undefined : handleConnect}
                         disabled={statusLoading || messagingStatus.reason === "pending_connection"}
-                        className={
-                            messagingStatus.reason === "pending_connection"
-                                ? "opacity-50 cursor-not-allowed"
-                                : "border-primary/30 hover:bg-primary/10 transition-all"
-                        }
-                        title={messagingStatus.reason === "pending_connection" ? "Request Pending" : "Send Connection Request"}
+                        className="h-9 w-9 rounded-xl border-white/10 bg-white/5 text-white/70"
                     >
-                        {messagingStatus.reason === "pending_connection" ? "Pending" : "Connect"}
+                        <Users className="w-4 h-4" />
                     </Button>
                 )}
 
@@ -551,10 +588,9 @@ const PersonCard = ({ person, index }: any) => {
                     size="sm"
                     variant="outline"
                     onClick={handleChallenge}
-                    className="border-orange-500/30 hover:bg-orange-500/10 hover:border-orange-500/60 hover:text-orange-400 transition-all"
-                    title="Challenge to PvP"
+                    className="h-9 w-9 rounded-xl border-orange-500/20 bg-orange-500/5 text-orange-400/70 hover:text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/40"
                 >
-                    <Swords className="w-3.5 h-3.5" />
+                    <Swords className="w-4 h-4" />
                 </Button>
             </div>
         </motion.div>

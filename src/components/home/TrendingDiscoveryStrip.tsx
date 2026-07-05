@@ -29,7 +29,7 @@ export const TrendingDiscoveryStrip = () => {
     });
 
     useEffect(() => {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
         const fetchTrends = async () => {
             try {
                 const res = await fetch(`${API_URL}/social/trending/all`);

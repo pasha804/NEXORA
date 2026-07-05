@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, MessageCircle, Share2, Bookmark, MousePointerClick, Play, Award, MapPin, Music2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, Bookmark, MousePointerClick, Play, Award, MapPin, Music2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Reel, isTutorialReel, isPvPReel, isProjectReel, isChallengeReel } from "@/types/reels"; // Added isChallengeReel if needed or ensure types/reels has it
+import { Reel, isTutorialReel, isPvPReel, isProjectReel } from "@/types/reels";
 import { ReelComments } from "./ReelComments";
 import { ShareModal } from "./ShareModal";
-import { Zap } from "lucide-react"; // Import Zap for project reel
+import { useReelStore } from "@/hooks/useReelStore";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 interface ReelPlayerProps {
     data: Reel;
@@ -18,16 +20,21 @@ export const ReelPlayer = ({ data, isActive }: ReelPlayerProps) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLiked, setIsLiked] = useState(data.isLiked);
     const [likeCount, setLikeCount] = useState(data.likes);
-    const [isSaved, setIsSaved] = useState(false);
+    const [isSaved, setIsSaved] = useState(data.isSaved || false);
+    const [saveCount, setSaveCount] = useState(data.saves);
     const [showComments, setShowComments] = useState(false);
     const [showShare, setShowShare] = useState(false);
     const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+    const toggleLikeStore = useReelStore((s) => s.toggleLike);
+    const toggleSaveStore = useReelStore((s) => s.toggleSave);
 
     // Sync with data changes
     useEffect(() => {
         setIsLiked(data.isLiked);
         setLikeCount(data.likes);
-    }, [data.isLiked, data.likes]);
+        setIsSaved(data.isSaved || false);
+        setSaveCount(data.saves);
+    }, [data.isLiked, data.likes, data.isSaved, data.saves]);
 
     // Using refs for double tap logic
     const lastTap = useRef<number>(0);
@@ -73,7 +80,6 @@ export const ReelPlayer = ({ data, isActive }: ReelPlayerProps) => {
     };
 
     const handleLike = async (forceLike = false) => {
-        // Optimistic UI update
         const wasLiked = isLiked;
         if (wasLiked && !forceLike) {
             setLikeCount(prev => prev - 1);
@@ -82,35 +88,57 @@ export const ReelPlayer = ({ data, isActive }: ReelPlayerProps) => {
             setLikeCount(prev => prev + 1);
             setIsLiked(true);
         } else if (forceLike) {
-            // Already liked, but forced (double tap)
             return;
         }
 
+        toggleLikeStore(data.id);
+
         try {
             const token = localStorage.getItem("access_token");
-            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:80";
             const resp = await fetch(`${API_URL}/reels/${data.id}/like`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });
-            
+
             if (!resp.ok) {
-                // Rollback on failure
                 setIsLiked(wasLiked);
                 setLikeCount(prev => wasLiked ? prev + 1 : prev - 1);
+                toggleLikeStore(data.id);
                 toast.error("Failed to update like status");
             }
         } catch (err) {
-            console.error("Like error:", err);
-            // Rollback
             setIsLiked(wasLiked);
             setLikeCount(prev => wasLiked ? prev + 1 : prev - 1);
+            toggleLikeStore(data.id);
         }
     };
 
-    const handleSave = () => {
-        setIsSaved(!isSaved);
-        toast.success(isSaved ? "Removed from saved" : "Reel saved to collections");
+    const handleSave = async () => {
+        const wasSaved = isSaved;
+        setIsSaved(!wasSaved);
+        setSaveCount(prev => wasSaved ? prev - 1 : prev + 1);
+        toggleSaveStore(data.id);
+
+        try {
+            const token = localStorage.getItem("access_token");
+            const resp = await fetch(`${API_URL}/reels/${data.id}/save`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!resp.ok) {
+                setIsSaved(wasSaved);
+                setSaveCount(prev => wasSaved ? prev + 1 : prev - 1);
+                toggleSaveStore(data.id);
+                toast.error("Failed to save reel");
+            } else {
+                toast.success(wasSaved ? "Removed from saved" : "Reel saved to collections");
+            }
+        } catch (err) {
+            setIsSaved(wasSaved);
+            setSaveCount(prev => wasSaved ? prev + 1 : prev - 1);
+            toggleSaveStore(data.id);
+        }
     };
 
     return (
@@ -258,7 +286,7 @@ export const ReelPlayer = ({ data, isActive }: ReelPlayerProps) => {
                             <div className={`p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/5 transition-colors ${isSaved ? "text-yellow-400" : "text-white"}`}>
                                 <Bookmark className={`w-7 h-7 ${isSaved ? "fill-current" : ""}`} />
                             </div>
-                            <span className="text-xs font-bold text-white drop-shadow-md">{data.saves}</span>
+                            <span className="text-xs font-bold text-white drop-shadow-md">{saveCount}</span>
                         </Button>
 
                         <Button variant="ghost" size="icon" className="flex flex-col gap-1 items-center hover:bg-transparent" onClick={() => setShowShare(true)}>

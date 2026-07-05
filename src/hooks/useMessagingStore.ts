@@ -23,6 +23,7 @@ interface MessagingState {
     sendMessage: (conversationId: string, content: string, type?: 'text' | 'image' | 'code' | 'file') => void;
     addMessageToConversation: (roomId: number, message: any) => void;
     updateConversationStatus: (userId: number, status: string) => void;
+    updateTypingStatus: (roomId: number, userId: number, isTyping: boolean) => void;
 }
 
 export const useMessagingStore = create<MessagingState>((set) => ({
@@ -90,6 +91,18 @@ export const useMessagingStore = create<MessagingState>((set) => ({
                         ? { ...c.recipient, onlineStatus: status as any }
                         : c.recipient
                 };
+            }
+            return c;
+        })
+    })),
+
+    updateTypingStatus: (roomId, userId, isTyping) => set((state) => ({
+        conversations: state.conversations.map(c => {
+            if (c.id === roomId.toString()) {
+                const typingUsers = isTyping
+                    ? [...c.typingUsers.filter(id => id !== userId), userId]
+                    : c.typingUsers.filter(id => id !== userId);
+                return { ...c, typingUsers };
             }
             return c;
         })

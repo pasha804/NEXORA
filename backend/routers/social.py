@@ -5,10 +5,11 @@ from typing import List, Optional
 
 from common.database import get_db
 from common import models
-from common.models import User, UserSkill, Skill, SkillPost, PvPMatch, Follower, UserSocialStats, UserAchievement, Achievement
+from common.models import User, UserSkill, Skill, SkillPost, PvPMatch, Follower, UserSocialStats, UserAchievement, Achievement, Notification
 import auth as auth_module
 from common.redis_utils import cache_get, cache_set
 from common.event_utils import emit_follow_created, emit_achievement_unlocked
+from common.realtime_utils import emit_realtime_notification
 from social_utils import user_to_dict
 
 router = APIRouter(prefix="/social", tags=["Social"])
@@ -100,6 +101,19 @@ async def follow_user(
         target_stats.followers_count += 1
     
     db.commit()
+    
+    # Create follow notification for target user
+    follow_notification = Notification(
+        user_id=user_id,
+        type="NEW_FOLLOWER",
+        title="New Follower",
+        message=f"{current_user.display_name or current_user.username} started following you",
+        related_id=str(current_user.id)
+    )
+    db.add(follow_notification)
+    db.commit()
+    db.refresh(follow_notification)
+    await emit_realtime_notification(follow_notification)
     
     emit_follow_created(current_user.id, user_id)
     
